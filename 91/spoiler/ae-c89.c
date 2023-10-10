@@ -5,6 +5,7 @@
  */
 
 #include <ctype.h>
+#include <assert.h>
 #include <curses.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -19,10 +20,21 @@
 
 static int done;
 static int row, col;
-static int here, page, epage;
+static off_t here, page, epage;
 static char buf[BUF];
 static char *gap = buf, *egap, *ebuf;
 static char *filename;
+
+/*
+ * The original prog.c for the IOCCC conformed to the 1536 bytes of
+ * source size rule.  Not yet sure if this version will still conform,
+ * though it should for more current versions of the size rule (4096,
+ * 2503).
+ *
+ *	0 <= off_t <= file size	eg. here (the cursor)
+ *
+ *	buf <= char * <= ebuf	eg. gap (start of the hole)
+ */
 
 /*
  *	The following assertions must be maintained.
@@ -65,8 +77,9 @@ static char *filename;
  * where the gap size has to be factored in.
  */
 char *
-ptr(int cur)
+ptr(off_t cur)
 {
+	assert(0 <= cur && cur <= (ebuf-buf)-(egap-gap));
 	return buf+cur + (buf+cur < gap ? 0 : egap-gap);
 }
 
@@ -74,9 +87,10 @@ ptr(int cur)
  * Translate a buffer offset into a cursor offset,
  * where the gap size has to be factored out.
  */
-int
+off_t
 pos(char *s)
 {
+	assert(buf <= s && s <= ebuf);
 	return s-buf - (s < egap ? 0 : egap-gap);
 }
 
@@ -101,6 +115,7 @@ quit(void)
 void
 movegap(off_t cur)
 {
+	assert(0 <= cur && cur <= (ebuf-buf)-(egap-gap));
 	char *p = ptr(cur);
 	while (p < gap) {
 		*--egap = *--gap;
@@ -108,38 +123,37 @@ movegap(off_t cur)
 	while (egap < p) {
 		*gap++ = *egap++;
 	}
+	assert(buf <= gap && gap <= egap && egap <= ebuf);
 }
 
-int
-prevline(int offset)
+off_t
+prevline(off_t cur)
 {
-	char *p;
-	while (buf < (p = ptr(--offset)) && *p != '\n') {
+	while (0 < cur && *ptr(--cur) != '\n') {
 		;
 	}
-	return buf < p ? ++offset : 0;
+	return 0 < cur ? ++cur : 0;
 }
 
-int
-nextline(int offset)
+off_t
+nextline(off_t cur)
 {
-	char *p;
-	while ((p = ptr(offset++)) < ebuf && *p != '\n') {
+	off_t n = pos(ebuf);
+	while (cur < n && *ptr(cur++) != '\n') {
 		;
 	}
-	return p < ebuf ? offset : pos(ebuf);
+	return cur < n ? cur : n;
 }
 
-int
-adjust(int offset, int column)
+off_t
+adjust(off_t cur, int column)
 {
 	char *p;
-	int i = 0;
-	while ((p = ptr(offset)) < ebuf && *p != '\n' && i < column) {
+	for (int i = 0; (p = ptr(cur)) < ebuf && *p != '\n' && i < column; ) {
 		i += *p == '\t' ? TABSTOP(i) : 1;
-		++offset;
+		++cur;
 	}
-	return offset;
+	return cur;
 }
 
 void
