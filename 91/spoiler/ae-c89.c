@@ -21,9 +21,7 @@ static int done;
 static int row, col;
 static int here, page, epage;
 static char buf[BUF];
-static char *ebuf;
-static char *gap = buf;
-static char *egap;
+static char *gap = buf, *egap, *ebuf;
 static char *filename;
 
 /*
@@ -62,19 +60,24 @@ static char *filename;
  *	Point.
  */
 
+/*
+ * Translate a cursor offset into a buffer offset,
+ * where the gap size has to be factored in.
+ */
 char *
-ptr(int offset)
+ptr(int cur)
 {
-	if (offset < 0) {
-		return buf;
-	}
-	return buf+offset + (buf+offset < gap ? 0 : egap-gap);
+	return buf+cur + (buf+cur < gap ? 0 : egap-gap);
 }
 
+/*
+ * Translate a buffer offset into a cursor offset,
+ * where the gap size has to be factored out.
+ */
 int
-pos(char *pointer)
+pos(char *s)
 {
-	return pointer-buf - (pointer < egap ? 0 : egap-gap);
+	return s-buf - (s < egap ? 0 : egap-gap);
 }
 
 void
@@ -96,16 +99,15 @@ quit(void)
 }
 
 void
-movegap(void)
+movegap(off_t cur)
 {
-	char *p = ptr(here);
+	char *p = ptr(cur);
 	while (p < gap) {
 		*--egap = *--gap;
 	}
 	while (egap < p) {
 		*gap++ = *egap++;
 	}
-	here = pos(egap);
 }
 
 int
@@ -198,12 +200,14 @@ display(void)
 	refresh();
 }
 
+#ifndef NDEBUG
 void
 redraw(void)
 {
 	clear();
 	display();
 }
+#endif /* NDEBUG */
 
 void
 left(void)
@@ -297,7 +301,7 @@ void
 insert(void)
 {
 	int ch;
-	movegap();
+	movegap(here);
 	while ((ch = getch()) != '\e' && ch != '\f') {
 		if (ch == '\b') {
 			if (buf < gap) {
@@ -314,7 +318,7 @@ insert(void)
 void
 delete(void)
 {
-	movegap();
+	movegap(here);
 	if (egap < ebuf) {
 		here = pos(++egap);
 	}
@@ -324,21 +328,32 @@ void
 file(void)
 {
 	int i;
-	int j = here;
-	here = 0;
-	movegap();
-	(void) write(i = creat(filename, MODE), egap, (int)(ebuf-egap));
+	movegap(0);
+	(void) write(i = creat(filename, MODE), egap, ebuf-egap);
 	(void) close(i);
-	here = j;
 }
 
-static char key[] = "hjklHJKL[]tbixWRQ";
+void
+noop(void)
+{
+	/* Do nothing. */
+}
+
+static char key[] = "hjklHJKL[]tbixWQ"
+#ifndef NDEBUG
+"R"
+#endif /* NDEBUG */
+;
 
 static void (*func[])(void) = {
 	left, down, up, right,
 	wleft, pgdown, pgup, wright,
 	lnbegin, lnend, top, bottom,
-	insert, delete, file, redraw, quit, movegap
+	insert, delete, file, quit,
+#ifndef NDEBUG
+	redraw,
+#endif /* NDEBUG */
+	noop
 };
 
 int
