@@ -6,7 +6,16 @@
 # Winner Best Utility
 #
 
-CFLAGS	= -Os
+CFLAGS	= -Os -Wall
+
+# Cygwin
+#LIBS	= -lcurses
+
+# NetBSD
+LIBS	= -lcurses -ltermcap
+
+.c$E :
+	${CC} ${CFLAGS} -DMODE=0600 -o $* $< ${LIBS}
 
 all: build
 
@@ -27,8 +36,7 @@ clean:
 # This older version may generate lots of warnings with newer compilers.
 #
 ae: ae.c
-	${CC} ${CFLAGS} -DMODE=0600 -DBUF=32767 ae.c -o $* -lcurses -ltermcap
+	${CC} ${CFLAGS} -DMODE=0600 -DBUF=32767 ae.c -o $* ${LIBS}
 
-# Mostly cosmetic changes to read like ANSI C 89.
+# Convert from K&R to ANSI C89 and resolve compiler warnings.
 ae-c89: ae-c89.c
-	${CC} ${CFLAGS} -DMODE=0600 ae-c89.c -o $* -lcurses -ltermcap
