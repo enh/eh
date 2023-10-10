@@ -249,11 +249,12 @@ lnend(void)
 void
 wleft(void)
 {
-	char *p;
-	while (!isspace(*(p = ptr(here))) && buf < p) {
+	/* Move backwards to end of previous word. */
+	while (0 < here && isspace(*ptr(here-1))) {
 		--here;
 	}
-	while (isspace(*(p = ptr(here))) && buf < p) {
+	/* Move backwards to start of previous word. */
+	while (0 < here && !isspace(*ptr(here-1))) {
 		--here;
 	}
 }
@@ -281,11 +282,13 @@ pgup(void)
 void
 wright(void)
 {
-	char *p;
-	while (!isspace(*(p = ptr(here))) && p < ebuf) {
+	off_t n = pos(ebuf);
+	/* Move forwards to end of current word. */
+	while (here < n && !isspace(*ptr(here))) {
 		++here;
 	}
-	while (isspace(*(p = ptr(here))) && p < ebuf) {
+	/* Move forwards to start of next word. */
+	while (here < n && isspace(*ptr(here))) {
 		++here;
 	}
 }
