@@ -19,7 +19,7 @@
 #define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
 
 static int done;
-static int row, col;
+static int cur_row, cur_col;
 static off_t here, page, epage;
 static char buf[BUF];
 static char *gap = buf, *egap, *ebuf;
@@ -171,14 +171,13 @@ display(void)
 			page = prevline(page-1);
 		}
 	}
-	move(0, 0);
+	move(i = 0, j = 0);
 	clrtobot();
-	i = j = 0;
 	epage = page;
 	for (;;) {
 		if (here == epage) {
-			row = i;
-			col = j;
+			cur_row = i;
+			cur_col = j;
 		}
 		p = ptr(epage);
 		if (LINES <= i || ebuf <= p) {
@@ -210,7 +209,7 @@ display(void)
 	if (++i < LINES) {
 		mvaddstr(i, 0, "~EOF~");
 	}
-	move(row, col);
+	move(cur_row, cur_col);
 	refresh();
 }
 
@@ -242,13 +241,13 @@ right(void)
 void
 up(void)
 {
-	here = adjust(prevline(prevline(here)-1), col);
+	here = adjust(prevline(prevline(here)-1), cur_col);
 }
 
 void
 down(void)
 {
-	here = adjust(nextline(here), col);
+	here = adjust(nextline(here), cur_col);
 }
 
 void
@@ -281,7 +280,7 @@ void
 pgdown(void)
 {
 	page = here = prevline(epage-1);
-	while (0 < row--){
+	while (0 < cur_row--){
 		down();
 	}
 	epage = pos(ebuf);
