@@ -59,7 +59,7 @@ The character constants `\b`, `\f`, `\n`, `\r`, `\t` are used in order to provid
 
 My goals for this project were to learn and experiment with the Buffer Gap Scheme], write a useful and *portable* programme, and meet the requirements of the IOCCC.  I initially planned to have a mini CURSES built-in like the IOCCC Tetris entry from a previous year, however this was not as portable as using a CURSES library with TERMINFO/TERMCAP support.
 
-I plan to post followups such as unobfuscated versions and bugs fixes to comp.editors.  Reposts of the editor.101, gap.doc, and editor.102 can be found in the same group every so often.
+~~I plan to post followups such as unobfuscated versions and bugs fixes to comp.editors.  Reposts of the editor.101, gap.doc, and editor.102 can be found in the same group every so often.~~
 
 This entry will display a file with long lines, but has trouble scrolling the screen with long lines.  Paging up and down should work correctly, however.
 

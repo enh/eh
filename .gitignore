@@ -3,8 +3,13 @@ config.log
 config.status
 ant
 ae
+ae-c89
+ae-alt
+prog*
 ae.rc
 .aerc
+*.core
 *.exe
 *.obj
 *.o
+*.i

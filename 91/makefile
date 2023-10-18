@@ -1,26 +1,38 @@
 #
-# Anthony's Editor
-#
-# IOCCC 1991
-#
-# Winner Best Utility
+# Anthony's Editor - IOCCC 1991 - Winner Best Utility
 #
 
-all: ae
+.POSIX :
+
+O := .o
+E :=
+
+.SUFFIXES :
+.SUFFIXES : .c .h .i $O $E
+
+BUF	:= 65536
+MODE	:= 0600
+
+# Override from the command-line, eg. make DBG='-O0 -g'
+DBG	:= -DNDEBUG
+
+# gcc option closest to K&R behaviour, since no option -std=K&R.
+# clang supports K&R, but unclear how to enable that support.
+CFLAGS	:= -Wno-implicit ${DBG}
+
+CPPFLAGS:= -DMODE=${MODE} -DBUF=${BUF}
+
+LIBS	:= -lcurses -ltermcap
+
+.c.i:
+	${CC} ${CFLAGS} ${CPPFLAGS} -E $*.c >$*.i
+
+.c$E :
+	${CC} ${CFLAGS} ${CPPFLAGS} -o $*$E $< ${LIBS}
+
+all: ant$E
 
 clean:
-	-rm -f ae
+	-rm -f ant$E *.core *.i a.out
 
-# NOTE: some systems may need:
-#
-#  old SYS V:
-#	cc ${CFLAGS} -DMODE=0600 -DBUF=32767 -o ant ant.c -lcurses
-#  ATARI ST:
-#	cc -DMODE=0 -DBUF=32767 -o ant.ttp ant.c curses.a
-#  PC class:
-#	wcl -mc -DMODE=0 -DBUF=32767 ant.c curses.lib
-#
-ae: ant.c
-	${CC} ${CFLAGS} -DMODE=0600 -DBUF=32767 ant.c -o ae -lcurses -ltermcap
-
-
+ant$E: ant.c

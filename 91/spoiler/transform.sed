@@ -9,9 +9,9 @@
 /[[:<:]]DEBUG/d
 /[[:<:]]DUMP/d
 
-/#define SLOW/d
-/^#ifdef SLOW/d
-/^#else.*SLOW/,/^#endif.*SLOW/d
+/#define FAST/d
+/^#ifdef.*FAST/,/^#else.*FAST/d
+/^#endif.*FAST/d
 
 # Assertions
 /^#include.*assert/d
@@ -19,7 +19,7 @@
 
 # Comment lines
 /^\/\//d
-s/\/\* .* \*\///
+s/\/\*.*\*\///
 
 # Comment blocks
 /\/\*/,/\*\//d
@@ -32,7 +32,12 @@ s/[[:blank:]]*\/\///
 #
 
 /^#define TAB/d
-s/TABSTOP(\(.*\))/(8-(\1\&7))/g
+s/TABSTOP(\([^)]*\))/(8-(\1\&7))/g
+
+/^#ifndef.*MAX_COLS/,/^#endif$/d
+/^#define MAX_COLS/d
+s/MAX_COLS/999/g
+
 
 #
 #  Types
@@ -79,6 +84,7 @@ s/[[:<:]]pgup[[:>:]]/K/g
 s/[[:<:]]wright[[:>:]]/W/g
 s/[[:<:]]lnbegin[[:>:]]/H/g
 s/[[:<:]]lnend[[:>:]]/E/g
+s/[[:<:]]lngoto[[:>:]]/V/g
 s/[[:<:]]top[[:>:]]/T/g
 s/[[:<:]]bottom[[:>:]]/S/g
 s/[[:<:]]insert[[:>:]]/I/g
@@ -100,13 +106,15 @@ s/argc/x/g
 s/argv/y/g
 s/[[:<:]]off\(set\)*[[:>:]]/n/g
 s/[[:<:]]cur[[:>:]]/m/g
-s/[[:<:]]col(umn)*[[:>:]]/a/g
+s/[[:<:]]col\(umn\)*[[:>:]]/a/g
 s/[[:<:]]key[[:>:]]/k/g
 s/[[:<:]]func[[:>:]]/w/g
 s/[[:<:]]done[[:>:]]/d/g
 s/[[:<:]]here[[:>:]]/o/g
 s/[[:<:]]page[[:>:]]/u/g
 s/[[:<:]]epage[[:>:]]/v/g
+s/[[:<:]]eof[[:>:]]/w/g
+s/[[:<:]]count[[:>:]]/z/g
 s/[[:<:]]buf[[:>:]]/b/g
 s/[[:<:]]ebuf[[:>:]]/c/g
 s/[[:<:]]gap[[:>:]]/g/g
@@ -134,7 +142,7 @@ s/ != 0//g
 s/0 != //g
 
 #    (v = func(expr)) == 0	->  !(v = func(expr))
-s/\(([a-zA-Z0-9][a-zA-Z0-9]* = .*))\) == 0/!\1/g
+s/\(([a-zA-Z0-9][a-zA-Z0-9]* = [^)]*))\) == 0/!\1/g
 
 #    (expr) == 0	->  !(expr)
 s/\(([^()]*)\) == 0/!\1/g
@@ -143,7 +151,7 @@ s/\(([^()]*)\) == 0/!\1/g
 s/\([^()]*\) == 0/!\1/g
 
 #    func(expr) == 0	->  !func(expr)
-s/\([a-zA-Z0-9][a-zA-Z0-9]*(.*)\) == 0/!\1/g
+s/\([a-zA-Z0-9][a-zA-Z0-9]*([^)]*)\) == 0/!\1/g
 
 #    array[0]	->  *array
 s/\([^ 	]*[^[]\)\[0\]/*\1/g

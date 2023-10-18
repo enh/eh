@@ -1,15 +1,24 @@
 #
-# Anthony's Editor
+# Anthony's Editor - IOCCC 1991 - Winner Best Utility
 #
-# IOCCC 1991
-#
-# Winner Best Utility
-#
+
+.POSIX :
+
+O := .o
+E :=
+
+.SUFFIXES :
+.SUFFIXES : .c .h .i $O $E
+
+BUF	:= 65536
+MODE	:= 0600
 
 # Override from the command-line, eg. make DBG='-O0 -g'
 DBG	:= -DNDEBUG
 
 CFLAGS	:= -Os -Wall ${DBG}
+
+CPPFLAGS:= -DMODE=${MODE}
 
 # Cygwin
 #LIBS	:= -lcurses
@@ -17,47 +26,41 @@ CFLAGS	:= -Os -Wall ${DBG}
 # NetBSD
 LIBS	:= -lcurses -ltermcap
 
+.c.i:
+	${CC} ${CFLAGS} ${CPPFLAGS} -E $*.c >$*.i
+
 .c$E :
-	${CC} ${CFLAGS} -DMODE=0600 -o $* $< ${LIBS}
+	${CC} ${CFLAGS} ${CPPFLAGS} -o $*$E $< ${LIBS}
+
+#######################################################################
+#
+#######################################################################
 
 all: build
 
-build: ae ae-c89 ae-alt prog prog-alt
+build: ae$E ae-c89$E ae-alt$E prog$E prog-alt$E
 
 clean:
-	-rm -f ae ae-c89 ae-alt prog* *.core
+	-rm -f ae ae-c89 ae-alt prog* *.core *.i a.out
 
 strip: build
 	strip ae ae-c89 ae-alt prog prog-alt
 	ls -l
 
-# NOTE: some systems may need:
-#
-#  old SYS V:
-#	cc ${CFLAGS} -DMODE=0600 -DBUF=32767 -o ant ant.c -lcurses
-#  ATARI ST:
-#	cc -DMODE=0 -DBUF=32767 -o ant.ttp ant.c curses.a
-#  PC class:
-#	wcl -mc -DMODE=0 -DBUF=32767 ant.c curses.lib
-#
-# This older version may generate lots of warnings with newer compilers.
-#
-ae: ae.c
-	${CC} ${CFLAGS} -DMODE=0600 -DBUF=32767 ae.c -o $* ${LIBS}
+# Original IOCCC 1991 version 1.0.0.
+ae$E: ae.c
+	${CC} ${CFLAGS} ${CPPFLAGS} -DBUF=${BUF} ae.c -o $*$E ${LIBS}
 
-# Convert from K&R to ANSI C89 and resolve compiler warnings.
-ae-c89: ae-c89.c
+#######################################################################
+# Generated files.
+#######################################################################
 
-# See comments.
-ae-alt: ae-alt.c
-
-# Compress source.
 prog.c: ae-c89.c transform.sed
 	sed -f transform.sed ae-c89.c | sed -e '/^[ 	]*$$/d' >$@
 
 prog-alt.c: ae-alt.c transform.sed
 	sed -f transform.sed ae-alt.c | sed -e '/^[ 	]*$$/d' >$@
 
-prog: prog.c
+prog$E: prog.c
 
-prog-alt: prog-alt.c
+prog-alt$E: prog-alt.c

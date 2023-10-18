@@ -12,18 +12,17 @@
 #include <unistd.h>
 
 #ifndef BUF
-# define BUF		(USHRT_MAX)
+# define BUF		USHRT_MAX
 #endif
 
+#define MAX_COLS	999
 #define TABWIDTH	8
 #define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
 
-static int done;
-static int cur_row, cur_col;
-static off_t here, page, epage;
-static char buf[BUF];
+static int done, cur_row, cur_col;
+static off_t here, page, epage, count;
+static char buf[BUF], *filename;
 static char *gap = buf, *egap, *ebuf;
-static char *filename;
 
 /*
  * The original prog.c for the IOCCC conformed to the 1536 bytes of
@@ -73,17 +72,6 @@ static char *filename;
  */
 
 /*
- * Translate a cursor offset into a buffer offset,
- * where the gap size has to be factored in.
- */
-char *
-ptr(off_t cur)
-{
-	assert(0 <= cur && cur <= (ebuf-buf)-(egap-gap));
-	return buf+cur + (buf+cur < gap ? 0 : egap-gap);
-}
-
-/*
  * Translate a buffer offset into a cursor offset,
  * where the gap size has to be factored out.
  */
@@ -94,28 +82,21 @@ pos(char *s)
 	return s-buf - (s < egap ? 0 : egap-gap);
 }
 
-void
-top(void)
+/*
+ * Translate a cursor offset into a buffer offset,
+ * where the gap size has to be factored in.
+ */
+char *
+ptr(off_t cur)
 {
-	here = 0;
-}
-
-void
-bottom(void)
-{
-	epage = here = pos(ebuf);
-}
-
-void
-quit(void)
-{
-	done = 1;
+	assert(0 <= cur && cur <= pos(ebuf));
+	return buf+cur + (buf+cur < gap ? 0 : egap-gap);
 }
 
 void
 movegap(off_t cur)
 {
-	assert(0 <= cur && cur <= (ebuf-buf)-(egap-gap));
+	assert(0 <= cur && cur <= pos(ebuf));
 	char *p = ptr(cur);
 	while (p < gap) {
 		*--egap = *--gap;
@@ -126,34 +107,46 @@ movegap(off_t cur)
 	assert(buf <= gap && gap <= egap && egap <= ebuf);
 }
 
+/*
+ * Return the beginning of previous physical line or BOF.
+ */
 off_t
 prevline(off_t cur)
 {
 	while (0 < cur && *ptr(--cur) != '\n') {
 		;
 	}
-	return 0 < cur ? ++cur : 0;
+	/* Return cursor at BOL or BOF. */
+	return 0 < cur ? cur+1 : 0;
 }
 
-off_t
-nextline(off_t cur)
-{
-	off_t n = pos(ebuf);
-	while (cur < n && *ptr(cur++) != '\n') {
-		;
-	}
-	return cur < n ? cur : n;
-}
-
+/*
+ * Return the column position within the physical line or the EOL,
+ * which ever comes first.  Specify a large unrealistic column
+ * position, like 999, to simply return the EOL.  A long physical
+ * line can wrap into two or more logical lines or screen rows
+ * depending on the terminal width given by COLS.
+ */
 off_t
 adjust(off_t cur, int column)
 {
 	char *p;
-	for (int i = 0; (p = ptr(cur)) < ebuf && *p != '\n' && i < column; ) {
+	for (int i = 0; (p = ptr(cur)) < ebuf && *p != '\n' && i < column; cur++) {
 		i += *p == '\t' ? TABSTOP(i) : 1;
-		++cur;
 	}
+	assert(0 <= cur && cur <= pos(ebuf));
 	return cur;
+}
+
+/*
+ * Return the beginning of next physical line or EOF.
+ */
+off_t
+nextline(off_t cur)
+{
+	cur = adjust(cur, MAX_COLS);
+	/* Return EOF or BOL next line. */
+	return cur + (cur < pos(ebuf));
 }
 
 void
@@ -166,21 +159,19 @@ display(void)
 	}
 	if (epage <= here) {
 		page = nextline(here);
-		i = page == pos(ebuf) ? LINES-2 : LINES;
+		i = LINES - 2*(page == pos(ebuf));
 		while (0 < i--) {
 			page = prevline(page-1);
 		}
 	}
 	move(i = 0, j = 0);
 	clrtobot();
-	epage = page;
-	for (;;) {
+	for (epage = page; i < LINES; epage++) {
 		if (here == epage) {
 			cur_row = i;
 			cur_col = j;
 		}
-		p = ptr(epage);
-		if (LINES <= i || ebuf <= p) {
+		if (ebuf <= (p = ptr(epage))) {
 			break;
 		}
 		if (*p != '\r') {
@@ -193,8 +184,7 @@ display(void)
 			 * NCurses does not by default it seems.
 			 */
 			if (*p == '\t') {
-				j += TABSTOP(j);
-				move(i, j);
+				move(i, j += TABSTOP(j));
 			} else {
 				addch(*p);
 				j++;
@@ -204,38 +194,31 @@ display(void)
 			++i;
 			j = 0;
 		}
-		++epage;
 	}
 	if (++i < LINES) {
-		mvaddstr(i, 0, "~EOF~");
+		mvaddstr(i, 0, "^D");
 	}
 	move(cur_row, cur_col);
 	refresh();
 }
 
-#ifndef NDEBUG
 void
 redraw(void)
 {
 	clear();
 	display();
 }
-#endif /* NDEBUG */
 
 void
 left(void)
 {
-	if (0 < here) {
-		--here;
-	}
+	here -= 0 < here;
 }
 
 void
 right(void)
 {
-	if (here < pos(ebuf)) {
-		++here;
-	}
+	here += here < pos(ebuf);
 }
 
 void
@@ -279,10 +262,15 @@ wleft(void)
 void
 pgdown(void)
 {
-	page = here = prevline(epage-1);
+	/* Advance to the next page, then move `here` down. */
+	page = here = epage;
+	/* Keep the cursor position on the next page, if possible. */
 	while (0 < cur_row--){
 		down();
 	}
+	/* Set `epage` beyond `here` so display() will frame
+	 * downwards from `page`; `epage` will be updated.
+	 */
 	epage = pos(ebuf);
 }
 
@@ -290,7 +278,7 @@ void
 pgup(void)
 {
 	int i = LINES;
-	while (0 < --i) {
+	while (0 < i--) {
 		page = prevline(page-1);
 		up();
 	}
@@ -308,6 +296,17 @@ wright(void)
 	while (here < n && isspace(*ptr(here))) {
 		++here;
 	}
+}
+
+void
+lngoto(void)
+{
+	page = epage = pos(ebuf);
+	count += (count == 0) * INT_MAX;
+	for (here = 0; here < epage && 1 < count; count--) {
+		here = nextline(here);
+	}
+	count = 0;
 }
 
 void
@@ -347,33 +346,25 @@ file(void)
 }
 
 void
-noop(void)
+quit(void)
 {
-	/* Do nothing. */
+	done = 1;
 }
 
-static char key[] = "hjklHJKL[]tbixWQ"
-#ifndef NDEBUG
-"R"
-#endif /* NDEBUG */
-;
+static char key[] = "hjklHJKL[]GixWQ";
 
 static void (*func[])(void) = {
 	left, down, up, right,
 	wleft, pgdown, pgup, wright,
-	lnbegin, lnend, top, bottom,
+	lnbegin, lnend, lngoto,
 	insert, delete, file, quit,
-#ifndef NDEBUG
-	redraw,
-#endif /* NDEBUG */
-	noop
+	redraw
 };
 
 int
 main(int argc, char **argv)
 {
 	int ch, i;
-	egap = ebuf = buf + BUF;
 	if (argc < 2) {
 		return 2;
 	}
@@ -381,21 +372,26 @@ main(int argc, char **argv)
 	raw();
 	noecho();
 	idlok(stdscr, 1);
+	egap = ebuf = buf + BUF;
 	if (0 < (i = open(filename = *++argv, 0))) {
 		gap += read(i, buf, BUF);
-		if (gap < buf) {
-			gap = buf;
-		}
 		(void) close(i);
+		if (gap < buf) {
+			/* Good grief Charlie Brown! */
+			return 1;
+		}
 	}
-	top();
 	while (!done) {
 		display();
 		ch = getch();
-		for (i = 0; key[i] != '\0' && ch != key[i]; i++) {
-			;
+		if (isdigit(ch)) {
+			count = count * 10 + ch - '0';
+		} else {
+			for (i = 0; key[i] != '\0' && ch != key[i]; i++) {
+				;
+			}
+			(*func[i])();
 		}
-		(*func[i])();
 	}
 	endwin();
 	return 0;
