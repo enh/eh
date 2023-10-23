@@ -133,7 +133,7 @@ prevline(off_t cur)
 		;
 	}
 	/* Return cursor at BOL or BOF. */
-	return 0 < cur ? cur+1 : 0;
+	return (cur+1) * (0 < cur);
 }
 
 /*
@@ -171,16 +171,20 @@ display(void)
 	ptrdiff_t p;
 	int i, j;
 	if (here < page) {
+		/* Scroll up one line, page up, or jump up. */
 		page = prevline(here);
-	}
-	if (epage <= here) {
-		page = nextline(here);
-		i = LINES - 2*(page == pos(ebuf));
-		while (0 < i--) {
+	} else if (epage <= here && here < nextline(here)) {
+		/* Scroll down one line. */
+		page = nextline(page);
+	} else if (epage < here && here < pos(ebuf)) {
+		/* Page down or jump down to line, find top of page. */
+		for (page = here, i = LINES; 0 < page && 0 < --i; ) {
 			page = prevline(page-1);
 		}
-	}
-	/* Redraw the lot using `page` as the starting point. */
+	} else if (page == epage && here == pos(ebuf)) {
+		/* Jump to EOF. */
+		page = prevline(here-1);
+	} /* Else still within page bounds, update cursor. */
 	move(i = 0, j = 0);
 	clrtobot();
 	for (epage = page; i < LINES; epage++) {
@@ -317,11 +321,15 @@ wright(void)
 void
 lngoto(void)
 {
-	page = epage = pos(ebuf);
-	count += (count == 0) * INT_MAX;
-	for (here = 0; here < epage && 1 < count; count--) {
+	off_t eof = pos(ebuf);
+	for (here = eof * (count == 0); here < eof && 1 < count; count--) {
 		here = nextline(here);
 	}
+	/* Set page to eof if beyond page end to force display() to reframe
+	 * the page with target line at top.  Otherwise move cursor with the
+	 * page.
+	 */
+	page = here < epage ? page : prevline(eof-1);
 	count = 0;
 }
 
@@ -332,9 +340,7 @@ insert(void)
 	movegap(here);
 	while ((ch = getch()) != '\e' && ch != '\f') {
 		if (ch == '\b') {
-			if (0 < gap) {
-				--gap;
-			}
+			gap -= 0 < gap;
 		} else if (gap < egap) {
 			buf[gap++] = ch == '\r' ? '\n' : ch;
 		}
@@ -397,6 +403,7 @@ main(int argc, char **argv)
 			return 1;
 		}
 	}
+	epage = pos(ebuf);
 	while (!done) {
 		display();
 		ch = getch();

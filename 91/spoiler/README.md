@@ -38,7 +38,11 @@ Exit Status
 Bugs
 ----
 
-* `ae` will display a file with long lines (greater than the terminal width), but has trouble scrolling the screen containing long lines.  Paging up and down should work correctly, however.
+* See [testing notes](./TEST.md) for manual visual testing instructions and expected behaviour.  Failures indicated by a `FAIL` tag.
+
+* `ae` will display a file with long physical lines (greater than the terminal width), but has trouble paging up where the previous page contains some long lines.  Scrolling up / down and paging down work correctly (an improvement over the original 1991 version).  Paging up is an issue, because it counts back `LINES` physical line units, not logical line units.  See [testing notes](./TEST.md).
+
+* The display of long physical lines that are larger than the terminal screen is undefined.  Given historical terminal dimensions of 80x24 = 1920 ASCII characters, a line longer than 1918 characters will have issues.  In computing, its often bad form when functions are more than a screen length; similarly in English writing a paragraph (as a single long line) that occupies a screen is probably bad form too.
 
 
 Notes
@@ -49,21 +53,6 @@ Notes
 `ae-alt.c` is `ae-c89.c` converted to use offsets into the buffer inspired by a derivative version from https://github.com/jarnosz/e that raised a question as to which method, given today's optimising compilers, yields the smallest binary.
 
 Comparing the stripped binary sizes between `ae-c89` and `ae-alt` could differ from the `prog` and `prog-alt`, because of size differences between `off_t` and `ptrdiff_t` (8 bytes) versus `int` (4 bytes) as defined on NetBSD 64-bit.
-
-    elf$ iocccsize -v1 prog.c
-    1393 2878 117
-    elf$ iocccsize -v1 prog-alt.c
-    1407 2881 117
-    elf$ ls -l ae ae-c89 ae-alt prog* ../ant*
-    -rwxr-x---  1 achowe  users  12080 Oct 20 18:00 ../ant
-    -rwx------  1 achowe  users   1478 Oct 17 08:17 ../ant.c
-    -rwxr-x---  1 achowe  users  10384 Oct 20 10:04 ae
-    -rwxr-x---  1 achowe  users  10464 Oct 20 10:04 ae-alt
-    -rwxr-x---  1 achowe  users  10456 Oct 20 10:04 ae-c89
-    -rwxr-x---  1 achowe  users  10328 Oct 20 10:04 prog
-    -rwxr-x---  1 achowe  users  10320 Oct 20 10:04 prog-alt
-    -rw-r-----  1 achowe  users   2881 Oct 20 10:04 prog-alt.c
-    -rw-r-----  1 achowe  users   2878 Oct 20 10:04 prog.c
 
 Oddly enough the original `ant` stripped binary is larger than the revised versions.  This appears to be a reflection of how ` gcc` handles K&R versus C89 source; I suspect the C89 version (1.1.0) being more clearly and strongly typed allows the compiler to make better optimisations for `-Os`.
 
