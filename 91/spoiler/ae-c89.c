@@ -14,6 +14,9 @@
 #ifndef BUF
 # define BUF		USHRT_MAX
 #endif
+#ifndef MODE
+# define MODE		0600
+#endif
 
 #define MAX_COLS	999
 #define TABWIDTH	8
@@ -179,21 +182,19 @@ display(void)
 		if (ebuf <= (p = ptr(epage))) {
 			break;
 		}
-		if (*p != '\r') {
-			/* Handle tab expansion ourselves.  Differences
-			 * between historical Curses and NCurses 2021
-			 * WRT tab handling I can't suss just yet.
-			 *
-			 * Historical Curses addch() would handle tab
-			 * expansion as I recall while (current 2021)
-			 * NCurses does not by default it seems.
-			 */
-			if (*p == '\t') {
-				move(i, j += TABSTOP(j));
-			} else {
-				addch(*p);
-				j++;
-			}
+		/* Handle tab expansion ourselves.  Differences
+		 * between historical Curses and NCurses 2021
+		 * WRT tab handling I can't suss just yet.
+		 *
+		 * Historical Curses addch() would handle tab
+		 * expansion as I recall while (current 2021)
+		 * NCurses does not by default it seems.
+		 */
+		if (*p == '\t') {
+			move(i, j += TABSTOP(j));
+		} else {
+			addch(*p);
+			j++;
 		}
 		if (*p == '\n' || COLS <= j) {
 			++i;
@@ -327,7 +328,7 @@ insert(void)
 		if (ch == '\b') {
 			gap -= buf < gap;
 		} else if (gap < egap) {
-			*gap++ = ch == '\r' ? '\n' : ch;
+			*gap++ = ch;
 		}
 		here = pos(egap);
 		display();
@@ -335,7 +336,7 @@ insert(void)
 }
 
 void
-delete(void)
+del(void)
 {
 	movegap(here);
 	if (egap < ebuf) {
@@ -344,7 +345,7 @@ delete(void)
 }
 
 void
-file(void)
+save(void)
 {
 	int i;
 	movegap(0);
@@ -364,7 +365,7 @@ static void (*func[])(void) = {
 	left, down, up, right,
 	wleft, pgdown, pgup, wright,
 	lnbegin, lnend, lngoto,
-	insert, delete, file, quit,
+	insert, del, save, quit,
 	redraw
 };
 
@@ -376,7 +377,7 @@ main(int argc, char **argv)
 		return 2;
 	}
 	initscr();
-	raw();
+	cbreak();
 	noecho();
 	idlok(stdscr, 1);
 	egap = ebuf = buf + BUF;

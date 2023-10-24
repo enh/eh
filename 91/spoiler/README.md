@@ -9,7 +9,7 @@ Usage
 
     ae file
 
-Text files consists of lines of printable text or tab characters.  A line can be of arbitrary length and is delimited by either a newline or the end of file.  Carriage return is mapped to newline on input and ignored on output.  Tab stops are every eight columns.  Non-printable characters may have unpredictable results depending on the implementation of the Curses library.
+Text files consists of lines of printable text, tabs, or newline characters.  A physical line can be of arbitrary length and is delimited by either a newline or the end of file.  Tab stops are every eight columns.  Carriage return and newline behaviour is based on the `stty(1)` input mode settings or terminal emulator or both.  The behaviour of other non-printable characters may be undefined depending on the implementation of the Curses library or `stty(1)` settings.
 
 
 Commands
