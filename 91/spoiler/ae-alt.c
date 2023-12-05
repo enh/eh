@@ -25,7 +25,7 @@
 static int done, cur_row, cur_col;
 static off_t here, page, epage, count;
 static ptrdiff_t gap, egap, ebuf;
-static char buf[BUF], *filename;
+static char buf[BUF], *filename = "a.txt";
 
 /*
  * The original prog.c for the IOCCC conformed to the 1536 bytes of
@@ -388,15 +388,15 @@ int
 main(int argc, char **argv)
 {
 	int ch, i;
-	if (argc < 2) {
-		return 2;
-	}
 	initscr();
 	cbreak();
 	noecho();
 	idlok(stdscr, 1);
 	egap = ebuf = BUF;
-	if (0 < (i = open(filename = *++argv, 0))) {
+	if (1 < argc) {
+		filename = *++argv;
+	}
+	if (0 < (i = open(filename, 0))) {
 		gap += read(i, buf, ebuf);
 		(void) close(i);
 		if (gap < 0) {

@@ -24,7 +24,7 @@
 
 static int done, cur_row, cur_col;
 static off_t here, page, epage, count;
-static char buf[BUF], *filename;
+static char buf[BUF], *filename = "a.txt";
 static char *gap = buf, *egap, *ebuf;
 
 /*
@@ -373,15 +373,15 @@ int
 main(int argc, char **argv)
 {
 	int ch, i;
-	if (argc < 2) {
-		return 2;
-	}
 	initscr();
 	cbreak();
 	noecho();
 	idlok(stdscr, 1);
 	egap = ebuf = buf + BUF;
-	if (0 < (i = open(filename = *++argv, 0))) {
+	if (1 < argc) {
+		filename = *++argv;
+	}
+	if (0 < (i = open(filename, 0))) {
 		gap += read(i, buf, BUF);
 		(void) close(i);
 		if (gap < buf) {
