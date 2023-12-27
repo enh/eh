@@ -22,6 +22,10 @@
 #define TABWIDTH	8
 #define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
 
+#define STANDOUT_EOF	1
+#define TOP_LINE	1
+#define ROWS		(LINES-TOP_LINE)
+
 static int done, cur_row, cur_col;
 static off_t here, page, epage, count;
 static ptrdiff_t gap, egap, ebuf;
@@ -127,69 +131,124 @@ movegap(off_t cur)
 }
 
 /*
- * Return the beginning of previous physical line or BOF.
+ * Return the physical BOL or BOF containing cur.
  */
 off_t
-prevline(off_t cur)
+bol(off_t cur)
 {
 	while (0 < cur && buf[ptr(--cur)] != '\n') {
 		;
 	}
-	/* Return cursor at BOL or BOF. */
+	assert(-1 <= cur);
 	return (cur+1) * (0 < cur);
 }
 
 /*
- * Return the column position within the physical line or the EOL,
- * which ever comes first.  Specify a large unrealistic column
- * position, like 999, to simply return the EOL.  A long physical
- * line can wrap into two or more logical lines or screen rows
- * depending on the terminal width given by COLS.
+ * Return offset of column position, newline (EOL), or EOF; otherwise
+ * if maxcol is way larger than the terminal width, eg. 999 (assumes
+ * that you're not using an IMAX theatre screen for your terminal),
+ * just EOL or EOF.
  */
 off_t
-adjust(off_t cur, int column)
+col_or_eol(off_t cur, int col, int maxcol)
 {
 	ptrdiff_t p;
-	for (int i = 0; (p = ptr(cur)) < ebuf && buf[p] != '\n' && i < column; cur++) {
-		i += buf[p] == '\t' ? TABSTOP(i) : 1;
+	while (col < maxcol && (p = ptr(cur)) < ebuf && buf[p] != '\n') {
+		col += buf[p] == '\t' ? TABSTOP(col) : 1;
+		cur++;
 	}
 	assert(0 <= cur && cur <= pos(ebuf));
 	return cur;
 }
 
 /*
- * Return the beginning of next physical line or EOF.
+ * Return offset to start of logical line containing offset.
+ */
+off_t
+row_start(off_t cur, off_t offset)
+{
+	int col = 0;
+	off_t mark = cur;
+	assert(/* 0 <= cur && cur <= offset &&*/ offset <= pos(ebuf));
+	while (cur < offset) {
+		cur++;
+		col += buf[ptr(cur)] == '\t' ? TABSTOP(col) : 1;
+		if (COLS <= col) {
+			mark = cur;
+			col = 0;
+		}
+	}
+	assert(0 <= mark && mark <= cur);
+	return mark;
+}
+
+/*
+ * Return the previous logical BOL or BOF.
+ */
+off_t
+prevline(off_t cur)
+{
+	off_t s = bol(cur);		/* Current physical line. */
+	off_t t = row_start(s, cur);	/* Current logical line. */
+	if (s < t) {
+		/* Within current physical line, find previous logical line. */
+		return row_start(s, t-1);
+	}
+	/* Previous physical line, find last logical line. */
+	return row_start(bol(s-1), s-1);
+}
+
+/*
+ * Return the next logical EOL or EOF.
  */
 off_t
 nextline(off_t cur)
 {
-	cur = adjust(cur, MAX_COLS);
-	/* Return EOF or BOL next line. */
+	cur = col_or_eol(cur, cur_col, COLS-1);
 	return cur + (cur < pos(ebuf));
 }
 
 void
 display(void)
 {
-	ptrdiff_t p;
 	int i, j;
+	ptrdiff_t p;
 	if (here < page) {
-		/* Scroll up one line, page up, or jump up. */
-		page = prevline(here);
-	} else if (epage <= here && here < nextline(here)) {
-		/* Scroll down one line. */
+		/* Scroll up one logical line or goto physical line. */
+		page = row_start(bol(here), here);
+	} else if (epage <= here && here < nextline(epage)) {
+		/* Scroll down one logical line. */
 		page = nextline(page);
-	} else if (epage < here && here < pos(ebuf)) {
-		/* Page down or jump down to line, find top of page. */
-		for (page = here, i = LINES; 0 < page && 0 < --i; ) {
-			page = prevline(page-1);
+	} else if (epage <= here) {
+		/* Find top of page from here.  Avoid an unnecessary
+		 * screen redraw when the EOF marker is displayed (mid-
+		 * screen) by remembering where the previous page frame
+		 * started.
+		 */
+		epage = page;
+		for (page = here, i = ROWS - (here == pos(ebuf)); 0 < --i && epage < page; ) {
+			page = prevline(page);
 		}
-	} else if (page == epage && here == pos(ebuf)) {
-		/* Jump to EOF. */
-		page = prevline(here-1);
+		/* When find the top line of the page over shoots the
+		 * previous frame, restore the previous frame.  This
+		 * avoid an undesired scroll back of one line.
+		 */
+		if (page <= epage) {
+			page = epage;
+		}
 	} /* Else still within page bounds, update cursor. */
 	move(i = 0, j = 0);
 	clrtobot();
+#if 0 < TOP_LINE
+	standout();
+	printw("%s %ldB", filename, (long) pos(ebuf));
+	getyx(stdscr, i, j);
+	for ( ; j < COLS; j++) {
+		addch(' ');
+	}
+	standend();
+	i = TOP_LINE; j = 0;
+#endif
 	for (epage = page; i < LINES; epage++) {
 		if (here == epage) {
 			cur_row = i;
@@ -213,12 +272,19 @@ display(void)
 			j++;
 		}
 		if (buf[p] == '\n' || COLS <= j) {
-			++i;
 			j = 0;
+			i++;
 		}
 	}
-	if (++i < LINES) {
+	assert(page <= here && here <= epage);
+	if (i++ < LINES) {
+#ifdef STANDOUT_EOF
+		standout();
 		mvaddstr(i, 0, "^D");
+		standend();
+#else
+		mvaddstr(i, 0, "^D");
+#endif /* STANDOUT_EOF */
 	}
 	move(cur_row, cur_col);
 	refresh();
@@ -228,7 +294,6 @@ void
 redraw(void)
 {
 	clear();
-	display();
 }
 
 void
@@ -243,29 +308,40 @@ right(void)
 	here += here < pos(ebuf);
 }
 
+/*
+ * Move up one logical line.
+ */
 void
 up(void)
 {
-	here = adjust(prevline(prevline(here)-1), cur_col);
+	here = col_or_eol(prevline(here), 0, cur_col);
 }
 
+/*
+ * Move down one logical line.
+ */
 void
 down(void)
 {
-	here = adjust(nextline(here), cur_col);
+	here = col_or_eol(nextline(here), 0, cur_col);
 }
 
+/*
+ * Beginning of physical line.
+ */
 void
 lnbegin(void)
 {
-	here = prevline(here);
+	here = bol(here);
 }
 
+/*
+ * End of physical line.
+ */
 void
 lnend(void)
 {
-	here = nextline(here);
-	left();
+	here = col_or_eol(here, 0, MAX_COLS);
 }
 
 void
@@ -281,40 +357,60 @@ wleft(void)
 	}
 }
 
+/*
+ * Page down logical lines.
+ */
 void
 pgdown(void)
 {
 	/* Advance to the next page, then move `here` down. */
-	page = here = epage;
-	/* Keep the cursor position on the next page, if possible. */
-	while (0 < cur_row--){
-		down();
+	here = epage;
+	/* Keep the cursor row on the next page, if possible. */
+	while (TOP_LINE < cur_row--) {
+		here = nextline(here);
 	}
-	/* Set `epage` beyond `here` so display() will frame
-	 * downwards from `page`; `epage` will be updated.
+	/* Maintain cursor column on logical line, if possible. */
+	here = col_or_eol(here, 0, cur_col);
+	/* Page down advances to the next page or remains as-is because
+	 * of a short page at EOF, ie. using short.txt G and J should
+	 * not redraw the screen, just move the cursor to EOF.
 	 */
-	epage = pos(ebuf);
+	page = here < pos(ebuf) ? epage : page;
+	/* Set `epage` beyond `here` so display() will frame downwards
+	 * from `page`; `epage` will be updated to reflect the correct
+	 * end of page.
+	 */
+	epage = here+1;
 }
 
+/*
+ * Page up logical lines.
+ */
 void
 pgup(void)
 {
-	for (int i = LINES; 0 < i--; ) {
-		page = prevline(page-1);
-		up();
+	/* Page up N logical lines. */
+	for (int i = ROWS; 0 < i--; ) {
+		here = prevline(here);
 	}
+	/* Maintain cursor row within the page by adjusting the frame. */
+	for (page = here; TOP_LINE < cur_row--; ) {
+		page = prevline(page);
+	}
+	/* Maintain cursor column on logical line. */
+	here = col_or_eol(here, 0, cur_col);
 }
 
 void
 wright(void)
 {
-	off_t n = pos(ebuf);
+	off_t eof = pos(ebuf);
 	/* Move forwards to end of current word. */
-	while (here < n && !isspace(buf[ptr(here)])) {
+	while (here < eof && !isspace(buf[ptr(here)])) {
 		++here;
 	}
 	/* Move forwards to start of next word. */
-	while (here < n && isspace(buf[ptr(here)])) {
+	while (here < eof && isspace(buf[ptr(here)])) {
 		++here;
 	}
 }
@@ -322,16 +418,22 @@ wright(void)
 void
 lngoto(void)
 {
+	/* Count physcical lines, just as ed, grep, or wc would. */
 	off_t eof = pos(ebuf);
 	for (here = eof * (count == 0); here < eof && 1 < count; count--) {
-		here = nextline(here);
+		/* Next physical line. */
+		here = col_or_eol(here, 0, MAX_COLS);
+		here += here < eof;
 	}
-	/* Set page to eof if beyond page end to force display() to reframe
-	 * the page with target line at top.  Otherwise move cursor with the
-	 * page.
+// 	/* Set page to eof if beyond page end to force display() to
+// 	 * reframe the page with target line at top.  Otherwise move
+// 	 * the cursor within the page.
+// 	 */
+// 	page = here <= epage ? page : eof;
+	/* Set page to eof if beyond page end to force display() to
+	 * reframe the page with target line at top.
 	 */
-	page = here < epage ? page : prevline(eof-1);
-	count = 0;
+	page = eof;
 }
 
 void
@@ -344,6 +446,7 @@ insert(void)
 			gap -= 0 < gap;
 		} else if (gap < egap) {
 			buf[gap++] = ch;
+			epage++;
 		}
 		here = pos(egap);
 		display();
@@ -388,9 +491,17 @@ int
 main(int argc, char **argv)
 {
 	int ch, i;
-	initscr();
+	if (NULL == initscr()) {
+		/* Try TERM=ansi-mini which works. */
+		return 1;
+	}
+	/* We could use raw(), but cbreak() still allows for signals, like
+	 * CTRL+Z (suspend) and CTRL+C (interrupt) (I don't read manuals
+	 * and don't know how to quit).
+	 */
 	cbreak();
 	noecho();
+	/* Curses draw optimisations can use scrolling. */
 	idlok(stdscr, 1);
 	egap = ebuf = BUF;
 	if (1 < argc) {
@@ -404,7 +515,8 @@ main(int argc, char **argv)
 			return 1;
 		}
 	}
-	epage = pos(ebuf);
+	/* Force display() to frame the initial screen. */
+	epage = 1;
 	while (!done) {
 		display();
 		ch = getch();
@@ -415,6 +527,7 @@ main(int argc, char **argv)
 				;
 			}
 			(*func[i])();
+			count = 0;
 		}
 	}
 	endwin();

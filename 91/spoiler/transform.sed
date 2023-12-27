@@ -9,9 +9,24 @@
 /[[:<:]]DEBUG/d
 /[[:<:]]DUMP/d
 
-/#define FAST/d
-/^#ifdef.*FAST/,/^#else.*FAST/d
+/^#include.*limits/d
+
+/^#ifdef.*FAST/,/^#else/d
 /^#endif.*FAST/d
+
+/^#if.*BUF/,/^#endif/d
+
+/^#if.*MODE/,/^#endif/d
+s/MODE/0600/
+
+/#define TOP_LINE/d
+/^#if.*TOP_LINE/,/^#endif/d
+s/TOP_LINE/0/
+
+/#define STANDOUT_EOF/d
+/^#ifdef.*STANDOUT_EOF/,/^#else/d
+/^#endif.*STANDOUT_EOF/d
+
 
 # Assertions
 /^#include.*assert/d
@@ -38,6 +53,8 @@ s/TABSTOP(\([^)]*\))/(8-(\1\&7))/g
 /^#define MAX_COLS/d
 s/MAX_COLS/999/g
 
+/^#define ROWS/d
+s/ROWS/LINES/g
 
 #
 #  Types
@@ -70,10 +87,13 @@ s/'\\0'/0/g
 
 s/[[:<:]]ptr[[:>:]]/Z/g
 s/[[:<:]]pos[[:>:]]/P/g
-s/[[:<:]]movegap[[:>:]]/G/g
+s/[[:<:]]movegap[[:>:]]/V/g
 s/[[:<:]]prevline[[:>:]]/M/g
 s/[[:<:]]nextline[[:>:]]/N/g
-s/[[:<:]]adjust[[:>:]]/A/g
+s/[[:<:]]bol[[:>:]]/O/g
+s/[[:<:]]col_or_eol[[:>:]]/A/g
+s/[[:<:]]row_start[[:>:]]/_/g
+#s/[[:<:]]adjust[[:>:]]/A/g
 s/[[:<:]]left[[:>:]]/L/g
 s/[[:<:]]down[[:>:]]/D/g
 s/[[:<:]]up[[:>:]]/U/g
@@ -84,16 +104,16 @@ s/[[:<:]]pgup[[:>:]]/K/g
 s/[[:<:]]wright[[:>:]]/W/g
 s/[[:<:]]lnbegin[[:>:]]/H/g
 s/[[:<:]]lnend[[:>:]]/E/g
-s/[[:<:]]lngoto[[:>:]]/V/g
+s/[[:<:]]lngoto[[:>:]]/G/g
 s/[[:<:]]top[[:>:]]/T/g
 s/[[:<:]]bottom[[:>:]]/S/g
 s/[[:<:]]insert[[:>:]]/I/g
-s/[[:<:]]delete[[:>:]]/X/g
+s/[[:<:]]del\(ete\)*[[:>:]]/X/g
 s/[[:<:]]file[[:>:]]/F/
 s/[[:<:]]save[[:>:]]/F/
 s/[[:<:]]redraw[[:>:]]/C/g
 s/[[:<:]]quit[[:>:]]/Q/g
-s/[[:<:]]noop[[:>:]]/O/g
+#s/[[:<:]]noop[[:>:]]/O/g
 s/[[:<:]]display[[:>:]]/Y/
 
 
@@ -108,12 +128,14 @@ s/argv/y/g
 s/[[:<:]]off\(set\)*[[:>:]]/n/g
 s/[[:<:]]cur[[:>:]]/m/g
 s/[[:<:]]col\(umn\)*[[:>:]]/a/g
+s/[[:<:]]maxcol[[:>:]]/n/g
 s/[[:<:]]key[[:>:]]/k/g
 s/[[:<:]]func[[:>:]]/w/g
 s/[[:<:]]done[[:>:]]/d/g
 s/[[:<:]]here[[:>:]]/o/g
 s/[[:<:]]page[[:>:]]/u/g
 s/[[:<:]]epage[[:>:]]/v/g
+s/[[:<:]]eof_mark[[:>:]]/e/g
 s/[[:<:]]eof[[:>:]]/w/g
 s/[[:<:]]count[[:>:]]/z/g
 s/[[:<:]]buf[[:>:]]/b/g
