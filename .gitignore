@@ -6,6 +6,8 @@ ae
 ae-c89
 ae-alt
 prog*
+a.out
+a.txt
 ae.rc
 .aerc
 *.core

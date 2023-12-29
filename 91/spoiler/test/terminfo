@@ -1,0 +1,7 @@
+ansi-bare|Minimalist ANSI,
+	am, xon,
+	cols#80, lines#24,
+	bel=\a, cr=\r, ind=\n,
+	clear=\e[H\e[J, ed=\e[J, el=\e[K,
+	cub1=\b, cud1=\n, cup=\e[%i%p1%d;%p2%dH, home=\e[H,
+	rmso=\E[m, smso=\E[7m,
