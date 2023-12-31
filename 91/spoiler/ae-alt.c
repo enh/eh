@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <unistd.h>
+#include <regex.h>
 
 #ifndef BUF
 # define BUF		USHRT_MAX
@@ -26,10 +27,11 @@
 #define TOP_LINE	1
 #define ROWS		(LINES-TOP_LINE)
 
-static int done, cur_row, cur_col;
-static off_t here, page, epage, count;
+static int done, cur_row, cur_col, count, ere_dollar_only, match_length;
+static off_t here, page, epage;
 static ptrdiff_t gap, egap, ebuf;
 static char buf[BUF], *filename = "a.txt";
+static regex_t ere;
 
 /*
  * The original prog.c for the IOCCC conformed to the 1536 bytes of
@@ -209,6 +211,14 @@ nextline(off_t cur)
 }
 
 void
+clr_to_eol(void)
+{
+	for (int i = getcurx(stdscr); i < COLS; i++) {
+		addch(' ');
+	}
+}
+
+void
 display(void)
 {
 	int i, j;
@@ -237,19 +247,12 @@ display(void)
 			page = epage;
 		}
 	} /* Else still within page bounds, update cursor. */
-	move(i = 0, j = 0);
-	clrtobot();
-#if 0 < TOP_LINE
 	standout();
-	printw("%s %ldB", filename, (long) pos(ebuf));
-	getyx(stdscr, i, j);
-	for ( ; j < COLS; j++) {
-		addch(' ');
-	}
+	mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
+	clr_to_eol();
 	standend();
-	i = TOP_LINE; j = 0;
-#endif
-	for (epage = page; i < LINES; epage++) {
+	clrtobot();
+	for (i = TOP_LINE, j = 0, epage = page; i < LINES; epage++) {
 		if (here == epage) {
 			cur_row = i;
 			cur_col = j;
@@ -278,13 +281,9 @@ display(void)
 	}
 	assert(page <= here && here <= epage);
 	if (i++ < LINES) {
-#ifdef STANDOUT_EOF
 		standout();
 		mvaddstr(i, 0, "^D");
 		standend();
-#else
-		mvaddstr(i, 0, "^D");
-#endif /* STANDOUT_EOF */
 	}
 	move(cur_row, cur_col);
 	refresh();
@@ -355,6 +354,18 @@ wleft(void)
 	while (0 < here && !isspace(buf[ptr(here-1)])) {
 		--here;
 	}
+}
+
+void
+pgtop(void)
+{
+	here = page;
+}
+
+void
+pgbottom(void)
+{
+	here = row_start(bol(epage-1), epage-1);
 }
 
 /*
@@ -471,19 +482,99 @@ save(void)
 	(void) close(i);
 }
 
+/* In case we're sitting on a previous match, we need to search starting
+ * from the end of that match.  Note some special cases:
+ *
+ * Pattern /^/
+ * -----------
+ *      BOFtext\n\nterminated\nEOF
+ *         ^     ^ ^           ^
+ *      BOFtext\n\nnot terminatedEOF
+ *         ^     ^ ^
+ *
+ * Pattern /$/
+ * -----------
+ *	BOFtext\n\nterminated\nEOF
+ *             ^ ^           ^ ^
+ *	BOFtext\n\nnot terminatedEOF
+ *             ^ ^               ^
+ *
+ * Pattern /.$/
+ * ------------
+ *	BOFtext\n\nterminated\nEOF
+ *            ^             ^
+ *	BOFtext\n\nnot terminatedEOF
+ *            ^                 ^
+ *
+ * Pattern /^$/
+ * ------------
+ *      BOFtext\n\nterminated\n\nEOF
+ *               ^             ^
+ *      BOFtext\n\nnot terminatedEOF
+ *	         ^               ^
+ */
+void
+next(void)
+{
+	regmatch_t matches[1];
+	/* Move the gap out of the way in case it sits in the middle
+	 * of a potential match and NUL terminate the buffer.
+	 */
+	assert(0 < egap - gap);
+	movegap(pos(ebuf));
+	buf[gap] = '\0';
+	/* REG_NOTBOL allows /^/ to advance to start of next line. */
+	if (here+match_length < pos(ebuf) && 0 == regexec(&ere, buf+ptr(here+match_length), 1, matches, REG_NOTBOL)) {
+		here += match_length + matches[0].rm_so;
+	}
+	/* Wrap-around search. */
+	else if (0 == regexec(&ere, buf+ptr(0), 1, matches, 0)) {
+		here = matches[0].rm_so;
+	}
+	/* No match after wrap-around. */
+	else {
+		match_length = 0;
+		beep();
+		return;
+	}
+	match_length = matches[0].rm_eo - matches[0].rm_so + ere_dollar_only;
+}
+
+void
+search(void)
+{
+	echo();
+	standout();
+	mvaddch(0, 0, '/');
+	clr_to_eol();
+	assert(COLS <= egap - gap);
+	mvgetnstr(0, 1, buf+gap, egap-gap);
+	standend();
+	noecho();
+	regfree(&ere);
+	if (regcomp(&ere, buf+gap, REG_EXTENDED|REG_NEWLINE) != 0) {
+		beep();
+	} else {
+		/* Kludge to handle repeated /$/ matching. */
+		ere_dollar_only = buf[gap] == '$' && '\0' == buf[gap+1];
+		next();
+	}
+}
+
 void
 quit(void)
 {
 	done = 1;
 }
 
-static char key[] = "hjklHJKL[]GixWQ";
+static char key[] = "hjklbwHJKL[]GixW/nQ";
 
 static void (*func[])(void) = {
-	left, down, up, right,
-	wleft, pgdown, pgup, wright,
+	left, down, up, right, wleft, wright,
+	pgtop, pgdown, pgup, pgbottom,
 	lnbegin, lnend, lngoto,
-	insert, del, save, quit,
+	insert, del, save,
+	search, next, quit,
 	redraw
 };
 
@@ -501,8 +592,8 @@ main(int argc, char **argv)
 	 */
 	cbreak();
 	noecho();
-	/* Curses draw optimisations can use scrolling. */
-	idlok(stdscr, 1);
+//	/* Curses draw optimisations can use scrolling. */
+//	idlok(stdscr, 1);
 	egap = ebuf = BUF;
 	if (1 < argc) {
 		filename = *++argv;

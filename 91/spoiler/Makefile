@@ -51,10 +51,6 @@ size: build
 	iocccsize -v1 prog.c
 	iocccsize -v1 prog-alt.c
 
-# Original IOCCC 1991 version 1.0.0.
-ae$E: ae.c
-	${CC} ${CFLAGS} ${CPPFLAGS} ae.c -o $*$E ${LIBS}
-
 #######################################################################
 # Generated files.
 #######################################################################
@@ -64,10 +60,6 @@ prog.c: ae-c89.c transform.sed
 
 prog-alt.c: ae-alt.c transform.sed
 	sed -f transform.sed ae-alt.c | sed -e '/^[ 	]*$$/d' >$@
-
-prog$E: prog.c
-
-prog-alt$E: prog-alt.c
 
 #######################################################################
 # Tests
@@ -83,7 +75,7 @@ prog-alt$E: prog-alt.c
 #
 #######################################################################
 
-PROG	?= ./ae-alt
+PROG	?= ./ae-alt$E
 
 TITLE	= printf "     %s: " $@
 PASS	= printf "\r-OK-\r\n"
@@ -96,14 +88,15 @@ A_TXT	= diff -u test/$@.txt a.txt
 # the number of hardware `lines` and `columns`, we explicitly override
 # them to be sure to ensure terminal emulator dimensions are ignored.
 
-test: clean ${PROG}
+test: build
 	-${MAKE} PROG=${PROG} TERM=ansi LINES=24 COLUMNS=80 tests
 
 tests:	redraw0 empty0 empty1 \
 	ins0 ins1 ins2 ins3 ins4 ins5 \
 	del0 del1 del2 del3 del4 del5 \
 	scroll0 scroll1 goto0 goto1 goto2 goto3 \
-	pgdn0 pgdn1 pgdn2 pgup0 pgup1
+	pgdn0 pgdn1 pgdn2 pgup0 pgup1 \
+	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 ere10
 
 # An unknown command character redraws the screen.
 redraw0:
@@ -162,7 +155,7 @@ ins2:
 ins3:
 	@${TITLE}
 	@${RESET}
-	@printf "iHello world!\e[LiWOOT! \fWQ" | ${PROG} >a.out
+	@printf "iHello world!\e[wiWOOT! \fWQ" | ${PROG} >a.out
 	@${A_OUT}
 	@${A_TXT}
 	@${PASS}
@@ -336,5 +329,82 @@ pgup1:
 pgup2:
 	@${TITLE}
 	@printf "GKKKKQ" | ${PROG} test/usage.md >a.out
+	@${A_OUT}
+	@${PASS}
+
+# Invalid ERE pattern.
+ere0:
+	@${TITLE}
+	@printf "/)(\nQ" | ${PROG} test/short.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# Start of lines.
+ere1:
+	@${TITLE}
+	@printf "/^\nnnnnnnnnnnQ" | ${PROG} test/short.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# Start of lines.
+ere2:
+	@${TITLE}
+	@printf "/^\nnnnnnnnnnQ" | ${PROG} test/short-nonl.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# End of lines.
+ere3:
+	@${TITLE}
+	@printf "/$$\nnnnnnnnnnnQ" | ${PROG} test/short.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# End of lines.
+ere4:
+	@${TITLE}
+	@printf "/$$\nnnnnnnnnnnQ" | ${PROG} test/short-nonl.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# Last character of line.
+ere5:
+	@${TITLE}
+	@printf "/.$$\nnnnnnnnnQ" | ${PROG} test/short.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# Last character of line.
+ere6:
+	@${TITLE}
+	@printf "/.$$\nnnnnnnnnQ" | ${PROG} test/short-nonl.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# Blank lines.
+ere7:
+	@${TITLE}
+	@printf "/^$$\nnnQ" | ${PROG} test/short.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# Blank lines.
+ere8:
+	@${TITLE}
+	@printf "/^$$\nnnQ" | ${PROG} test/short-nonl.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# Plain text
+ere9:
+	@${TITLE}
+	@printf "/line\nnnnQ" | ${PROG} test/short.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+# Blank lines.
+ere10:
+	@${TITLE}
+	@printf "/line\nnnnQ" | ${PROG} test/short-nonl.txt >a.out
 	@${A_OUT}
 	@${PASS}

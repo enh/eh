@@ -16,8 +16,10 @@ Commands
 --------
 
     h j k l   left, down, up, right cursor movement
-    H J K L   word left, page down, page up, word right
+    H J K L   page top, page down, page up, page bottom
+    b w       word left, word right
     [ ]       beginning and end of line
+    / n       find ERE pattern, find next occurrence
     G         goto line number; 1G top of file, G bottom
     i         enter insert mode, FF or ESC to quit
     x         delete character under the cursor
@@ -54,8 +56,6 @@ Other targets are:
 Bugs
 ----
 
-* See [testing notes](./TEST.md) for manual visual testing instructions and expected behaviour.  Known failures marked by a `FAIL` tag.
-
 * The display of long physical lines that are larger than the terminal screen is undefined.  Given historical terminal dimensions of 80x24 = 1920 ASCII characters, a line longer than 1918 characters will have issues.  In computing, its often bad form when functions are more than a screen length; similarly in English writing a paragraph (as a single long line) that occupies a screen is probably bad form too.
 
 
@@ -70,7 +70,7 @@ Comparing the stripped binary sizes between `ae-c89` and `ae-alt` could differ f
 
 Version 1.2.0 found additional places to compact the code further and also replaced `t` and `b` commands with `G`, while slightly more code, it provides more functionality.  Also fixed the behaviour of `H` word left.
 
-Version 1.3.0 resolves issues with scrolling and paging a file with long physical lines.  Add a regression test suite.
+Version 1.3.0 resolves issues with scrolling and paging a file with long physical lines.  Renames `H`, `L` (word left, right) commands to `b` and `w` more in line with `vi(1)`; add `H` and `L` page top and bottom commands.  Add `/` and `n` commands. Add a regression test suite.
 
 
 References
