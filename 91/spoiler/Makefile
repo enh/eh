@@ -91,7 +91,7 @@ A_TXT	= diff -u test/$@.txt a.txt
 test: build
 	-${MAKE} PROG=${PROG} TERM=ansi LINES=24 COLUMNS=80 tests
 
-tests:	redraw0 empty0 empty1 \
+tests:	redraw0 empty0 empty1 flip0 \
 	ins0 ins1 ins2 ins3 ins4 ins5 \
 	del0 del1 del2 del3 del4 del5 \
 	scroll0 scroll1 goto0 goto1 goto2 goto3 \
@@ -119,6 +119,14 @@ empty1:
 	@${RESET}
 	@printf "WQ" | ${PROG} | ${EMPTY}
 	@diff -u test/empty.txt a.txt
+	@${PASS}
+
+flip0:
+	@${TITLE}
+	@${RESET}
+	@printf "iHELLO world!\e[~~~~~~~~~~~~WQ" | ${PROG} >a.out
+	@${A_OUT}
+	@${A_TXT}
 	@${PASS}
 
 # Start without file argument, insert nothing, and stop.

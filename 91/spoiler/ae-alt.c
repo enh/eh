@@ -562,18 +562,27 @@ search(void)
 }
 
 void
+flipcase(void)
+{
+	ptrdiff_t p = ptr(here);
+	int ch = buf[p];
+	buf[p] = islower(ch) ? toupper(ch) : tolower(ch);
+	right();
+}
+
+void
 quit(void)
 {
 	done = 1;
 }
 
-static char key[] = "hjklbwHJKL[]GixW/nQ";
+static char key[] = "hjklbwHJKL[]Gix~W/nQ";
 
 static void (*func[])(void) = {
 	left, down, up, right, wleft, wright,
 	pgtop, pgdown, pgup, pgbottom,
 	lnbegin, lnend, lngoto,
-	insert, del, save,
+	insert, del, flipcase, save,
 	search, next, quit,
 	redraw
 };

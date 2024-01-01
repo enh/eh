@@ -9,7 +9,7 @@ Usage
 
     ae [filename]
 
-Read or create a text file; default filename is `a.txt`.  Text files consists of lines of printable text, tabs, or newline characters.  A physical line can be of arbitrary length and is delimited by either a newline or the end of file.  Tab stops are every eight columns.  The behaviour of non-printable characters may vary depending on the implementation of the Curses library, `stty(1)` settings, or terminal emulator.
+Read or create a text file; default filename is `a.txt`.  Text files consists of lines of printable ASCII text, tabs, or newline characters.  A physical line can be of arbitrary length and is delimited by either a newline or the end of file.  Tab stops are every eight columns.  The behaviour of non-printable characters may vary depending on the implementation of the Curses library, `stty(1)` settings, or terminal emulator.
 
 
 Commands
@@ -23,6 +23,7 @@ Commands
     G         goto line number; 1G top of file, G bottom
     i         enter insert mode, FF or ESC to quit
     x         delete character under the cursor
+    ~         invert character case
     W         write buffer to file
     Q         quit
 
