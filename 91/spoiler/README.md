@@ -15,12 +15,14 @@ Read or create a text file; default filename is `a.txt`.  Text files consists of
 Commands
 --------
 
+Most commands can be prefixed by a repeat count.  Commands that do not support count are `[`, `]`, `/`, `i`, `W`, and `Q`.
+
     h j k l   left, down, up, right cursor movement
     H J K L   page top, page down, page up, page bottom
     b w       word left, word right
     [ ]       beginning and end of line
     / n       find ERE pattern, find next occurrence
-    G         goto line number; 1G top of file, G bottom
+    G         goto line (count) number; 1G top of file, G bottom
     i         enter insert mode, FF or ESC to quit
     x         delete character under the cursor
     ~         invert character case
@@ -85,3 +87,5 @@ References
 
 * Webb Miller, "A Software Tools Sampler", Prentice Hall, 1987  
   ISBN 0-13-822305-X, chapter 5
+
+* POSIX 1003.2b Draft 11.1 ex & vi, Feb 1996, courtesy of Keith Bostic

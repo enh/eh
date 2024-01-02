@@ -28,9 +28,9 @@
 #define ROWS		(LINES-TOP_LINE)
 
 static int done, cur_row, cur_col, count, ere_dollar_only, match_length;
-static off_t here, page, epage;
 static char buf[BUF], *filename = "a.txt";
 static char *gap = buf, *egap, *ebuf;
+static off_t here, page, epage;
 static regex_t ere;
 
 /*
@@ -374,24 +374,22 @@ pgbottom(void)
 void
 pgdown(void)
 {
-	/* Advance to the next page, then move `here` down. */
-	here = epage;
-	/* Keep the cursor row on the next page, if possible. */
-	while (TOP_LINE < cur_row--) {
+	int i;
+	/* Maintain cursor row within the next page frame. */
+	for (here = epage, i = TOP_LINE; i < cur_row; i++) {
 		here = nextline(here);
 	}
 	/* Maintain cursor column on logical line, if possible. */
 	here = col_or_eol(here, 0, cur_col);
 	/* Page down advances to the next page or remains as-is because
-	 * of a short page at EOF, ie. using short.txt G and J should
-	 * not redraw the screen, just move the cursor to EOF.
+	 * of a short page at EOF, ie. using short.txt J should not redraw
+	 * the screen, just move the cursor to EOF.
 	 */
 	page = here < pos(ebuf) ? epage : page;
-	/* Set `epage` beyond `here` so display() will frame downwards
-	 * from `page`; `epage` will be updated to reflect the correct
-	 * end of page.
-	 */
-	epage = here+1;
+	/* Maintain cursor row within the page by adjusting the frame. */
+	for (epage = here; i < LINES; i++) {
+		epage = nextline(epage);
+	}
 }
 
 /*
@@ -462,6 +460,8 @@ insert(void)
 		here = pos(egap);
 		display();
 	}
+	/* Not repeatable yet. */
+	count = 0;
 }
 
 void
@@ -480,6 +480,7 @@ save(void)
 	movegap(0);
 	(void) write(i = creat(filename, MODE), egap, ebuf-egap);
 	(void) close(i);
+	count = 0;
 }
 
 /* In case we're sitting on a previous match, we need to search starting
@@ -559,12 +560,14 @@ search(void)
 		ere_dollar_only = gap[0] == '$' && '\0' == gap[1];
 		next();
 	}
+	count = 0;
 }
 
 void
 flipcase(void)
 {
 	char *p = ptr(here);
+	/* Skip moving the gap and modify in place. */
 	*p = islower(*p) ? toupper(*p) : tolower(*p);
 	right();
 }
@@ -625,7 +628,7 @@ main(int argc, char **argv)
 			for (i = 0; key[i] != '\0' && ch != key[i]; i++) {
 				;
 			}
-			(*func[i])();
+			do (*func[i])(); while (0 < --count);
 			count = 0;
 		}
 	}
