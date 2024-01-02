@@ -214,7 +214,7 @@ void
 clr_to_eol(void)
 {
 	for (int i = getcurx(stdscr); i < COLS; i++) {
-		addch(' ');
+		(void) addch(' ');
 	}
 }
 
@@ -247,11 +247,11 @@ display(void)
 			page = epage;
 		}
 	} /* Else still within page bounds, update cursor. */
-	standout();
-	mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
+	(void) standout();
+	(void) mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
 	clr_to_eol();
-	standend();
-	clrtobot();
+	(void) standend();
+	(void) clrtobot();
 	for (i = TOP_LINE, j = 0, epage = page; i < LINES; epage++) {
 		if (here == epage) {
 			cur_row = i;
@@ -269,9 +269,9 @@ display(void)
 		 * NCurses does not by default it seems.
 		 */
 		if (*p == '\t') {
-			move(i, j += TABSTOP(j));
+			(void) move(i, j += TABSTOP(j));
 		} else {
-			addch(*p);
+			(void) addch(*p);
 			j++;
 		}
 		if (*p == '\n' || COLS <= j) {
@@ -281,18 +281,18 @@ display(void)
 	}
 	assert(page <= here && here <= epage);
 	if (i++ < LINES) {
-		standout();
-		mvaddstr(i, 0, "^D");
-		standend();
+		(void) standout();
+		(void) mvaddstr(i, 0, "^D");
+		(void) standend();
 	}
-	move(cur_row, cur_col);
-	refresh();
+	(void) move(cur_row, cur_col);
+	(void) refresh();
 }
 
 void
 redraw(void)
 {
-	clear();
+	(void) clear();
 }
 
 void
@@ -535,7 +535,7 @@ next(void)
 	/* No match after wrap-around. */
 	else {
 		match_length = 0;
-		beep();
+		(void) beep();
 		return;
 	}
 	match_length = matches[0].rm_eo - matches[0].rm_so + ere_dollar_only;
@@ -544,17 +544,17 @@ next(void)
 void
 search(void)
 {
-	echo();
-	standout();
-	mvaddch(0, 0, '/');
+	(void) echo();
+	(void) standout();
+	(void) mvaddch(0, 0, '/');
 	clr_to_eol();
 	assert(COLS <= egap - gap);
-	mvgetnstr(0, 1, gap, egap-gap);
-	standend();
-	noecho();
+	(void) mvgetnstr(0, 1, gap, egap-gap);
+	(void) standend();
+	(void) noecho();
 	regfree(&ere);
 	if (regcomp(&ere, gap, REG_EXTENDED|REG_NEWLINE) != 0) {
-		beep();
+		(void) beep();
 	} else {
 		/* Kludge to handle repeated /$/ matching. */
 		ere_dollar_only = gap[0] == '$' && '\0' == gap[1];
@@ -601,10 +601,10 @@ main(int argc, char **argv)
 	 * CTRL+Z (suspend) and CTRL+C (interrupt) (I don't read manuals
 	 * and don't know how to quit).
 	 */
-	cbreak();
-	noecho();
+	(void) cbreak();
+	(void) noecho();
 //	/* Curses draw optimisations can use scrolling. */
-//	idlok(stdscr, 1);
+//	(void) idlok(stdscr, 1);
 	egap = ebuf = buf + BUF;
 	if (1 < argc) {
 		filename = *++argv;
@@ -632,6 +632,6 @@ main(int argc, char **argv)
 			count = 0;
 		}
 	}
-	endwin();
+	(void) endwin();
 	return 0;
 }
