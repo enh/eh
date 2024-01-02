@@ -56,10 +56,14 @@ size: build
 #######################################################################
 
 prog.c: ae-c89.c transform.sed
-	sed -f transform.sed ae-c89.c | sed -e '/^[ 	]*$$/d' >$@
+	sed -f transform.sed ae-c89.c | \
+	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
+	sed -e'/^[[:blank:]]*$$/d' >$@
 
 prog-alt.c: ae-alt.c transform.sed
-	sed -f transform.sed ae-alt.c | sed -e '/^[ 	]*$$/d' >$@
+	sed -f transform.sed ae-alt.c | \
+	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
+	sed -e'/^[[:blank:]]*$$/d' >$@
 
 #######################################################################
 # Tests
@@ -83,6 +87,12 @@ RESET	= rm a.txt a.out 2>/dev/null; true
 EMPTY	= cmp test/empty.out -
 A_OUT	= cmp test/$@.out a.out
 A_TXT	= diff -u test/$@.txt a.txt
+
+test-all: build
+	${MAKE} PROG=./ae-alt TERM=ansi LINES=24 COLUMNS=80 tests
+	${MAKE} PROG=./prog-alt TERM=ansi LINES=24 COLUMNS=80 tests
+	${MAKE} PROG=./ae-c89 TERM=ansi LINES=24 COLUMNS=80 tests
+	${MAKE} PROG=./prog TERM=ansi LINES=24 COLUMNS=80 tests
 
 # While the terminal definition will probably contain definitions for
 # the number of hardware `lines` and `columns`, we explicitly override

@@ -33,21 +33,26 @@ s/ROWS/LINES-1/g
 /#define STANDOUT_EOF/d
 /^#ifdef.*STANDOUT_EOF/,/^#else/d
 /^#endif.*STANDOUT_EOF/d
-
+#/standout()/d
+#/standend()/d
 
 # Assertions
 /^#include.*assert/d
 /assert(/d
 
 # Comment lines
-/^\/\//d
-s/\/\*.*\*\///
+/^[[:blank:]]*\/\//d
+/^[[:blank:]]*\/\*.*\*\//d
+#s/^[[:blank:]]*\/\*.*\*\///
+
+# Trailing comment.
+s/[[:blank:]]*\/\/[[:blank:]]*$//
 
 # Comment blocks
-/\/\*/,/\*\//d
+/^[[:blank:]]*\/\*/,/^[[:blank:]]*\*\//d
 
-# Trailing comments
-s/[[:blank:]]*\/\///
+# Inline comment.
+s/\/\*.*\*\///
 
 #
 # Replace macros.
@@ -115,8 +120,9 @@ s/[[:<:]]top[[:>:]]/T/g
 s/[[:<:]]bottom[[:>:]]/T_/g
 s/[[:<:]]insert[[:>:]]/I/g
 s/[[:<:]]del\(ete\)*[[:>:]]/X/g
+s/[[:<:]]flipcase[[:>:]]/R_/g
 s/[[:<:]]save[[:>:]]/S/
-s/[[:<:]]redraw[[:>:]]/R_/g
+s/[[:<:]]redraw[[:>:]]/C_/g
 s/[[:<:]]quit[[:>:]]/Q/g
 s/[[:<:]]display[[:>:]]/Y/
 s/[[:<:]]search[[:>:]]/F/
@@ -199,13 +205,8 @@ s/\([^ 	]*[^[]\)\[0\]\([^.]\)/*\1\2/g
 #    &array[n]	->  array+n
 #N#s/\&\([^[]*\)\[\([^]]*\)\]/\1+\2/g
 
-
 #
-# Handle if() late.
+# Split `} else`
 #
-
-#R#s/if[[:blank:]]*(/Q /
-#R#1i\
-#R##define Q if(
-#R#
-
+s/^\([[:blank:]]*\)} else/\1}\
+\1else/
