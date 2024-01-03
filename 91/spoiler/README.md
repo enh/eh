@@ -15,7 +15,7 @@ Read or create a text file; default filename is `a.txt`.  Text files consists of
 Commands
 --------
 
-Most commands can be prefixed by a repeat count.  Commands that do not support count are `[`, `]`, `/`, `i`, `W`, and `Q`.
+Most commands can be prefixed by a repeat count.  Commands that do not support (ignore) count are `[`, `]`, `/`, `i`, `W`, and `Q`.
 
     h j k l   left, down, up, right cursor movement
     H J K L   page top, page down, page up, page bottom
@@ -46,7 +46,7 @@ To build simply:
 
     $ make build
 
-There is a basic regression test based on the [testing notes](./TEST.md) for manual visual testing.
+There is a basic regression test based:
 
     $ make test
     $ make test PROG=./ae-c89

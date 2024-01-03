@@ -1,3 +1,9 @@
+#
+# Expanded from:
+#
+# ansi-bare,
+#	use=ansi-mini, use=ansi+sgrso,
+#
 ansi-bare|Minimalist ANSI,
 	am, xon,
 	cols#80, lines#24,

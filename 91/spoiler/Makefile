@@ -48,8 +48,8 @@ strip: build
 	ls -l
 
 size: build
-	iocccsize -v1 prog.c
-	iocccsize -v1 prog-alt.c
+	-iocccsize -v1 prog.c
+	-iocccsize -v1 prog-alt.c
 
 #######################################################################
 # Generated files.
@@ -101,11 +101,12 @@ test-all: build
 test: build
 	-${MAKE} PROG=${PROG} TERM=ansi LINES=24 COLUMNS=80 tests
 
-tests:	redraw0 empty0 empty1 flip0 \
+tests:	redraw0 empty0 empty1 flip0 flip1 \
 	ins0 ins1 ins2 ins3 ins4 ins5 \
-	del0 del1 del2 del3 del4 del5 \
-	scroll0 scroll1 goto0 goto1 goto2 goto3 \
-	pgdn0 pgdn1 pgdn2 pgup0 pgup1 \
+	del0 del1 del2 del3 del4 del5 del6 \
+	scroll0 scroll1 scroll2 \
+	goto0 goto1 goto2 goto3 \
+	pgdn0 pgdn1 pgdn2 pgdn3 pgdn4 pgup0 pgup1 pgup2 pgup3 \
 	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 ere10
 
 # An unknown command character redraws the screen.
@@ -135,6 +136,14 @@ flip0:
 	@${TITLE}
 	@${RESET}
 	@printf "iHELLO world!\e[~~~~~~~~~~~~WQ" | ${PROG} >a.out
+	@${A_OUT}
+	@${A_TXT}
+	@${PASS}
+
+flip1:
+	@${TITLE}
+	@${RESET}
+	@printf "iHello World!\e[12~WQ" | ${PROG} >a.out
 	@${A_OUT}
 	@${A_TXT}
 	@${PASS}
@@ -246,6 +255,14 @@ del5:
 	@${A_TXT}
 	@${PASS}
 
+del6:
+	@${TITLE}
+	@printf "Hello\n\tworld!\n" >a.txt
+	@printf "Gk6xWQ" | ${PROG} >a.out
+	@${A_OUT}
+	@${A_TXT}
+	@${PASS}
+
 # + Cursor down `j` from BOF to EOF.  Only cursor moves.
 # + Cursor up `k` from EOF to BOF.  Only cursor moves.
 scroll0:
@@ -261,6 +278,12 @@ scroll0:
 scroll1:
 	@${TITLE}
 	@printf "jjjjjjjjjjjjjjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkkkkkQ" | ${PROG} test/usage.md >a.out
+	@${A_OUT}
+	@${PASS}
+
+scroll2:
+	@${TITLE}
+	@printf "24j24kQ" | ${PROG} test/usage.md >a.out
 	@${A_OUT}
 	@${PASS}
 
@@ -327,6 +350,18 @@ pgdn2:
 	@${A_OUT}
 	@${PASS}
 
+pgdn3:
+	@${TITLE}
+	@printf "3JQ" | ${PROG} test/short.txt >a.out
+	@${A_OUT}
+	@${PASS}
+
+pgdn4:
+	@${TITLE}
+	@printf "3JJQ" | ${PROG} test/usage.md >a.out
+	@${A_OUT}
+	@${PASS}
+
 # + Page up `K` once.  Screen remains unchanged with cursor at TOP and BOF.
 # + Page down `J` once.  Cursor moves to EOF.
 # + Page up `K`.  Screen redraws its starting point with cursor at TOP and BOF.
@@ -347,6 +382,12 @@ pgup1:
 pgup2:
 	@${TITLE}
 	@printf "GKKKKQ" | ${PROG} test/usage.md >a.out
+	@${A_OUT}
+	@${PASS}
+
+pgup3:
+	@${TITLE}
+	@printf "G3KKQ" | ${PROG} test/usage.md >a.out
 	@${A_OUT}
 	@${PASS}
 
