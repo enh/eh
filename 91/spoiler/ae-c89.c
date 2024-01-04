@@ -469,7 +469,7 @@ del(void)
 {
 	movegap(here);
 	if (egap < ebuf) {
-		here = pos(++egap);
+		egap++;
 	}
 }
 
@@ -529,7 +529,7 @@ next(void)
 		here += match_length + matches[0].rm_so;
 	}
 	/* Wrap-around search. */
-	else if (0 == regexec(&ere, ptr(0), 1, matches, 0)) {
+	else if (0 == regexec(&ere, buf, 1, matches, 0)) {
 		here = matches[0].rm_so;
 	}
 	/* No match after wrap-around. */
