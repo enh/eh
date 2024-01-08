@@ -11,6 +11,7 @@ a.txt
 ae.rc
 .aerc
 *.core
+*.cdb
 *.exe
 *.obj
 *.o

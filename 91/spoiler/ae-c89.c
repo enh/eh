@@ -1,19 +1,20 @@
 /*
  * Anthony's Editor
  *
- * Public Domain 1991, 2023 by Anthony Howe.  All rights released.
+ * Public Domain 1991, 2024 by Anthony Howe.  All rights released.
  */
 
 #include <ctype.h>
 #include <assert.h>
 #include <curses.h>
 #include <fcntl.h>
-#include <limits.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 #include <regex.h>
 
 #ifndef BUF
-# define BUF		USHRT_MAX
+# define BUF		(128*1024)
 #endif
 #ifndef MODE
 # define MODE		0600
@@ -23,15 +24,19 @@
 #define TABWIDTH	8
 #define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
 
-#define STANDOUT_EOF	1
 #define TOP_LINE	1
 #define ROWS		(LINES-TOP_LINE)
 
-static int done, cur_row, cur_col, count, ere_dollar_only, match_length;
-static char buf[BUF], *filename = "a.txt";
-static char *gap = buf, *egap, *ebuf;
-static off_t here, page, epage;
+#define MOTION_CMDS	16
+
+static int cur_row, cur_col, count, ere_dollar_only, match_length, scrap_length;
+static char buf[BUF], *filename, *scrap;
+static char *gap = buf, *egap, *ebuf, *ugap = buf, *uegap;
+static off_t here, page, epage, uhere, marks[27];
 static regex_t ere;
+
+void
+deld(void);
 
 /*
  * The original prog.c for the IOCCC conformed to the 1536 bytes of
@@ -103,11 +108,31 @@ ptr(off_t cur)
 }
 
 void
+setundo(void)
+{
+	ugap = gap;
+	uegap = egap;
+	uhere = here;
+}
+
+void
+undo(void)
+{
+	char *m = ugap, *n = uegap;
+	off_t p = uhere;
+	setundo();
+	here = p;
+	egap = n;
+	gap = m;
+	/* Force display() to reframe, ie. 1GdGu fails. */
+	epage = here+1;
+}
+
+void
 movegap(off_t cur)
 {
 	assert(0 <= cur && cur <= pos(ebuf));
 #ifdef FAST_MOVE
-# include <string.h>
 	ssize_t len = gap - buf - cur;
 	if (len < 0) {
 		/* Shift data down, moving gap up to cursor. */
@@ -130,6 +155,7 @@ movegap(off_t cur)
 	}
 #endif /* FAST_MOVE */
 	assert(buf <= gap && gap <= egap && egap <= ebuf);
+	setundo();
 }
 
 /*
@@ -201,7 +227,7 @@ prevline(off_t cur)
 }
 
 /*
- * Return the beginning of next physical line or EOF.
+ * Return the next logical EOL or EOF.
  */
 off_t
 nextline(off_t cur)
@@ -260,19 +286,24 @@ display(void)
 		if (ebuf <= (p = ptr(epage))) {
 			break;
 		}
-		/* Handle tab expansion ourselves.  Differences
-		 * between historical Curses and NCurses 2021
-		 * WRT tab handling I can't suss just yet.
-		 *
-		 * Historical Curses addch() would handle tab
-		 * expansion as I recall while (current 2021)
-		 * NCurses does not by default it seems.
-		 */
-		if (*p == '\t') {
-			(void) move(i, j += TABSTOP(j));
-		} else {
-			(void) addch(*p);
-			j++;
+		if (*p != '\r') {
+			/* Handle tab expansion ourselves.  Historical
+			 * Curses addch() would advance to the next
+			 * tabstop (a multiple of 8, eg. 0, 8, 16, ...).
+			 * See SUS Curses Issue 7 section 3.4.3.
+			 *
+			 * Note that the behaviour of LF will typically
+			 * blank-out or truncated the current line, which
+			 * means "text\r\n" would result in "text" being
+			 * erased, eg. CR move to column 0, LF clear to
+			 * end line and move to column 0 of next line.
+			 *
+			 * CR and other non-spacing control characters
+			 * still count as a byte when framing and placing
+			 * the cursor, but are not visible.
+			 */
+			(void) mvaddch(i, j, *p);
+			j += *p == '\t' ? TABSTOP(j) : 1;
 		}
 		if (*p == '\n' || COLS <= j) {
 			j = 0;
@@ -293,6 +324,7 @@ void
 redraw(void)
 {
 	(void) clear();
+	count = 0;
 }
 
 void
@@ -359,12 +391,14 @@ wleft(void)
 void
 pgtop(void)
 {
+	marks[0] = here;
 	here = page;
 }
 
 void
 pgbottom(void)
 {
+	marks[0] = here;
 	here = row_start(bol(epage-1), epage-1);
 }
 
@@ -413,13 +447,13 @@ pgup(void)
 void
 wright(void)
 {
-	off_t n = pos(ebuf);
+	off_t eof = pos(ebuf);
 	/* Move forwards to end of current word. */
-	while (here < n && !isspace(*ptr(here))) {
+	while (here < eof && !isspace(*ptr(here))) {
 		++here;
 	}
 	/* Move forwards to start of next word. */
-	while (here < n && isspace(*ptr(here))) {
+	while (here < eof && isspace(*ptr(here))) {
 		++here;
 	}
 }
@@ -427,6 +461,7 @@ wright(void)
 void
 lngoto(void)
 {
+	marks[0] = here;
 	/* Count physcical lines, just as ed, grep, or wc would. */
 	off_t eof = pos(ebuf);
 	for (here = eof * (count == 0); here < eof && 1 < count; count--) {
@@ -450,7 +485,7 @@ insert(void)
 {
 	int ch;
 	movegap(here);
-	while ((ch = getch()) != '\e' && ch != '\f') {
+	while ((ch = getch()) != '\e'/* && ch != '\f'*/) {
 		if (ch == '\b') {
 			gap -= buf < gap;
 		} else if (gap < egap) {
@@ -464,12 +499,50 @@ insert(void)
 	count = 0;
 }
 
+/*
+ * Similar to `dl` command, eg.
+ *
+ *	ungetc('l', stdin);
+ *	deld();
+ */
 void
-del(void)
+delx(void)
 {
 	movegap(here);
-	if (egap < ebuf) {
-		egap++;
+	egap += egap < ebuf;
+}
+
+void
+paste(void)
+{
+	if (scrap != NULL && scrap_length <= egap-gap) {
+		movegap(here);
+		(void) memcpy(gap, scrap, scrap_length);
+		gap += scrap_length;
+		/* Force display() to reframe, ie. 1GdGP fails. */
+		epage = here+1;
+	}
+}
+
+void
+setmark(void)
+{
+	/* ASCII characters ` a..z are the allowed marks. */
+	int i = getch() - '`';
+	if (0 <= i && i < 27) {
+		marks[i] = here;
+	}
+}
+
+void
+gomark(void)
+{
+	/* ASCII characters ` a..z are the allowed marks. */
+	int i = getch() - '`';
+	if (0 <= i && i < 27) {
+		off_t j = marks[0];
+		marks[0] = here;
+		here = 0 < i ? marks[i] : j;
 	}
 }
 
@@ -523,6 +596,7 @@ next(void)
 	 */
 	assert(0 < egap - gap);
 	movegap(pos(ebuf));
+	marks[0] = here;
 	*gap = '\0';
 	/* REG_NOTBOL allows /^/ to advance to start of next line. */
 	if (here+match_length < pos(ebuf) && 0 == regexec(&ere, ptr(here+match_length), 1, matches, REG_NOTBOL)) {
@@ -535,7 +609,6 @@ next(void)
 	/* No match after wrap-around. */
 	else {
 		match_length = 0;
-		(void) beep();
 		return;
 	}
 	match_length = matches[0].rm_eo - matches[0].rm_so + ere_dollar_only;
@@ -549,11 +622,13 @@ search(void)
 	(void) mvaddch(0, 0, '/');
 	clr_to_eol();
 	assert(COLS <= egap - gap);
+	/* Erase (^H) works fine, but not the kill (^U) character. */
 	(void) mvgetnstr(0, 1, gap, egap-gap);
 	(void) standend();
 	(void) noecho();
 	regfree(&ere);
 	if (regcomp(&ere, gap, REG_EXTENDED|REG_NEWLINE) != 0) {
+		/* Something about the pattern is fubar. */
 		(void) beep();
 	} else {
 		/* Kludge to handle repeated /$/ matching. */
@@ -575,24 +650,63 @@ flipcase(void)
 void
 quit(void)
 {
-	done = 1;
+	filename = NULL;
 }
 
-static char key[] = "hjklbwHJKL[]Gix~W/nQ";
+static char key[] = "hjklbwHJKL^$G/n`~ixdPumWQ";
 
 static void (*func[])(void) = {
+	/* Motion */
 	left, down, up, right, wleft, wright,
 	pgtop, pgdown, pgup, pgbottom,
 	lnbegin, lnend, lngoto,
-	insert, del, flipcase, save,
-	search, next, quit,
+	search, next, gomark,
+	/* Modify */
+	flipcase, insert, delx, deld, paste, undo,
+	/* Other */
+	setmark, save, quit,
 	redraw
 };
+
+void
+getcmd(int m)
+{
+	int j = count, ch;
+	for (count = 0; isdigit(ch = getch()); ) {
+		count = count * 10 + ch - '0';
+	}
+	/* 2dw = d2w and 2d3w = d6w */
+	count = j != 0 && count != 0 ? j*count : count != 0 ? count : j;
+	for (j = 0; key[j] != '\0' && ch != key[j]; j++) {
+		;
+	}
+	if (m != 0 || j < MOTION_CMDS) {
+		/* Count always defaults to 1. */
+		do (*func[j])(); while (1 < count--);
+		count = 0;
+	}
+}
+
+void
+deld(void)
+{
+	off_t mark = here;
+	getcmd(0);
+	if (mark < here) {
+		mark ^= here;
+		here ^= mark;
+		mark ^= here;
+	}
+	free(scrap);
+	movegap(here);
+	scrap = strndup(egap, scrap_length = mark-here);
+	egap += scrap_length;
+}
 
 int
 main(int argc, char **argv)
 {
-	int ch, i;
+	int i;
 	if (NULL == initscr()) {
 		/* Try TERM=ansi-mini which works. */
 		return 1;
@@ -603,34 +717,20 @@ main(int argc, char **argv)
 	 */
 	(void) cbreak();
 	(void) noecho();
-//	/* Curses draw optimisations can use scrolling. */
-//	(void) idlok(stdscr, 1);
-	egap = ebuf = buf + BUF;
-	if (1 < argc) {
-		filename = *++argv;
-	}
-	if (0 < (i = open(filename, 0))) {
-		gap += read(i, buf, BUF);
+	uegap = egap = ebuf = buf + BUF;
+	if (0 < (i = open(filename = *++argv, 0))) {
+		gap += read(i, buf, ebuf-buf);
 		(void) close(i);
-		if (gap < buf) {
+		if (gap < buf || ebuf <= gap) {
 			/* Good grief Charlie Brown! */
-			return 1;
+			return 2;
 		}
 	}
 	/* Force display() to frame the initial screen. */
 	epage = 1;
-	while (!done) {
+	while (filename != NULL) {
 		display();
-		ch = getch();
-		if (isdigit(ch)) {
-			count = count * 10 + ch - '0';
-		} else {
-			for (i = 0; key[i] != '\0' && ch != key[i]; i++) {
-				;
-			}
-			do (*func[i])(); while (0 < --count);
-			count = 0;
-		}
+		getcmd(1);
 	}
 	(void) endwin();
 	return 0;
