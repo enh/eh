@@ -10,6 +10,7 @@ E :=
 .SUFFIXES :
 .SUFFIXES : .c .h .i $O $E
 
+BASE	?= ae-c89
 BUF	:= 131072
 MODE	:= 0600
 
@@ -38,30 +39,24 @@ LIBS	:= -lcurses
 
 all: build
 
-build: ae$E ae-c89$E ae-alt$E prog$E prog-alt$E
+build: ae$E ae-c89$E prog$E
 
 clean:
-	-rm -f ae$E ae-c89$E ae-alt$E prog* *.core *.i a.out a.txt test/terminfo.cdb
+	-rm -f ae$E ae-c89$E prog* *.core *.i a.out a.txt test/terminfo.cdb
 
 strip: build
-	strip ae$E ae-c89$E ae-alt$E prog$E prog-alt$E
+	strip ae$E ae-c89$E prog$E
 	ls -l
 
-size: prog.c prog-alt.c
+size: prog.c
 	-iocccsize -v1 prog.c
-	-iocccsize -v1 prog-alt.c
 
 #######################################################################
 # Generated files.
 #######################################################################
 
-prog.c: ae-c89.c transform.sed
-	sed -f transform.sed ae-c89.c | \
-	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
-	sed -e'/^[[:blank:]]*$$/d' >$@
-
-prog-alt.c: ae-alt.c transform.sed
-	sed -f transform.sed ae-alt.c | \
+prog.c: ${BASE}.c transform.sed
+	sed -f transform.sed ${BASE}.c | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
 	sed -e'/^[[:blank:]]*$$/d' >$@
 
@@ -79,7 +74,7 @@ prog-alt.c: ae-alt.c transform.sed
 #
 #######################################################################
 
-PROG	?= ./ae-c89$E
+PROG	?= ./${BASE}$E
 
 TESTDIR	= test
 RESET	= rm a.txt a.out *.core 2>/dev/null; true
@@ -91,10 +86,8 @@ A_OUT	= cmp ${TESTDIR}/$@.out a.out
 A_TXT	= diff -u ${TESTDIR}/$@.txt a.txt
 
 test-all: build
-	${MAKE} PROG=./ae-c89 TERM=ansi LINES=24 COLUMNS=80 tests
-	${MAKE} PROG=./ae-alt TERM=ansi LINES=24 COLUMNS=80 tests
-	${MAKE} PROG=./prog TERM=ansi LINES=24 COLUMNS=80 tests
-	${MAKE} PROG=./prog-alt TERM=ansi LINES=24 COLUMNS=80 tests
+	${MAKE} PROG=./${BASE}$E TERM=ansi LINES=24 COLUMNS=80 tests
+	${MAKE} PROG=./prog$E TERM=ansi LINES=24 COLUMNS=80 tests
 
 # While the terminal definition will probably contain definitions for
 # the number of hardware `lines` and `columns`, we explicitly override

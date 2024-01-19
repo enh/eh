@@ -119,7 +119,6 @@ Version 1.2.0
 * Replaced `t` and `b` commands with `G`, while slightly more code, it provides more functionality.
 * Fixed the behaviour of `H` word left.
 * Minor code compaction.
-* `ae-alt.c` is `ae-c89.c` converted to use offsets into the buffer inspired by a derivative version from https://github.com/the8thbit/e that raised a question as to which method, given today's optimising compilers, yields the smallest binary.  Comparing the stripped binary sizes between `ae-c89` and `ae-alt` could differ from the `prog` and `prog-alt`, because of size differences between `off_t` and `ptrdiff_t` (8 bytes) versus `int` (4 bytes) as defined on NetBSD 64-bit.
 
 Version 1.3.0
 * Resolves original 1991 (ae91-1.0.0) issues with scrolling and paging a file with long physical lines.
