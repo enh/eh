@@ -29,14 +29,14 @@
 
 #define MOTION_CMDS	16
 
-static int cur_row, cur_col, count, ere_dollar_only, match_length, scrap_length;
+static int cur_row, cur_col, count, ere_dollar_only;
 static char buf[BUF], *filename, *scrap;
 static ptrdiff_t gap, egap, ebuf, ugap, uegap;
-static off_t here, page, epage, uhere, marks[27];
+static off_t here, page, epage, uhere, match_length, scrap_length, marks[27];
 static regex_t ere;
 
 void
-deld(void);
+getcmd(int);
 
 /*
  * The original prog.c for the IOCCC conformed to the 1536 bytes of
@@ -324,7 +324,7 @@ void
 redraw(void)
 {
 	(void) clear();
-	count = 0;
+//	count = 0;
 }
 
 void
@@ -496,7 +496,7 @@ insert(void)
 		display();
 	}
 	/* Not repeatable yet. */
-	count = 0;
+//	count = 0;
 }
 
 /*
@@ -510,6 +510,28 @@ delx(void)
 {
 	movegap(here);
 	egap += egap < ebuf;
+}
+
+void
+yank(void)
+{
+	off_t mark = here;
+	getcmd(0);
+	if (mark < here) {
+		mark ^= here;
+		here ^= mark;
+		mark ^= here;
+	}
+	free(scrap);
+	movegap(here);
+	scrap = strndup(buf+egap, scrap_length = mark-here);
+}
+
+void
+deld(void)
+{
+	yank();
+	egap += scrap_length;
 }
 
 void
@@ -553,7 +575,7 @@ save(void)
 	movegap(0);
 	(void) write(i = creat(filename, MODE), buf+egap, ebuf-egap);
 	(void) close(i);
-	count = 0;
+//	count = 0;
 }
 
 /* In case we're sitting on a previous match, we need to search starting
@@ -635,6 +657,7 @@ search(void)
 		ere_dollar_only = buf[gap] == '$' && '\0' == buf[gap+1];
 		next();
 	}
+	/* Does not make sense to repeat. */
 	count = 0;
 }
 
@@ -653,7 +676,7 @@ quit(void)
 	filename = NULL;
 }
 
-static char key[] = "hjklbwHJKL^$G/n`~ixdPumWQ";
+static char key[] = "hjklbwHJKL^$G/n`~ixydPumWQ";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -662,7 +685,7 @@ static void (*func[])(void) = {
 	lnbegin, lnend, lngoto,
 	search, next, gomark,
 	/* Modify */
-	flipcase, insert, delx, deld, paste, undo,
+	flipcase, insert, delx, yank, deld, paste, undo,
 	/* Other */
 	setmark, save, quit,
 	redraw
@@ -687,22 +710,6 @@ getcmd(int m)
 	}
 }
 
-void
-deld(void)
-{
-	off_t mark = here;
-	getcmd(0);
-	if (mark < here) {
-		mark ^= here;
-		here ^= mark;
-		mark ^= here;
-	}
-	free(scrap);
-	movegap(here);
-	scrap = strndup(buf+egap, scrap_length = mark-here);
-	egap += scrap_length;
-}
-
 int
 main(int argc, char **argv)
 {
@@ -712,8 +719,8 @@ main(int argc, char **argv)
 		return 1;
 	}
 	/* We could use raw(), but cbreak() still allows for signals, like
-	 * CTRL+Z (suspend) and CTRL+C (interrupt) (I don't read manuals
-	 * and don't know how to quit).
+	 * CTRL+Z (suspend) and CTRL+C (interrupt) (for those who don't
+	 * read manuals and don't know how to quit).
 	 */
 	(void) cbreak();
 	(void) noecho();

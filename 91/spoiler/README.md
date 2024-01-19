@@ -1,7 +1,7 @@
 ae 1.3.0
 ========
 
-A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method outlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by many Emacs style editors.
+A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method outlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by many Emacs style editors.  (Yep I mixed `vi` and `emacs` in the same paragraph; I'm going to hell for that one.)
 
 
 Usage
@@ -15,19 +15,20 @@ Create or read a text file to edit.  Text files consists of lines of printable A
 Commands
 --------
 
-Most commands can be prefixed by a repeat count.  Commands that do not support (ignore) count are `[`, `]`, `/`, `i`, `W`, and `Q`.  Motion commands are those that move the cursor without modifying the buffer.
+Most commands can be prefixed by a repeat count, eg. `2dw` (`d2w`) or `2d3w` (`d6w`).  Motion commands are those that move the cursor without modifying the buffer.
 
     h j k l   left, down, up, right cursor movement
     H J K L   page top, page down, page up, page bottom
     b w       word left, word right
     ^ $       beginning and end of line
     / n       find ERE pattern, find next occurrence
-    m char    set a mark letter a..z
-    ` char    goto previously set mark a..z
+    m char    set a mark letter a..z or `
+    ` char    goto previously set mark a..z or ` (previous position)
     G         goto line (count) number; 1G top of file, G bottom
     d motion  delete text region given by motion
-    P         paste last deleted text region before the cursor
-    i         insert text mode before the cursor, ESC to quit
+    y motion  yank (copy) text region given by motion
+    P         paste last deleted or yanked text region before the cursor
+    i         insert text mode before the cursor, ESC to quit inserting
     x         delete character under the cursor, ie. dl
     u         undo last modification, except invert case
     ~         invert character case
@@ -52,7 +53,7 @@ To build simply:
 
     $ make build
 
-There is a basic regression test based:
+There is a basic regression test:
 
     $ make test
     $ make test PROG=./ae-c89
@@ -97,11 +98,13 @@ Bugs & Differences
 
 * Behaviour of `^` is more like `0` in `vi(1)`, try `^w` (roughly similar except on empty / blank lines).
 
-* `[count]i`not supported, try ``maitext\ed`a[count]P``.
+* `[count]i` not supported, try ``maitext\ed`a[count]P``.
 
 * `[count]$` not supported, try `[count]j$`.
 
 * `[count]dd` not supported, try `^[count]dj`.
+
+* `[count]yy` not supported, try `^[count]yj` or `^[count]dju`.
 
 
 Notes
@@ -125,5 +128,5 @@ Version 1.3.0
 * Add page top `H` and bottom `L` commands.
 * Add `/` and `n` commands.
 * Add set `m` and goto mark `` ` `` commands.
-* Add delete `d motion` (eg. 3dw = d2w, 2d3w = d6w), paste before `P`, and undo last `u`.
+* Add delete `d motion` (eg. 3dw = d2w, 2d3w = d6w), yank `y motion`, paste before `P`, and undo last `u`.
 * Add a regression test suite.
