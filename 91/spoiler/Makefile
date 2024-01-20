@@ -75,15 +75,17 @@ prog.c: ${BASE}.c transform.sed
 #######################################################################
 
 PROG	?= ./${BASE}$E
+REBUILD	?= false
 
-TESTDIR	= test
+TESTDIR	= test/${TERM}
 RESET	= rm a.txt a.out *.core 2>/dev/null; true
 TITLE	= printf "%s      %s: " ${PROG} $@ ; ${RESET}
 PASS	= printf "\r%s -OK-\r\n" ${PROG}
+SAVE	= ${REBUILD} && cp a.out ${TESTDIR}/$@.out
 EMPTY	= cmp ${TESTDIR}/empty.out -
 A_CORE	= test ! -f *.core
-A_OUT	= cmp ${TESTDIR}/$@.out a.out
-A_TXT	= diff -u ${TESTDIR}/$@.txt a.txt
+A_OUT	= ${SAVE} ; cmp ${TESTDIR}/$@.out a.out
+A_TXT	= diff -u test/$@.txt a.txt
 
 test-all: build
 	${MAKE} PROG=./${BASE}$E TERM=ansi LINES=24 COLUMNS=80 tests
@@ -100,7 +102,8 @@ test: build test/terminfo.cdb
 	-${MAKE} PROG=${PROG} TERM=ansi LINES=24 COLUMNS=80 tests
 #	-${MAKE} PROG=${PROG} TERM=ansi-bare LINES=24 COLUMNS=80 TERMINFO=${PWD}/test/terminfo tests
 
-tests:	arg0 term0 empty0 empty1 redraw0 flip0 flip1 \
+tests:	tests_have_term_data \
+	arg0 term0 empty0 empty1 redraw0 flip0 flip1 \
 	ins0 ins1 ins2 ins3 ins4 ins5 \
 	del0 del1 del2 del3 del4 del5 del6 \
 	scroll0 scroll1 scroll2 \
@@ -110,6 +113,10 @@ tests:	arg0 term0 empty0 empty1 redraw0 flip0 flip1 \
 	mark0 mark1 del7 del8 del9 del10 del11 del12 del13 \
 	undo0 undo1 undo2 undo3 \
 	paste0 paste1 paste2 paste3
+
+tests_have_term_data:
+	@test -d ${TESTDIR}
+	@echo TERM=${TERM}
 
 # Missing filename argument.
 arg0:
