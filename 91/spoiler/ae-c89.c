@@ -485,7 +485,7 @@ insert(void)
 {
 	int ch;
 	movegap(here);
-	while ((ch = getch()) != '\e'/* && ch != '\f'*/) {
+	while ((ch = getch()) != ' '-5/* && ch != '\f'*/) {
 		if (ch == '\b') {
 			gap -= buf < gap;
 		} else if (gap < egap) {

@@ -110,6 +110,9 @@ Bugs & Differences
 Notes
 -----
 
+Version 1.0.0
+* Original 1990 K&R `ae.c`.
+
 Version 1.1.0
 * `ae-c89.c` is the C89 version of K&R `ae.c`.
 * Address Curses library differences.
