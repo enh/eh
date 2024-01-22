@@ -35,7 +35,7 @@
 #define ALL_CMDS	99
 
 static int cur_row, cur_col, count, ere_dollar_only;
-static char buf[BUF], *filename, *scrap;
+static char buf[BUF], *filename, *scrap, *replace;
 static char *gap = buf, *egap, *ebuf, *ugap = buf, *uegap;
 static char ins[] = "INS", cmd[] = "   ", *mode = cmd;
 static off_t here, page, epage, uhere, match_length, scrap_length, marks[27];
@@ -569,6 +569,13 @@ insert(void)
 }
 
 void
+append(void)
+{
+	right();
+	insert();
+}
+
+void
 yank(void)
 {
 	off_t mark = here;
@@ -747,7 +754,7 @@ readfile(void)
 void
 next(void)
 {
-	regmatch_t matches[1];
+	regmatch_t matches[10];
 	/* Move the gap out of the way in case it sits in the middle
 	 * of a potential match and NUL terminate the buffer.
 	 */
@@ -756,11 +763,11 @@ next(void)
 	marks[0] = here;
 	*gap = '\0';
 	/* REG_NOTBOL allows /^/ to advance to start of next line. */
-	if (here+match_length < pos(ebuf) && 0 == regexec(&ere, ptr(here+match_length), 1, matches, REG_NOTBOL)) {
+	if (here+match_length < pos(ebuf) && 0 == regexec(&ere, ptr(here+match_length), 10, matches, REG_NOTBOL)) {
 		here += match_length + matches[0].rm_so;
 	}
 	/* Wrap-around search. */
-	else if (0 == regexec(&ere, buf, 1, matches, 0)) {
+	else if (0 == regexec(&ere, buf, 10, matches, 0)) {
 		here = matches[0].rm_so;
 	}
 	/* No match after wrap-around. */
@@ -769,12 +776,49 @@ next(void)
 		return;
 	}
 	match_length = matches[0].rm_eo - matches[0].rm_so + ere_dollar_only;
+	if (NULL != replace) {
+		movegap(here);
+		for (char *s = replace; *s != '\0'; s++) {
+			if (*s == '\\') {
+				if ('0' <= *++s && *s <= '9') {
+					int i = *s-'0';
+					off_t n = matches[i].rm_eo - matches[i].rm_so;
+					(void) memcpy(gap, egap + (matches[i].rm_so - matches[0].rm_so), n);
+					gap += n;
+					continue;
+				}
+			} else if (*s == '/') {
+				/* End replace; no options (yet). */
+				break;
+			}
+			*gap++ = *s;
+		}
+		egap += match_length;
+		match_length = gap-ugap;
+		assert(gap <= uegap);
+	}
 }
 
 void
 search(void)
 {
+	char *t;
 	prompt('/');
+	free(replace);
+	/* Find end of pattern. */
+	for (t = gap; *t != '\0'; t++) {
+		if (*t == '\\') {
+			/* Escape next character. */
+			t++;
+		} else if (*t == '/') {
+			/* End of pattern, start of replacement. */
+			break;
+		}
+	}
+	if (*t == '/') {
+		*t++ = '\0';
+		replace = strdup(t);
+	}
 	regfree(&ere);
 	if (regcomp(&ere, gap, REG_EXTENDED|REG_NEWLINE) != 0) {
 		/* Something about the pattern is fubar. */
@@ -803,7 +847,7 @@ quit(void)
 	filename = NULL;
 }
 
-static char key[] = "hjklbwHJKL^$|G/n`'~ixXydPpumRWQ\003";
+static char key[] = "hjklbwHJKL^$|G/n`'~iaxXydPpumRWQ\003";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -812,8 +856,8 @@ static void (*func[])(void) = {
 	lnbegin, lnend, column, lngoto,
 	search, next, gomark, lnmark,
 	/* Modify */
-	flipcase, insert, delx, delX, yank, deld,
-	paste, pastel, undo,
+	flipcase, insert, append, delx, delX,
+	yank, deld, paste, pastel, undo,
 	/* Other */
 	setmark, readfile, save, quit, quit,
 	redraw
@@ -865,6 +909,10 @@ main(int argc, char **argv)
 		display();
 		getcmd(ALL_CMDS);
 	}
+	/* Clean-up. */
 	(void) endwin();
+	regfree(&ere);
+	free(replace);
+	free(scrap);
 	return 0;
 }

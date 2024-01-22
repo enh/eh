@@ -15,25 +15,34 @@ Create or read a text file to edit.  Text files consists of lines of printable A
 Commands
 --------
 
-Most commands can be prefixed by a repeat count, eg. `2dw` (`d2w`) or `2d3w` (`d6w`).  Motion commands are those that move the cursor without modifying the buffer.
+Most commands can be prefixed by a repeat count, eg. `2dw` (`d2w`) or `2d3w` (`d6w`).  Motion commands, optionally prefixed by a count, are those that move the cursor without modifying the buffer.
 
-    h j k l   left, down, up, right cursor movement
-    H J K L   page top, page down, page up, page bottom
-    b w       word left, word right
-    |         Goto column (count) of physical line.
-    / n       find ERE pattern, find next occurrence
-    m char    set a mark letter a..z or `
-    ` char    goto previously set mark a..z or ` (previous position)
-    G         goto line (count) number; 1G top of file, G bottom
-    d motion  delete text region given by motion
-    y motion  yank (copy) text region given by motion
-    P         paste last deleted or yanked text region before the cursor
-    i         insert text mode before the cursor, ESC to quit inserting
-    x         delete character under the cursor, ie. dl
-    u         undo last modification, except invert case
-    ~         invert character case
-    W         write buffer to file
-    Q         quit
+    h j k l     Left, down, up, right cursor movement
+    H J K L     Page top, page down, page up, page bottom
+    b w         Word left, word right
+    ^ $         Start and end of line
+    |           Goto column (count) of physical line.
+    /ERE        Find first occurence of ERE pattern after the cursor.
+    /ERE/REPL   Find ERE and replace.  In the `REPL`, a `\n` where `n` is
+                a digit `0..9` is replaced by the Nth subexpression of the
+                matched text.  `\0` is the whole matched text. `\x` where
+                `x` is punctuation or alphabetic is replaced by `x`.
+    m char      Set a mark letter `a..z` or `
+    n           Find next occurence of ERE (and replace); see `u`.
+    ` char      Goto position of mark `a..z` or ` (previous position)
+    ' char      Goto start of line of mark `a..z` or ` (previous position)
+    G           Goto line (count) number; 1G top of file, G bottom
+    d motion    Delete text region given by motion
+    y motion    Yank (copy) text region given by motion
+    P p         Paste last deleted or yanked text region before or after
+                the cursor.
+    i a         Insert text mode before or after the cursor, ESC end insert
+    X x         Delete character before or after cursor, ie. `dh` or `dl`
+    u           Undo last modification, except invert case
+    ~           Invert character case
+    R           Read a file into buffer after cursor.
+    W           Write buffer to file.
+    Q           Quit
 
 Any other key will redraw the screen.
 
@@ -133,7 +142,9 @@ Version 1.3.0
 
 Version 1.4.0
 * Adjust marks after the cursor when the buffer is altered to maintain relative position.
-* Add `'` goto marked line, delete before `X`, paste after `p`, read file `R` commands.
+* Add `'` goto marked line, delete before `X`, paste after `p`, append `a`, read file `R` commands.
 * Switch from cbreak() to raw() input; handle INTR `^C`, LNEXT `^V`, and SUSP `^Z`.
 * INTR `^C` can leave insert mode same as `vi(1)` or quit (for those who don't read documentation).
 * Fix `[count]p` to ensure sufficent space before pasting and fix undo of last `[count]p` command.
+* ASCII control characters are displayed as highlighted characters.
+* Support search & replace `/ERE/REPL/`.
