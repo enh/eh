@@ -758,7 +758,7 @@ next(void)
 	/* Move the gap out of the way in case it sits in the middle
 	 * of a potential match and NUL terminate the buffer.
 	 */
-	assert(0 < egap - gap);
+	assert(gap < egap);
 	movegap(pos(ebuf));
 	marks[0] = here;
 	*gap = '\0';
@@ -781,21 +781,30 @@ next(void)
 		for (char *s = replace; *s != '\0'; s++) {
 			if (*s == '\\') {
 				if ('0' <= *++s && *s <= '9') {
+					/* Subexpression \0..\9 */
 					int i = *s-'0';
 					off_t n = matches[i].rm_eo - matches[i].rm_so;
 					(void) memcpy(gap, egap + (matches[i].rm_so - matches[0].rm_so), n);
 					gap += n;
 					continue;
 				}
+				/* Escaped character. */
 			} else if (*s == '/') {
-				/* End replace; no options (yet). */
+				/* End replacement string. */
+				if (*++s == 'a') {
+					/* a = all */
+					(void) ungetc('n', stdin);
+				}
 				break;
 			}
 			*gap++ = *s;
 		}
+		/* Delete the match. */
 		egap += match_length;
+		adjmarks();
+		/* Replacement string length. */
 		match_length = gap-ugap;
-		assert(gap <= uegap);
+		assert(gap < uegap);
 	}
 }
 
