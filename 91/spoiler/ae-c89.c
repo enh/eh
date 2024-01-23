@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <regex.h>
+#include <sys/wait.h>
 
 #ifndef BUF
 # define BUF		(128*1024)
@@ -720,6 +721,70 @@ readfile(void)
 	count = 0;
 }
 
+/*
+ * [countA]![countB]motion command
+ *
+ * Example format one or more lines of text:
+ *
+ *	^				Start of line.
+ *	!/^$<newline> fmt -w68		Reformat here to next empty line.
+ *
+ * Can also save a text region from `a to here, eg. !`a tee save.txt
+ * If motion is `!` then read-only from command, eg. !! ls
+ */
+void
+bang(void)
+{
+	int child, pipein[2], pipeout[2], ex = 74;
+	deld();
+	prompt('!');
+	if (*gap == '\0' || pipe(pipein)) {
+		goto error0;
+	}
+	if (pipe(pipeout)) {
+		goto error1;
+	}
+	if ((child = fork()) < 0) {
+		goto error2;
+	}
+	if (child == 0) {
+		/* Redirect standard I/O for the child. */
+		if (STDIN_FILENO == dup2(pipeout[0], STDIN_FILENO)
+		&& STDOUT_FILENO == dup2(pipein[1], STDOUT_FILENO)
+		&& STDERR_FILENO == dup2(pipein[1], STDERR_FILENO)) {
+			/* The Child, close the ends of the pipes not used. */
+			(void) close(pipeout[1]);
+			(void) close(pipein[0]);
+			ex = system(gap+(*gap == '!')) < 0;
+		}
+		exit(ex);
+	}
+	/* Finally write text region to filter and read result. */
+	if (scrap != NULL && 0 <= write(pipeout[1], scrap, scrap_length)) {
+		/* Signal EOF write to child, else hang on read(). */
+		(void) close(pipeout[1]);
+		ssize_t n = read(pipein[0], gap, egap-gap);
+		if (0 <= n && n < egap-gap) {
+			gap += n;
+			adjmarks();
+			epage = here+1;
+		} else {
+			/* ed(1) ? */
+			beep();
+		}
+		/* Get the child exit code; probably redundant. */
+		(void) waitpid(child, &ex, 0);
+	}
+error2:
+	(void) close(pipeout[0]);
+	(void) close(pipeout[1]);
+error1:
+	(void) close(pipein[0]);
+	(void) close(pipein[1]);
+error0:
+	;
+}
+
 /* In case we're sitting on a previous match, we need to search starting
  * from the end of that match.  Note some special cases:
  *
@@ -856,7 +921,7 @@ quit(void)
 	filename = NULL;
 }
 
-static char key[] = "hjklbwHJKL^$|G/n`'~iaxXydPpumRWQ\003";
+static char key[] = "hjklbwHJKL^$|G/n`'~iaxXydPpu!mRWQ\003";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -866,7 +931,7 @@ static void (*func[])(void) = {
 	search, next, gomark, lnmark,
 	/* Modify */
 	flipcase, insert, append, delx, delX,
-	yank, deld, paste, pastel, undo,
+	yank, deld, paste, pastel, undo, bang,
 	/* Other */
 	setmark, readfile, save, quit, quit,
 	redraw
@@ -887,8 +952,8 @@ getcmd(int m)
 	if (j < m) {
 		/* Count always defaults to 1. */
 		do (*func[j])(); while (1 < count--);
-		count = 0;
 	}
+	count = 0;
 }
 
 int

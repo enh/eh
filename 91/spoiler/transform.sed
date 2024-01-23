@@ -75,6 +75,10 @@ s/MAX_COLS/999/g
 s/MOTION_CMDS/18/g
 s/ALL_CMDS/99/g
 
+s/STDIN_FILENO/0/g
+s/STDOUT_FILENO/1/g
+s/STDERR_FILENO/2/g
+
 #
 #  Types
 #
@@ -185,6 +189,10 @@ s/[[:<:]]ugap[[:>:]]/og/g
 s/[[:<:]]uegap[[:>:]]/oh/g
 s/[[:<:]]scrap[[:>:]]/s/g
 s/[[:<:]]scrap_length[[:>:]]/t/g
+s/[[:<:]]pipein[[:>:]]/m/g
+s/[[:<:]]pipeout[[:>:]]/n/g
+s/[[:<:]]child[[:>:]]/a/g
+s/[[:<:]]ex[[:>:]]/i/g
 
 
 #
@@ -221,7 +229,7 @@ s/\([^ 	]*[^[]\)\[0\]\./\1->/g
 
 
 #    array[0]	->  *array
-s/\([^ 	]*[^[]\)\[0\]\([^.]\)/*\1\2/g
+#s/\([^ 	]*[^[]\)\[0\]\([^.]\)/*\1\2/g
 
 #    &array[n]	->  array+n
 #N#s/\&\([^[]*\)\[\([^]]*\)\]/\1+\2/g

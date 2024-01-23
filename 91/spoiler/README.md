@@ -1,4 +1,4 @@
-ae 1.3.0
+ae 1.4.0
 ========
 
 A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method outlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by many Emacs style editors.  (Yep I mixed `vi` and `emacs` in the same paragraph; I'm going to hell for that one.)
@@ -15,7 +15,7 @@ Create or read a text file to edit.  Text files consists of lines of printable A
 Commands
 --------
 
-Most commands can be prefixed by a repeat count, eg. `2dw` (`d2w`) or `2d3w` (`d6w`).  Motion commands, optionally prefixed by a count, are those that move the cursor without modifying the buffer.
+Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`), or `2d3w` (`d6w`).  Motion commands, optionally prefixed by a count, are those that move the cursor without modifying the buffer.
 
     h j k l     Left, down, up, right cursor movement
     H J K L     Page top, page down, page up, page bottom
@@ -27,22 +27,23 @@ Most commands can be prefixed by a repeat count, eg. `2dw` (`d2w`) or `2d3w` (`d
                 a digit `0..9` is replaced by the Nth subexpression of the
                 matched text.  `\0` is the whole matched text. `\x` where
                 `x` is punctuation or alphabetic is replaced by `x`.
-    m char      Set a mark letter `a..z` or `
+    m char      Set a mark letter `a..z` or `.
     n           Find next occurence of ERE (and replace); see `u`.
-    ` char      Goto position of mark `a..z` or ` (previous position)
-    ' char      Goto start of line of mark `a..z` or ` (previous position)
-    G           Goto line (count) number; 1G top of file, G bottom
-    d motion    Delete text region given by motion
-    y motion    Yank (copy) text region given by motion
+    ` char      Goto position of mark `a..z` or ` (previous).
+    ' char      Goto start of line with mark `a..z` or ` (previous).
+    G           Goto line (count) number; 1G top of file, G bottom.
+    d motion    Delete text region given by motion.
+    y motion    Yank (copy) text region given by motion.
     P p         Paste last deleted or yanked text region before or after
                 the cursor.
-    i a         Insert text mode before or after the cursor, ESC end insert
-    X x         Delete character before or after cursor, ie. `dh` or `dl`
-    u           Undo last modification, except invert case
-    ~           Invert character case
+    i a         Insert text mode before or after the cursor, ESC ends insert.
+    X x         Delete character before or after cursor, ie. `dh` or `dl`.
+    u           Undo last modification, except invert case.
+    ~           Invert character case.
+    ! motion    Filter a text region through command(s); `!!command` reads only.
     R           Read a file into buffer after cursor.
     W           Write buffer to file.
-    Q           Quit
+    Q           Quit.
 
 Any other key will redraw the screen.
 
@@ -148,3 +149,4 @@ Version 1.4.0
 * Fix `[count]p` to ensure sufficent space before pasting and fix undo of last `[count]p` command.
 * ASCII control characters are displayed as highlighted characters.
 * Support search & replace `/ERE/REPL/`.
+* Add filter `!` text region through external program.
