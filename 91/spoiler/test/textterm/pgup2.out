@@ -1,0 +1,168 @@
+<CLEAR>
+<CLEAR>
+<SMSO>test/usage.md 2570B                                                             <RMSO>
+<2;1>
+ae 1.3.0<3;1>
+========<5;1>
+A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method ou<6;1>
+tlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by<7;2>
+many Emacs style editors.<10;1>
+Usage<11;1>
+-----<13;5>
+ae [filename]<15;1>
+Read or create a text file; default filename is `a.txt`.  Text files consists of<16;2>
+lines of printable text, tabs, or newline characters.  A physical line can be o<17;1>
+f arbitrary length and is delimited by either a newline or the end of file.  Tab<18;2>
+stops are every eight columns.  The behaviour of non-printable characters may v<19;1>
+ary depending on the implementation of the Curses library, `stty(1)` settings, o<20;1>
+r terminal emulator.<23;1>
+Commands<24;1>
+--------<2;1>
+<EL>
+<3;1>
+<SMSO>^D<RMSO>
+<EL>
+<5;1>
+<EL>
+<6;1>
+<EL>
+<7;2>
+<EL>
+<10;1>
+     <11;1>
+     <13;5>
+<EL>
+<15;1>
+<EL>
+<16;2>
+<EL>
+<17;1>
+<EL>
+<18;2>
+<EL>
+<19;1>
+<EL>
+<20;1>
+<EL>
+<23;1>
+<EL>
+<24;1>
+<EL>
+<2;1>
+* Logical line = portion of a long line that fits on a single screen row.<3;1>
+* BOF = Beginning of file.<4;1>
+* EOF = End of file just after last character or newline.<5;1>
+* BOL = Beginning of line, which can be BOF.<6;1>
+* EOL = End of line at a newline or EOF if no terminating newline.<7;1>
+* TOP = Top of page.<8;1>
+* BOP = Bottom of page.<11;1>
+### Terminal Dimensions<13;1>
+Historical serial CRT terminals were 80 columns by 24 rows.  Later serial termin<14;1>
+als were 80x25 to make room for a status line.  X Windows, Windows, and Mac syst<15;1>
+ems have terminal emulators (typically `xterm`, `ansi`, or `vt100`) that can be<16;1>
+resized on the fly.  Typically the column width is a multiple of eight (8) to ac<17;1>
+count for `TAB` stops.  The terminal dimensions can be found with `stty -a` or c<18;1>
+heck the `TERM` definition (see `/usr/share/misc/terminfo`) or both.<20;1>
+Curses library supports the environment variables `TERM`, `LINES`, and `COLUMNS`<21;1>
+.  It possible to temporarily set `LINES` or `COLUMNS` or both smaller than the<22;1>
+terminal window size for easier testing and debugging, eg.<24;5>
+$ LINES=10 ./ae file<2;1>
+    Q         quit<EL>
+<3;1>
+<EL>
+<4;1>
+Any other key will redraw the screen.<EL>
+<5;1>
+<EL>
+<6;1>
+<EL>
+<7;1>
+Exit Status <EL>
+<8;1>
+-----------<EL>
+<10;1>
+- 0 success<11;1>
+- 1 file read error    <13;1>
+<EL>
+<14;1>
+Testing<EL>
+<15;1>
+-------<EL>
+<16;1>
+<EL>
+<17;1>
+This document contains a mix of short and long physical lines.<EL>
+<18;1>
+<EL>
+<19;1>
+* Row = A physical screen row.<20;1>
+* Short line = A physical line of text that display less that `COLS` columns fac<21;1>
+toring in tabs.<EL>
+<22;1>
+* Long line = A physical line of text that can wrap onto two or more logical lin<23;1>
+es (screen rows) depending on the terminal width given by `COLS` factoring in ta<24;1>
+bs. <EL>
+<2;1>
+Usage<2;15>
+<EL>
+<3;1>
+-----<4;1>
+<EL>
+<5;5>
+ae [filename]<7;1>
+Read or create a text file; default filename is `a.txt`.  Text files consists of<8;1>
+ lines of printable text, tabs, or newline characters.  A physical line can be o<9;1>
+f arbitrary length and is delimited by either a newline or the end of file.  Tab<10;1>
+ stops are every eight columns.  The behaviour of non-printable characters may v<11;1>
+ary depending on the implementation of the Curses library, `stty(1)` settings, o<12;1>
+r terminal emulator.<14;1>
+<EL>
+<15;1>
+Commands<16;1>
+--------<17;1>
+<EL>
+<18;5>
+h j k l   left, down, up, right cursor movement<19;1>
+    H J K L   word left, page down, page up, word right<20;1>
+    [ ]       beginning and end of line<EL>
+<21;1>
+    G         goto line number; 1G top of file, G bottom<22;1>
+    i         enter insert mode, FF or ESC to quit<EL>
+<23;1>
+    x         delete character under the cursor<EL>
+<24;1>
+    W<24;15>
+write buffer to file<2;1>
+ae 1.3.0<3;1>
+========<5;1>
+A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method ou<6;1>
+tlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by<7;1>
+ many Emacs style editors.<EL>
+<8;2>
+<EL>
+<9;1>
+<EL>
+<10;1>
+Usage<EL>
+<11;1>
+-----<EL>
+<12;1>
+<EL>
+<13;5>
+ae [filename]<15;1>
+Read or create a text file; default filename is `a.txt`.  Text files consists of<16;1>
+ lines of printable text, tabs, or newline characters.  A physical line can be o<17;1>
+f arbitrary length and is delimited by either a newline or the end of file.  Tab<18;2>
+stops are every eight columns.  The behaviour of non-printable characters may v<19;1>
+ary depending on the implementation of the Curses library, `stty(1)` settings, o<20;1>
+r terminal emulator.<EL>
+<21;5>
+<EL>
+<22;5>
+<EL>
+<23;1>
+Commands      <EL>
+<24;1>
+--------      <EL>
+<2;1>
+<24;1>

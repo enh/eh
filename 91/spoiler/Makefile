@@ -88,8 +88,8 @@ A_OUT	= ${SAVE} ; cmp ${TESTDIR}/$@.out a.out
 A_TXT	= diff -u test/$@.txt a.txt
 
 test-all: build
-	${MAKE} PROG=./${BASE}$E TERM=ansi LINES=24 COLUMNS=80 tests
-	${MAKE} PROG=./prog$E TERM=ansi LINES=24 COLUMNS=80 tests
+	${MAKE} PROG=./${BASE}$E test
+	${MAKE} PROG=./prog$E test
 
 # While the terminal definition will probably contain definitions for
 # the number of hardware `lines` and `columns`, we explicitly override
@@ -99,8 +99,8 @@ test/terminfo.cdb : test/terminfo
 	tic -x -o $@ test/terminfo
 
 test: build test/terminfo.cdb
-	-${MAKE} PROG=${PROG} TERM=ansi LINES=24 COLUMNS=80 tests
-#	-${MAKE} PROG=${PROG} TERM=ansi-bare LINES=24 COLUMNS=80 TERMINFO=${PWD}/test/terminfo tests
+	-${MAKE} PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/test/terminfo tests
+#	-${MAKE} PROG=${PROG} TERM=ansi LINES=24 COLUMNS=80 tests
 
 tests:	tests_have_term_data \
 	arg0 term0 empty0 empty1 redraw0 flip0 flip1 \
