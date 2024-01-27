@@ -301,6 +301,19 @@ display(void)
 		if (ebuf <= (p = ptr(epage))) {
 			break;
 		}
+#ifdef ALT
+		/* Handle tab expansion ourselves.  Historical
+		 * Curses addch() would advance to the next
+		 * tabstop (a multiple of 8, eg. 0, 8, 16, ...).
+		 * See SUS Curses Issue 7 section 3.4.3.
+		 *
+		 * Display control characters as a single byte
+		 * highlighted upper case letter (instead of two
+		 * byte ^X).
+		 */
+		(void) mvaddch(i, j, isprint(*p) || *p == '\t' || *p == '\n' ? *p : A_STANDOUT|(*p+'@'));
+		j += *p == '\t' ? TABSTOP(j) : 1;
+#else
 		if (*p != '\r') {
 			/* Handle tab expansion ourselves.  Historical
 			 * Curses addch() would advance to the next
@@ -320,6 +333,7 @@ display(void)
 			(void) mvaddch(i, j, *p);
 			j += *p == '\t' ? TABSTOP(j) : 1;
 		}
+#endif /* ALT */
 		if (*p == '\n' || COLS <= j) {
 			j = 0;
 			i++;
