@@ -37,6 +37,7 @@
 static int cur_row, cur_col, count, ere_dollar_only;
 static char buf[BUF], *filename, *scrap;
 static char *gap = buf, *egap, *ebuf, *ugap = buf, *uegap;
+static char ins[] = "INS", cmd[] = "   ", *mode = cmd;
 static off_t here, page, epage, uhere, match_length, scrap_length, marks[27];
 static regex_t ere;
 
@@ -291,6 +292,7 @@ display(void)
 	(void) standout();
 	(void) mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
 	clr_to_eol();
+	(void) mvaddstr(0, COLS-3, mode);
 	(void) standend();
 	(void) clrtobot();
 	for (i = TOP_LINE, j = 0, epage = page; i < LINES; epage++) {
@@ -533,6 +535,8 @@ void
 insert(void)
 {
 	int ch;
+	mode = ins;
+	display();
 	movegap(here);
 	while ((ch = getsigch()) != '\033' /* ^[ */ && ch != '\003' /* ^C */) {
 		if (ch == '\b') {
@@ -558,6 +562,7 @@ insert(void)
 		here = pos(egap);
 		display();
 	}
+	mode = cmd;
 	adjmarks();
 	/* Not repeatable yet. */
 	count = 0;
