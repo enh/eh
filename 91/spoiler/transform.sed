@@ -72,7 +72,7 @@ s/TABSTOP(\([^)]*\))/(8-(\1\&7))/g
 s/MAX_COLS/999/g
 
 /^#define .*_CMDS/d
-s/MOTION_CMDS/15/g
+s/MOTION_CMDS/18/g
 s/ALL_CMDS/99/g
 
 #

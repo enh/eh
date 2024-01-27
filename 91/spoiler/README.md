@@ -94,8 +94,6 @@ Bugs & Differences
     sed -e's/^M$//' dos.txt > unix.txt
     sed -e's/$/^M/' unix.txt > dos.txt
 
-* Marks set beyond the point of an insert or delete operation are not adjusted (maintained), so they will point to out of date locations.
-
 * Behaviour of `^` is more like `0` in `vi(1)`, try `^w` (roughly similar except on empty / blank lines).
 
 * `[count]i` not supported, try ``maitext\ed`a[count]P``.
@@ -132,3 +130,10 @@ Version 1.3.0
 * Add set `m` and goto mark `` ` `` commands.
 * Add delete `d motion` (eg. 3dw = d2w, 2d3w = d6w), yank `y motion`, paste before `P`, and undo last `u`.
 * Add a regression test suite.
+
+Version 1.4.0
+* Adjust marks after the cursor when the buffer is altered to maintain relative position.
+* Add `'` goto marked line, delete before `X`, paste after `p`, read file `R` commands.
+* Switch from cbreak() to raw() input; handle INTR `^C`, LNEXT `^V`, and SUSP `^Z`.
+* INTR `^C` can leave insert mode same as `vi(1)` or quit (for those who don't read documentation).
+* Fix `[count]p` to ensure sufficent space before pasting and fix undo of last `[count]p` command.

@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <regex.h>
 
 #ifndef BUF
@@ -20,6 +21,9 @@
 # define MODE		0600
 #endif
 
+#define ALT
+#define EXT
+
 #define MAX_COLS	999
 #define TABWIDTH	8
 #define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
@@ -27,11 +31,7 @@
 #define TOP_LINE	1
 #define ROWS		(LINES-TOP_LINE)
 
-#ifdef ALT
-#define MOTION_CMDS	16
-#else
-#define MOTION_CMDS	15
-#endif /* ALT */
+#define MOTION_CMDS	18
 #define ALL_CMDS	99
 
 static int cur_row, cur_col, count, ere_dollar_only;
@@ -121,6 +121,17 @@ setundo(void)
 }
 
 void
+adjmarks()
+{
+	off_t n = /* insert, paste */(gap-ugap) - /* delete */(egap-uegap);
+	for (int i = 0; i < 27; i++) {
+		if (here < marks[i]) {
+			marks[i] += n;
+		}
+	}
+}
+
+void
 undo(void)
 {
 	char *m = ugap, *n = uegap;
@@ -129,6 +140,7 @@ undo(void)
 	here = p;
 	egap = n;
 	gap = m;
+	adjmarks();
 	/* Force display() to reframe, ie. 1GdGu fails. */
 	epage = here+1;
 }
@@ -327,7 +339,7 @@ void
 redraw(void)
 {
 	(void) clear();
-//	count = 0;
+	count = 0;
 }
 
 void
@@ -360,7 +372,6 @@ down(void)
 	here = col_or_eol(nextline(here), 0, cur_col);
 }
 
-#ifdef ALT
 /*
  * Beginning of physical line.
  */
@@ -378,7 +389,7 @@ lnend(void)
 {
 	here = col_or_eol(here, 0, MAX_COLS);
 }
-#else
+
 /*
  * Goto column of physical line.
  */
@@ -388,7 +399,6 @@ column(void)
 	here = col_or_eol(bol(here), 0, count-1);
 	count = 0;
 }
-#endif /* ALT */
 
 void
 wleft(void)
@@ -495,36 +505,48 @@ lngoto(void)
 	page = eof;
 }
 
+int
+getsigch(void)
+{
+	int ch;
+	while ((ch = getch()) == '\032' /* ^Z */) {
+		(void) raise(SIGTSTP);
+	}
+	return ch;
+}
+
 void
 insert(void)
 {
 	int ch;
 	movegap(here);
-	while ((ch = getch()) != ' '-5/* && ch != '\f'*/) {
+	while ((ch = getsigch()) != '\033' /* ^[ */ && ch != '\003' /* ^C */) {
 		if (ch == '\b') {
 			gap -= buf < gap;
 		} else if (gap < egap) {
+#ifdef EXT
+			/* Using cbreak() then ^V is handled
+			 * so ESC ^[ is inserted with ^V^V^[.
+			 * With raw() we handle ^V so ESC ^[
+			 * is inserted with ^V^[ and we'd have
+			 * to handle ^C ourselves.
+			 */
+			if (ch == '\026' /* ^V */) {
+				(void) nonl();	/* CR as-is */
+				ch = getch();
+				(void) nl();	/* CR -> LF */
+			}
+#else
+#endif /* EXT */
 			*gap++ = ch;
 			epage++;
 		}
 		here = pos(egap);
 		display();
 	}
+	adjmarks();
 	/* Not repeatable yet. */
-//	count = 0;
-}
-
-/*
- * Similar to `dl` command, eg.
- *
- *	ungetc('l', stdin);
- *	deld();
- */
-void
-delx(void)
-{
-	movegap(here);
-	egap += egap < ebuf;
+	count = 0;
 }
 
 void
@@ -547,25 +569,49 @@ deld(void)
 {
 	yank();
 	egap += scrap_length;
+	adjmarks();
+}
+
+void
+delx(void)
+{
+	(void) ungetc('l', stdin);
+	deld();
+}
+
+void
+delX(void)
+{
+	(void) ungetc('h', stdin);
+	deld();
 }
 
 void
 paste(void)
 {
-	if (scrap != NULL && scrap_length <= egap-gap) {
+	if (scrap != NULL && (count+(count == 0))*scrap_length <= egap-gap) {
 		movegap(here);
-		(void) memcpy(gap, scrap, scrap_length);
-		gap += scrap_length;
+		do {
+			(void) memcpy(gap, scrap, scrap_length);
+			gap += scrap_length;
+		} while (1 < count--);
 		/* Force display() to reframe, ie. 1GdGP fails. */
 		epage = here+1;
 	}
 }
 
 void
+pastel(void)
+{
+	right();
+	paste();
+}
+
+void
 setmark(void)
 {
 	/* ASCII characters ` a..z are the allowed marks. */
-	int i = getch() - '`';
+	int i = getsigch() - '`';
 	if (0 <= i && i < 27) {
 		marks[i] = here;
 	}
@@ -575,12 +621,25 @@ void
 gomark(void)
 {
 	/* ASCII characters ` a..z are the allowed marks. */
-	int i = getch() - '`';
+	int i = getsigch() - '`';
 	if (0 <= i && i < 27) {
 		off_t j = marks[0];
 		marks[0] = here;
 		here = 0 < i ? marks[i] : j;
 	}
+	count = 0;
+}
+
+void
+lnmark(void)
+{
+	int ch = getsigch();
+	if (ch == '\'') {
+		ch = '`';
+	}
+	(void) ungetc(ch, stdin);
+	gomark();
+	lnbegin();
 }
 
 void
@@ -590,7 +649,49 @@ save(void)
 	movegap(0);
 	(void) write(i = creat(filename, MODE), egap, ebuf-egap);
 	(void) close(i);
-//	count = 0;
+	count = 0;
+}
+
+void
+prompt(int ch)
+{
+	(void) echo();
+	(void) standout();
+	(void) mvaddch(0, 0, ch);
+	clr_to_eol();
+	assert(COLS <= egap - gap);
+	/* NetBSD 9.3 erase ^H works fine, but not the kill ^U character. */
+	(void) mvgetnstr(0, 1, gap, egap-gap);
+	(void) standend();
+	(void) noecho();
+}
+
+int
+fileread(const char *fn)
+{
+	int fd;
+	ssize_t n;
+	if (0 < (fd = open(fn, 0))) {
+		movegap(here);
+		gap += n = read(fd, gap, egap-gap);
+		(void) close(fd);
+		return n < 0 || egap-gap <= n;
+	}
+	return 0;
+}
+
+void
+readfile(void)
+{
+	prompt('<');
+	if (fileread(gap)) {
+		/* ed(1) ? */
+		(void) beep();
+	} else {
+		epage = here+1;
+		adjmarks();
+	}
+	count = 0;
 }
 
 /* In case we're sitting on a previous match, we need to search starting
@@ -654,15 +755,7 @@ next(void)
 void
 search(void)
 {
-	(void) echo();
-	(void) standout();
-	(void) mvaddch(0, 0, '/');
-	clr_to_eol();
-	assert(COLS <= egap - gap);
-	/* Erase (^H) works fine, but not the kill (^U) character. */
-	(void) mvgetnstr(0, 1, gap, egap-gap);
-	(void) standend();
-	(void) noecho();
+	prompt('/');
 	regfree(&ere);
 	if (regcomp(&ere, gap, REG_EXTENDED|REG_NEWLINE) != 0) {
 		/* Something about the pattern is fubar. */
@@ -673,7 +766,7 @@ search(void)
 		next();
 	}
 	/* Does not make sense to repeat. */
-//	count = 0;
+	count = 0;
 }
 
 void
@@ -691,26 +784,19 @@ quit(void)
 	filename = NULL;
 }
 
-#ifdef ALT
-static char key[] = "hjklbwHJKL^$G/n`~ixydPumWQ";
-#else
-static char key[] = "hjklbwHJKL|G/n`~ixydPumWQ";
-#endif /* ALT */
+static char key[] = "hjklbwHJKL^$|G/n`'~ixXydPpumRWQ\003";
 
 static void (*func[])(void) = {
 	/* Motion */
 	left, down, up, right, wleft, wright,
 	pgtop, pgdown, pgup, pgbottom,
-#ifdef ALT
-	lnbegin, lnend, lngoto,
-#else
-	column, lngoto,
-#endif /* ALT */
-	search, next, gomark,
+	lnbegin, lnend, column, lngoto,
+	search, next, gomark, lnmark,
 	/* Modify */
-	flipcase, insert, delx, yank, deld, paste, undo,
+	flipcase, insert, delx, delX, yank, deld,
+	paste, pastel, undo,
 	/* Other */
-	setmark, save, quit,
+	setmark, readfile, save, quit, quit,
 	redraw
 };
 
@@ -718,7 +804,7 @@ void
 getcmd(int m)
 {
 	int j = count, ch;
-	for (count = 0; isdigit(ch = getch()); ) {
+	for (count = 0; isdigit(ch = getsigch()); ) {
 		count = count * 10 + ch - '0';
 	}
 	/* 2dw = d2w and 2d3w = d6w */
@@ -736,25 +822,23 @@ getcmd(int m)
 int
 main(int argc, char **argv)
 {
-	int i;
 	if (NULL == initscr()) {
 		/* Try TERM=ansi-mini which works. */
 		return 1;
 	}
-	/* We could use raw(), but cbreak() still allows for signals, like
-	 * CTRL+Z (suspend) and CTRL+C (interrupt) (for those who don't
-	 * read manuals and don't know how to quit).
+	/* Switching between cbreak() and raw() impacts terminal output
+	 * which can alter the expected test output files.
 	 */
+#ifdef ALT
+	(void) raw();
+#else
 	(void) cbreak();
+#endif /* ALT */
 	(void) noecho();
 	uegap = egap = ebuf = buf + BUF;
-	if (0 < (i = open(filename = *++argv, 0))) {
-		gap += read(i, buf, ebuf-buf);
-		(void) close(i);
-		if (gap < buf || ebuf <= gap) {
-			/* Good grief Charlie Brown! */
-			return 2;
-		}
+	if (fileread(filename = *++argv)) {
+		/* Good grief Charlie Brown! */
+		return 2;
 	}
 	/* Force display() to frame the initial screen. */
 	epage = 1;
