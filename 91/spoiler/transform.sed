@@ -71,8 +71,9 @@ s/TABSTOP(\([^)]*\))/(8-(\1\&7))/g
 /^#define MAX_COLS/d
 s/MAX_COLS/999/g
 
-/^#define MOTION_CMDS/d
+/^#define .*_CMDS/d
 s/MOTION_CMDS/16/g
+s/ALL_CMDS/99/g
 
 #
 #  Types

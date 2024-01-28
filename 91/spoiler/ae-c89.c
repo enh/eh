@@ -28,6 +28,7 @@
 #define ROWS		(LINES-TOP_LINE)
 
 #define MOTION_CMDS	16
+#define ALL_CMDS	99
 
 static int cur_row, cur_col, count, ere_dollar_only;
 static char buf[BUF], *filename, *scrap;
@@ -516,7 +517,7 @@ void
 yank(void)
 {
 	off_t mark = here;
-	getcmd(0);
+	getcmd(MOTION_CMDS);
 	if (mark < here) {
 		mark ^= here;
 		here ^= mark;
@@ -703,7 +704,7 @@ getcmd(int m)
 	for (j = 0; key[j] != '\0' && ch != key[j]; j++) {
 		;
 	}
-	if (m != 0 || j < MOTION_CMDS) {
+	if (j < m) {
 		/* Count always defaults to 1. */
 		do (*func[j])(); while (1 < count--);
 		count = 0;
@@ -737,7 +738,7 @@ main(int argc, char **argv)
 	epage = 1;
 	while (filename != NULL) {
 		display();
-		getcmd(1);
+		getcmd(ALL_CMDS);
 	}
 	(void) endwin();
 	return 0;
