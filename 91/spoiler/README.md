@@ -87,8 +87,8 @@ References
 
 * POSIX 1003.2b Draft 11.1 ex & vi, Feb 1996, courtesy of Keith Bostic
 
-* Single Unix Specification, Base Specification 2018  
-  <https://pubs.opengroup.org/onlinepubs/9699919799.2018edition/>
+* Single Unix Specification, Base Specification 2018, vi(1)
+  <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/vi.html>
 
 * Single Unix Specification, Curses issue 7  
   <https://pubs.opengroup.org/onlinepubs/9699909599/toc.pdf>
