@@ -4,6 +4,9 @@
 <3;1>
 <SMSO>^D<RMSO>
 <2;1>
+<1;78>
+<SMSO>INS<RMSO>
+<2;1>
 <1;7>
 <SMSO>1<RMSO>
 <2;1>
@@ -40,4 +43,7 @@ l<1;8>
 d<1;8>
 <SMSO>2<RMSO>
 <2;12>
-!<CR>hello WORLD!<24;1>
+!<1;78>
+<SMSO>   <RMSO>
+<2;13>
+<CR>hello WORLD!<24;1>

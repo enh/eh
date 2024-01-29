@@ -12,7 +12,10 @@ tab indent<11;1>
 -last line-<13;1>
 <SMSO>^D<RMSO>
 <2;1>
-hel<1;8>
+hel<1;78>
+<SMSO>INS<RMSO>
+<2;4>
+<1;8>
 <SMSO>20<RMSO>
 <2;4>
 Wlo<2;5>
@@ -32,6 +35,9 @@ Tlo<2;8>
 <SMSO>4<RMSO>
 <2;8>
 !lo<2;9>
+<1;78>
+<SMSO>   <RMSO>
+<2;9>
 <1;8>
 <SMSO>19<RMSO>
 <2;4>

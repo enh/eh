@@ -82,9 +82,9 @@ RESET	= rm a.txt a.out *.core 2>/dev/null; true
 TITLE	= printf "%s      %s: " ${PROG} $@ ; ${RESET}
 PASS	= printf "\r%s -OK-\r\n" ${PROG}
 SAVE	= ${REBUILD} && cp a.out ${TESTDIR}/$@.out
-EMPTY	= cmp ${TESTDIR}/empty.out -
+EMPTY	= diff -u ${TESTDIR}/empty.out -
 A_CORE	= test ! -f *.core
-A_OUT	= ${SAVE} ; cmp ${TESTDIR}/$@.out a.out
+A_OUT	= ${SAVE} ; diff -u ${TESTDIR}/$@.out a.out
 A_TXT	= diff -u test/$@.txt a.txt
 
 test-all: build
@@ -100,7 +100,6 @@ test/terminfo.cdb : test/terminfo
 
 test: build test/terminfo.cdb
 	-${MAKE} PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/test/terminfo tests
-#	-${MAKE} PROG=${PROG} TERM=ansi LINES=24 COLUMNS=80 tests
 
 tests:	tests_have_term_data \
 	arg0 term0 empty0 empty1 redraw0 flip0 flip1 \
@@ -174,11 +173,10 @@ flip1:
 # Start, insert nothing, and stop.
 ins0:
 	@${TITLE}
-	@printf "i\eQ" | ${PROG} a.txt | ${EMPTY}
+	@printf "i\eQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
+	@${A_OUT}
 	@${PASS}
-#	@printf "i\fQ" | ${PROG} a.txt | ${EMPTY}
-#	@${A_CORE}
 
 # Insert newline terminated, write, and stop.
 ins1:
@@ -241,8 +239,9 @@ del0:
 # Insert nothing, delete from empty buffer.
 del1:
 	@${TITLE}
-	@printf "i\exQ" | ${PROG} a.txt | ${EMPTY}
+	@printf "i\exQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
+	@${A_OUT}
 	@${PASS}
 
 # Insert single character, delete from buffer.

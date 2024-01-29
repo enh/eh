@@ -4,6 +4,9 @@
 <3;1>
 <SMSO>^D<RMSO>
 <2;1>
+<1;78>
+<SMSO>INS<RMSO>
+<2;1>
 <1;7>
 <SMSO>1<RMSO>
 <2;1>
@@ -40,7 +43,13 @@ l<1;8>
 d<1;8>
 <SMSO>2<RMSO>
 <2;12>
-!<CR>Hello <1;8>
+!<1;78>
+<SMSO>   <RMSO>
+<2;13>
+<CR>Hello <1;78>
+<SMSO>INS<RMSO>
+<2;7>
+<1;8>
 <SMSO>3<RMSO>
 <2;7>
 Wworld!<2;8>
@@ -64,4 +73,7 @@ Tworld!<2;11>
 <SMSO>8<RMSO>
 <2;12>
  world!<2;13>
+<1;78>
+<SMSO>   <RMSO>
+<2;13>
 <24;1>
