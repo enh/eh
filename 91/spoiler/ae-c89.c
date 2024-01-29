@@ -240,9 +240,7 @@ nextline(off_t cur)
 void
 clr_to_eol(void)
 {
-	for (int i = getcurx(stdscr); i < COLS; i++) {
-		(void) addch(' ');
-	}
+	(void) printw("%*s", COLS-getcurx(stdscr), "");
 }
 
 void
