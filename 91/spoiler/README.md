@@ -20,7 +20,7 @@ Most commands can be prefixed by a repeat count, eg. `2dw` (`d2w`) or `2d3w` (`d
     h j k l   left, down, up, right cursor movement
     H J K L   page top, page down, page up, page bottom
     b w       word left, word right
-    ^ $       beginning and end of line
+    |         Goto column (count) of physical line.
     / n       find ERE pattern, find next occurrence
     m char    set a mark letter a..z or `
     ` char    goto previously set mark a..z or ` (previous position)

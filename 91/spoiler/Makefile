@@ -157,7 +157,7 @@ empty1:
 
 flip0:
 	@${TITLE}
-	@printf "iHELLO world!\e^~~~~~~~~~~~~WQ" | ${PROG} a.txt >a.out
+	@printf "iHELLO world!\e|~~~~~~~~~~~~WQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -165,7 +165,7 @@ flip0:
 
 flip1:
 	@${TITLE}
-	@printf "iHello World!\e^12~WQ" | ${PROG} a.txt >a.out
+	@printf "iHello World!\e|12~WQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -205,7 +205,7 @@ ins2:
 #   right of cursor should shift as new text inserted.
 ins3:
 	@${TITLE}
-	@printf "iHello world!\e^wiWOOT! \eWQ" | ${PROG} a.txt >a.out
+	@printf "iHello world!\e|wiWOOT! \eWQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -225,7 +225,7 @@ ins4:
 ins5:
 	@${TITLE}
 	@printf "Hello\n\tworld!\n" >a.txt
-	@printf 'j$$i WOOT!\eWQ' | ${PROG} a.txt >a.out
+	@printf 'j99|i WOOT!\eWQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -581,7 +581,7 @@ del8:
 del9:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf '3w^djWQ' | ${PROG} a.txt >a.out
+	@printf '3w|djWQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}

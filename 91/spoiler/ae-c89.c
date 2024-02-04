@@ -27,7 +27,11 @@
 #define TOP_LINE	1
 #define ROWS		(LINES-TOP_LINE)
 
+#ifdef ALT
 #define MOTION_CMDS	16
+#else
+#define MOTION_CMDS	15
+#endif /* ALT */
 #define ALL_CMDS	99
 
 static int cur_row, cur_col, count, ere_dollar_only;
@@ -356,6 +360,7 @@ down(void)
 	here = col_or_eol(nextline(here), 0, cur_col);
 }
 
+#ifdef ALT
 /*
  * Beginning of physical line.
  */
@@ -373,6 +378,17 @@ lnend(void)
 {
 	here = col_or_eol(here, 0, MAX_COLS);
 }
+#else
+/*
+ * Goto column of physical line.
+ */
+void
+column(void)
+{
+	here = col_or_eol(bol(here), 0, count-1);
+	count = 0;
+}
+#endif /* ALT */
 
 void
 wleft(void)
@@ -675,13 +691,21 @@ quit(void)
 	filename = NULL;
 }
 
+#ifdef ALT
 static char key[] = "hjklbwHJKL^$G/n`~ixydPumWQ";
+#else
+static char key[] = "hjklbwHJKL|G/n`~ixydPumWQ";
+#endif /* ALT */
 
 static void (*func[])(void) = {
 	/* Motion */
 	left, down, up, right, wleft, wright,
 	pgtop, pgdown, pgup, pgbottom,
+#ifdef ALT
 	lnbegin, lnend, lngoto,
+#else
+	column, lngoto,
+#endif /* ALT */
 	search, next, gomark,
 	/* Modify */
 	flipcase, insert, delx, yank, deld, paste, undo,
