@@ -623,6 +623,14 @@ paste(void)
 			(void) memcpy(gap, scrap, scrap_length);
 			gap += scrap_length;
 		} while (1 < count--);
+		/* SUS 2018 vi(1) `P` paste-before unnamed buffer leaves
+		 * the cursor on the last column of the last character.
+		 * Instead keep the cursor on the same character before
+		 * the paste, which allows for clean repeated pasting,
+		 * eg. `PP` or `2P` XX_YY => XXpastepaste_YY, where '_'
+		 * is the cursor.
+		 */
+		here = pos(egap);
 		/* Force display() to reframe, ie. 1GdGP fails. */
 		epage = here+1;
 	}
@@ -633,6 +641,13 @@ pastel(void)
 {
 	right();
 	paste();
+	/* SUS 2018 vi(1) `p` paste-after unnamed buffer leaves the
+	 * cursor on the last column of the last character.  Allows
+	 * for common transpose combo `xp`, eg. te_h => th_e.  Also
+	 * `pp` or `2p` eg. 1_23 => 12pastepaste_3, where '_' is the
+	 * cursor.
+	 */
+	left();
 }
 
 void
