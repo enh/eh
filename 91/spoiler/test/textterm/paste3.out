@@ -43,8 +43,8 @@ file might be a<3;6>
 <1;8>
 <SMSO>24<RMSO>
 <2;1>
-file<CR>-last line-<3;1>
+file <CR>-last line-<3;1>
 file<4;1>
 <SMSO>^D<RMSO>
-<2;1>
+<2;6>
 <24;1>
