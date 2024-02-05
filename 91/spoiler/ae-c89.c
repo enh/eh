@@ -37,8 +37,8 @@
 #define ALL_CMDS	99
 
 static int cur_row, cur_col, count, ere_dollar_only;
-static char buf[BUF], *filename, *scrap, *replace;
-static char *gap = buf, *egap, *ebuf, *ugap = buf, *uegap;
+static char *filename, *scrap, *replace;
+static char *buf, *gap, *egap, *ebuf, *ugap, *uegap;
 static char ins[] = "INS", cmd[] = "   ", *mode = cmd;
 static off_t here, page, epage, uhere, match_length, scrap_length, marks[MARKS];
 static regex_t ere;
@@ -124,7 +124,7 @@ setundo(void)
 }
 
 void
-adjmarks()
+adjmarks(void)
 {
 	off_t n = /* insert, paste */(gap-ugap) - /* delete */(egap-uegap);
 	for (int i = 0; i < MARKS; i++) {
@@ -176,6 +176,33 @@ movegap(off_t cur)
 #endif /* FAST_MOVE */
 	assert(buf <= gap && gap <= egap && egap <= ebuf);
 	setundo();
+}
+
+void
+growgap(size_t min)
+{
+	char *xbuf;
+	/* Remember current gap location. */
+	assert(buf <= gap && gap <= egap && egap <= ebuf);
+	/* The gap is used for field input and should be at least as
+	 * large as the screen width.
+	 */
+	if ((size_t)(egap-gap) < min) {
+		off_t xhere = pos(egap);
+		ptrdiff_t buflen = ebuf-buf;
+		/* Append the new space to the end of the gap. */
+		movegap(pos(ebuf));
+		if ((xbuf = realloc(buf, buflen+BUF)) == NULL) {
+			/* Bugger.  Don't exit, allow user to write file. */
+			(void) beep();
+			return;
+		}
+		egap = ebuf = xbuf+buflen+BUF;
+		gap = xbuf+(gap-buf);
+		buf = xbuf;
+		/* Restore gap's previous location. */
+		movegap(xhere);
+	}
 }
 
 /*
@@ -558,6 +585,7 @@ insert(void)
 			}
 #else
 #endif /* EXT */
+			growgap(COLS);
 			*gap++ = ch;
 			epage++;
 		}
@@ -617,7 +645,8 @@ delX(void)
 void
 paste(void)
 {
-	if (scrap != NULL && (count+(count == 0))*scrap_length <= egap-gap) {
+	growgap(COLS+(count+(count == 0))*scrap_length);
+	if (scrap != NULL) {
 		movegap(here);
 		do {
 			(void) memcpy(gap, scrap, scrap_length);
@@ -686,7 +715,7 @@ lnmark(void)
 }
 
 void
-save(void)
+writefile(void)
 {
 	int i;
 	movegap(0);
@@ -713,14 +742,16 @@ int
 fileread(const char *fn)
 {
 	int fd;
-	ssize_t n;
+	ssize_t n = 0;
 	if (0 < (fd = open(fn, 0))) {
 		movegap(here);
-		gap += n = read(fd, gap, egap-gap);
+		while (0 < (n = read(fd, gap, egap-gap))) {
+			gap += n;
+			growgap(BUF/2);
+		}
 		(void) close(fd);
-		return n < 0 || egap-gap <= n;
 	}
-	return 0;
+	return (int) n;
 }
 
 void
@@ -871,6 +902,7 @@ next(void)
 	if (NULL != replace) {
 		movegap(here);
 		for (const char *s = replace; *s != '\0'; s++) {
+			growgap(COLS);
 			if (*s == '$' && isdigit(s[1])) {
 				/* Subexpression $0..$9 */
 				int i = *++s-'0';
@@ -960,7 +992,7 @@ static void (*func[])(void) = {
 	flipcase, insert, append, delx, delX,
 	yank, deld, paste, pastel, undo, bang,
 	/* Other */
-	setmark, readfile, save, quit, quit,
+	setmark, readfile, writefile, quit, quit,
 	redraw
 };
 
@@ -999,11 +1031,12 @@ main(int argc, char **argv)
 	(void) cbreak();
 #endif /* ALT */
 	(void) noecho();
-	uegap = egap = ebuf = buf + BUF;
+	growgap(BUF);
 	if (fileread(filename = *++argv)) {
 		/* Good grief Charlie Brown! */
 		return 2;
 	}
+	uegap = egap;
 	/* Force display() to frame the initial screen. */
 	epage = 1;
 	while (filename != NULL) {

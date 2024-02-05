@@ -11,7 +11,7 @@ E :=
 .SUFFIXES : .c .h .i $O $E
 
 BASE	?= ae-c89
-BUF	:= 131072
+BUF	:= 65536
 MODE	:= 0600
 
 # Override from the command-line, eg. make DBG='-O0 -g'
