@@ -23,10 +23,10 @@ Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`)
     ^ $         Start and end of line
     |           Goto column (count) of physical line.
     /ERE        Find first occurence of ERE pattern after the cursor.
-    /ERE/REPL   Find ERE and replace.  In the `REPL`, a `\n` where `n` is
-                a digit `0..9` is replaced by the Nth subexpression of the
-                matched text.  `\0` is the whole matched text. `\x` where
-                `x` is punctuation or alphabetic is replaced by `x`.
+    /ERE/REPL   Find ERE and replace.  In the `REPL`, a `$n` where `n` is
+                a digit `0..9` is replaced by the nth subexpression of the
+                matched text; `$0` is the whole matched text. `\x` is a
+                an escape sequence, ie. \a \b \e \f \n \r \t \? or `x`.
     m char      Set a mark letter `a..z` or `.
     n           Find next occurence of ERE (and replace); see `u`.
     ` char      Goto position of mark `a..z` or ` (previous).

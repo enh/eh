@@ -25,6 +25,7 @@
 #define ALT
 #define EXT
 
+#define MARKS		27
 #define MAX_COLS	999
 #define TABWIDTH	8
 #define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
@@ -39,7 +40,7 @@ static int cur_row, cur_col, count, ere_dollar_only;
 static char buf[BUF], *filename, *scrap, *replace;
 static char *gap = buf, *egap, *ebuf, *ugap = buf, *uegap;
 static char ins[] = "INS", cmd[] = "   ", *mode = cmd;
-static off_t here, page, epage, uhere, match_length, scrap_length, marks[27];
+static off_t here, page, epage, uhere, match_length, scrap_length, marks[MARKS];
 static regex_t ere;
 
 void
@@ -126,7 +127,7 @@ void
 adjmarks()
 {
 	off_t n = /* insert, paste */(gap-ugap) - /* delete */(egap-uegap);
-	for (int i = 0; i < 27; i++) {
+	for (int i = 0; i < MARKS; i++) {
 		if (here < marks[i]) {
 			marks[i] += n;
 		}
@@ -639,7 +640,7 @@ setmark(void)
 {
 	/* ASCII characters ` a..z are the allowed marks. */
 	int i = getsigch() - '`';
-	if (0 <= i && i < 27) {
+	if (0 <= i && i < MARKS) {
 		marks[i] = here;
 	}
 }
@@ -649,7 +650,7 @@ gomark(void)
 {
 	/* ASCII characters ` a..z are the allowed marks. */
 	int i = getsigch() - '`';
-	if (0 <= i && i < 27) {
+	if (0 <= i && i < MARKS) {
 		off_t j = marks[0];
 		marks[0] = here;
 		here = 0 < i ? marks[i] : j;
@@ -785,6 +786,17 @@ error0:
 	;
 }
 
+int
+cescape(int ch)
+{
+	for (const char *s = "a\ab\bf\fn\nr\rt\tv\ve\033?\177"; *s != '\0'; s += 2) {
+		if (ch == *s) {
+			return s[1];
+		}
+	}
+	return ch;
+}
+
 /* In case we're sitting on a previous match, we need to search starting
  * from the end of that match.  Note some special cases:
  *
@@ -843,17 +855,17 @@ next(void)
 	match_length = matches[0].rm_eo - matches[0].rm_so + ere_dollar_only;
 	if (NULL != replace) {
 		movegap(here);
-		for (char *s = replace; *s != '\0'; s++) {
-			if (*s == '\\') {
-				if ('0' <= *++s && *s <= '9') {
-					/* Subexpression \0..\9 */
-					int i = *s-'0';
-					off_t n = matches[i].rm_eo - matches[i].rm_so;
-					(void) memcpy(gap, egap + (matches[i].rm_so - matches[0].rm_so), n);
-					gap += n;
-					continue;
-				}
-				/* Escaped character. */
+		for (const char *s = replace; *s != '\0'; s++) {
+			if (*s == '$' && isdigit(s[1])) {
+				/* Subexpression $0..$9 */
+				int i = *++s-'0';
+				off_t n = matches[i].rm_eo - matches[i].rm_so;
+				(void) memcpy(gap, egap + (matches[i].rm_so - matches[0].rm_so), n);
+				gap += n;
+				continue;
+			} else if (*s == '\\') {
+				*gap++ = cescape(*++s);
+				continue;
 			} else if (*s == '/') {
 				/* End replacement string. */
 				if (*++s == 'a') {
