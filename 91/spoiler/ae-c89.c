@@ -192,7 +192,7 @@ growgap(size_t min)
 		ptrdiff_t buflen = ebuf-buf;
 		/* Append the new space to the end of the gap. */
 		movegap(pos(ebuf));
-		if ((xbuf = realloc(buf, buflen+BUF)) == NULL) {
+		if (NULL == (xbuf = realloc(buf, buflen+BUF))) {
 			/* Bugger.  Don't exit, allow user to write file. */
 			(void) beep();
 			return;
@@ -1015,6 +1015,15 @@ getcmd(int m)
 	count = 0;
 }
 
+void
+cleanup(void)
+{
+	(void) endwin();
+	regfree(&ere);
+	free(replace);
+	free(scrap);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -1022,6 +1031,7 @@ main(int argc, char **argv)
 		/* Try TERM=ansi-mini which works. */
 		return 1;
 	}
+	(void) atexit(cleanup);
 	/* Switching between cbreak() and raw() impacts terminal output
 	 * which can alter the expected test output files.
 	 */
@@ -1043,10 +1053,5 @@ main(int argc, char **argv)
 		display();
 		getcmd(ALL_CMDS);
 	}
-	/* Clean-up. */
-	(void) endwin();
-	regfree(&ere);
-	free(replace);
-	free(scrap);
 	return 0;
 }
