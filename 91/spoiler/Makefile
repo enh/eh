@@ -42,7 +42,8 @@ all: build
 build: ae$E ae-c89$E prog$E
 
 clean:
-	-rm -f ae$E ae-c89$E prog* *.core *.i a.out a.txt test/terminfo.cdb
+	-rm -f ae$E ae-c89$E prog* *.core *.stackdump *.i a.out a.txt b.txt
+	-rm -rf test/terminfo.cdb
 
 strip: build
 	strip ae$E ae-c89$E prog$E
@@ -99,7 +100,7 @@ test/terminfo.cdb : test/terminfo
 	tic -x -o $@ test/terminfo
 
 test: build test/terminfo.cdb
-	-${MAKE} PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/test/terminfo tests
+	-${MAKE} PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/test/terminfo.cdb tests
 
 tests:	tests_have_term_data \
 	arg0 term0 empty0 empty1 redraw0 flip0 flip1 \
@@ -111,7 +112,8 @@ tests:	tests_have_term_data \
 	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 ere10 ere11 \
 	mark0 mark1 del7 del8 del9 del10 del11 del12 del13 \
 	undo0 undo1 undo2 undo3 \
-	paste0 paste1 paste2 paste3
+	paste0 paste1 paste2 paste3 \
+	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7
 
 tests_have_term_data:
 	@test -d ${TESTDIR}
@@ -693,6 +695,85 @@ paste3:
 	@${TITLE}
 	@cp test/short.txt a.txt
 	@printf '3wdwuGPkWQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${A_TXT}
+	@${PASS}
+
+# Command not found.
+bang0:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf 'j!!WOOT\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# Command fail.
+bang1:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf 'j!!false\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# Command success.
+bang2:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf 'j!!true\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# Command read-only.
+bang3:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf 'j!!ls test/term*\nWQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${A_TXT}
+	@${PASS}
+
+# Command save and delete region.
+bang4:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf 'j!2jcat >b.txt\nWQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${A_TXT}
+	@test $$(wc -c <b.txt) -eq 43
+	@${PASS}
+
+# Command save region.
+bang5:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf 'j!2jtee b.txt\nWQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${A_TXT}
+	@test $$(wc -c <b.txt) -eq 43
+	@${PASS}
+
+# Command format region fails.
+bang6:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf 'j!2jfmt -w40\nWQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${A_TXT}
+	@${PASS}
+
+# Command format region succeeds.
+bang7:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf 'j!2jfmt -g32 -w40\nWQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}

@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <regex.h>
+#include <unistd.h>
 #include <sys/wait.h>
 
 #ifndef BUF
@@ -182,12 +183,12 @@ void
 growgap(size_t min)
 {
 	char *xbuf;
-	/* Remember current gap location. */
 	assert(buf <= gap && gap <= egap && egap <= ebuf);
 	/* The gap is used for field input and should be at least as
 	 * large as the screen width.
 	 */
 	if ((size_t)(egap-gap) < min) {
+		/* Remember current gap location. */
 		off_t xhere = pos(egap);
 		ptrdiff_t buflen = ebuf-buf;
 		/* Append the new space to the end of the gap. */
@@ -782,13 +783,15 @@ readfile(void)
 void
 bang(void)
 {
-	int child, pipein[2], pipeout[2], ex = 74;
+	ssize_t n;
+	pid_t child;
+	int child_in[2], child_out[2], ex = 74;
 	deld();
 	prompt('!');
-	if (*gap == '\0' || pipe(pipein)) {
+	if (pipe(child_in)) {
 		goto error0;
 	}
-	if (pipe(pipeout)) {
+	if (pipe(child_out)) {
 		goto error1;
 	}
 	if ((child = fork()) < 0) {
@@ -796,40 +799,53 @@ bang(void)
 	}
 	if (child == 0) {
 		/* Redirect standard I/O for the child. */
-		if (STDIN_FILENO == dup2(pipeout[0], STDIN_FILENO)
-		&& STDOUT_FILENO == dup2(pipein[1], STDOUT_FILENO)
-		&& STDERR_FILENO == dup2(pipein[1], STDERR_FILENO)) {
-			/* The Child, close the ends of the pipes not used. */
-			(void) close(pipeout[1]);
-			(void) close(pipein[0]);
-			ex = system(gap+(*gap == '!')) < 0;
+		if (STDIN_FILENO == dup2(child_in[0], STDIN_FILENO)
+		&& STDOUT_FILENO == dup2(child_out[1], STDOUT_FILENO)
+		&& STDERR_FILENO == dup2(child_out[1], STDERR_FILENO)) {
+			const char *sh, *shell = getenv("SHELL");
+			if (NULL == (sh = strrchr(shell, '/'))) {
+				sh = shell;
+			} else {
+				sh++;
+			}
+			/* Close duplicates and unused. */
+			(void) close(child_out[0]);
+			(void) close(child_out[1]);
+			(void) close(child_in[0]);
+			(void) close(child_in[1]);
+			/* Pass command(s) through a shell. */
+			(void) execl(shell, sh, "-c", gap, NULL);
 		}
-		exit(ex);
+		/* Use instead of exit() to avoid flushing standard I/O. */
+		_exit(127);
 	}
 	/* Finally write text region to filter and read result. */
-	if (scrap != NULL && 0 <= write(pipeout[1], scrap, scrap_length)) {
-		/* Signal EOF write to child, else hang on read(). */
-		(void) close(pipeout[1]);
-		ssize_t n = read(pipein[0], gap, egap-gap);
-		if (0 <= n && n < egap-gap) {
-			gap += n;
-			adjmarks();
-			epage = here+1;
-		} else {
-			/* ed(1) ? */
-			beep();
-		}
-		/* Get the child exit code; probably redundant. */
+	if (scrap != NULL && (scrap_length == 0 || (n = write(child_in[1], scrap, scrap_length)) == scrap_length)) {
+		/* Signal EOF write to child. */
+		(void) close(child_in[1]);
+		/* Wait for the child _before_ reading input. */
 		(void) waitpid(child, &ex, 0);
+		ex = WIFEXITED(ex) ? WEXITSTATUS(ex) : 127;
+		/* Avoid blocking on read() and allow for long or no output. */
+		(void) fcntl(child_out[0], F_SETFL, O_NONBLOCK);
+		while (0 < (n = read(child_out[0], gap, egap-gap))) {
+			gap += n;
+			growgap(BUF/2);
+		}
+		here = pos(egap);
+		epage = here+1;
+		adjmarks();
 	}
 error2:
-	(void) close(pipeout[0]);
-	(void) close(pipeout[1]);
+	(void) close(child_out[0]);
+	(void) close(child_out[1]);
 error1:
-	(void) close(pipein[0]);
-	(void) close(pipein[1]);
+	(void) close(child_in[0]);
+	(void) close(child_in[1]);
 error0:
-	;
+	if (ex != 0) {
+		(void) beep();
+	}
 }
 
 int
