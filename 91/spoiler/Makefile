@@ -4,8 +4,13 @@
 
 .POSIX :
 
+.if ${.MAKE.OS} == "Cygwin"
+O := .obj
+E := .exe
+.else
 O := .o
 E :=
+.endif
 
 .SUFFIXES :
 .SUFFIXES : .c .h .i $O $E
@@ -17,15 +22,18 @@ MODE	:= 0600
 # Override from the command-line, eg. make DBG='-O0 -g'
 DBG	:= -DNDEBUG
 
-CFLAGS	:= -Os -Wall ${DBG}
+# Cygwin gcc complains about ctype macros char-subscripts, but not for
+# ctype functions. eg. isspace(ch) vs (isspace)(ch)
+GCC	:= -Wno-char-subscripts
 
-CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE}
+CFLAGS	:= -Os -Wall ${GCC} ${DBG}
 
-# Cygwin
+# Frack gcc needs extra #define to enable SUS standard strdup(), strndup().
+GCCCPP	:= -D_POSIX_C_SOURCE=200809L
+
+CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} ${GCCCPP}
+
 LIBS	:= -lcurses
-
-# NetBSD
-#LIBS	:= -lcurses -ltermcap
 
 .c.i:
 	${CC} ${CFLAGS} ${CPPFLAGS} -E $*.c >$*.i
@@ -57,7 +65,7 @@ size: prog.c
 #######################################################################
 
 prog.c: ${BASE}.c transform.sed
-	sed -f transform.sed ${BASE}.c | \
+	sed -E -f transform.sed ${BASE}.c | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
 	sed -e'/^[[:blank:]]*$$/d' >$@
 

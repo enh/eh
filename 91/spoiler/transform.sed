@@ -1,13 +1,25 @@
+# NetBSD (POSIX?)
+# 	BOW = [[:<:]]
+# 	EOW = [[:>:]]
+#
+# Gnu BRE
+#	BOW = \<
+#	EOW = \>
+#
+# Portable ERE (requires sed -E option)
+#	BOW = (^|[^[:alnum:]_])
+#	EOW = ([^[:alnum:]_]|$)
+
 #
 #  Keywords & Phrases
 #
 /^#ifndef NDEBUG/,/#endif.*NDEBUG/d
-/[[:<:]]error(/d
-/[[:<:]]EPRINTF/d
-/[[:<:]]INFO/d
-/[[:<:]]INFO/d
-/[[:<:]]DEBUG/d
-/[[:<:]]DUMP/d
+/(^|[^[:alnum:]_])error\(/d
+/(^|[^[:alnum:]_])EPRINTF/d
+/(^|[^[:alnum:]_])INFO/d
+/(^|[^[:alnum:]_])INFO/d
+/(^|[^[:alnum:]_])DEBUG/d
+/(^|[^[:alnum:]_])DUMP/d
 
 /^#include.*limits/d
 /^#pragma/d
@@ -42,7 +54,7 @@ s/ROWS/LINES-1/g
 
 # Assertions
 /^#include.*assert/d
-/assert(/d
+/assert\(/d
 
 # Comment lines
 /^[[:blank:]]*\/\//d
@@ -63,13 +75,16 @@ s/\/\*.*\*\///
 #
 
 /^#define TAB/d
-s/TABSTOP(\([^)]*\))/(8-(\1\&7))/g
+s/TABSTOP(([^)]*))/(8-(\1\&7))/g
 #s/TABWIDTH/8/g
 #s/TABSTOP/TS/g
 
 /^#ifndef.*MAX_COLS/,/^#endif$/d
 /^#define MAX_COLS/d
 s/MAX_COLS/999/g
+
+/^#define MARKS/d
+s/MARKS/27/g
 
 /^#define .*_CMDS/d
 s/MOTION_CMDS/18/g
@@ -86,13 +101,14 @@ s/STDERR_FILENO/2/g
 s/const //g
 s/static //g
 s/ssize_t /long /g
-s/(void) \([[:alpha:]]\)/\1/
-s/^\([_[:alpha:]][_[:alnum:]]*\)(void)\(;\)*$/\1()\2/
+s/\(void\) ([[:alpha:]])/\1/
+s/^([_[:alpha:]][_[:alnum:]]*)\(void\)(;)*$/\1()\2/
 
 # Since sizeof (int) <= sizeof (off_t) using a smaller type like
 # `int` actually results in binary size of prog-alt < prog (just).
 # Otherwise long, off_t, and ptrdiff_t have prog < prog-alt
 #
+s/pid_t/int/g
 s/off_t */int /g
 s/ptrdiff_t */int /g
 #s/off_t */long /g
@@ -109,45 +125,47 @@ s/'\\0'/0/g
 #  Functions & Types
 #
 
-s/[[:<:]]ptr[[:>:]]/Z/g
-s/[[:<:]]pos[[:>:]]/P/g
-s/[[:<:]]movegap[[:>:]]/V/g
-s/[[:<:]]prevline[[:>:]]/M/g
-s/[[:<:]]nextline[[:>:]]/N/g
-s/[[:<:]]bol[[:>:]]/O/g
-s/[[:<:]]col_or_eol[[:>:]]/A/g
-s/[[:<:]]row_start[[:>:]]/_/g
-s/[[:<:]]getcmd[[:>:]]/T/g
-s/[[:<:]]left[[:>:]]/H/g
-s/[[:<:]]down[[:>:]]/J/g
-s/[[:<:]]up[[:>:]]/K/g
-s/[[:<:]]right[[:>:]]/L/g
-s/[[:<:]]wleft[[:>:]]/B/g
-s/[[:<:]]pgdown[[:>:]]/J_/g
-s/[[:<:]]pgup[[:>:]]/_K/g
-s/[[:<:]]pgtop[[:>:]]/_J/g
-s/[[:<:]]pgbottom[[:>:]]/K_/g
-s/[[:<:]]wright[[:>:]]/W/g
-s/[[:<:]]lnbegin[[:>:]]/_H/g
-s/[[:<:]]lnend[[:>:]]/L_/g
-s/[[:<:]]lngoto[[:>:]]/G/g
-s/[[:<:]]insert[[:>:]]/I/g
-s/[[:<:]]yank[[:>:]]/Y_/g
-s/[[:<:]]deld[[:>:]]/X/g
-s/[[:<:]]delx[[:>:]]/X_/g
-s/[[:<:]]paste[[:>:]]/_X/g
-s/[[:<:]]flipcase[[:>:]]/C_/g
-s/[[:<:]]writefile[[:>:]]/S/
-s/[[:<:]]redraw[[:>:]]/R/g
-s/[[:<:]]quit[[:>:]]/Q/g
-s/[[:<:]]display[[:>:]]/Y/
-s/[[:<:]]search[[:>:]]/F_/
-s/[[:<:]]next[[:>:]]/F/
-s/[[:<:]]clr_to_eol[[:>:]]/C/
-s/[[:<:]]gomark[[:>:]]/G_/
-s/[[:<:]]setmark[[:>:]]/S_/
-s/[[:<:]]undo[[:>:]]/U_/
-s/[[:<:]]setundo[[:>:]]/U/
+s/(^|[^[:alnum:]_])ptr([^[:alnum:]_]|$)/\1Z\2/g
+s/(^|[^[:alnum:]_])pos([^[:alnum:]_]|$)/\1P\2/g
+s/(^|[^[:alnum:]_])movegap([^[:alnum:]_]|$)/\1V\2/g
+s/(^|[^[:alnum:]_])prevline([^[:alnum:]_]|$)/\1M\2/g
+s/(^|[^[:alnum:]_])nextline([^[:alnum:]_]|$)/\1N\2/g
+s/(^|[^[:alnum:]_])bol([^[:alnum:]_]|$)/\1O\2/g
+s/(^|[^[:alnum:]_])col_or_eol([^[:alnum:]_]|$)/\1A\2/g
+s/(^|[^[:alnum:]_])row_start([^[:alnum:]_]|$)/\1_\2/g
+s/(^|[^[:alnum:]_])getcmd([^[:alnum:]_]|$)/\1T\2/g
+s/(^|[^[:alnum:]_])wleft([^[:alnum:]_]|$)/\1B\2/g
+s/(^|[^[:alnum:]_])wright([^[:alnum:]_]|$)/\1W\2/g
+s/(^|[^[:alnum:]_])pgdown([^[:alnum:]_]|$)/\1J_\2/g
+s/(^|[^[:alnum:]_])pgup([^[:alnum:]_]|$)/\1_K\2/g
+s/(^|[^[:alnum:]_])pgtop([^[:alnum:]_]|$)/\1_J\2/g
+s/(^|[^[:alnum:]_])pgbottom([^[:alnum:]_]|$)/\1K_\2/g
+s/(^|[^[:alnum:]_])left([^[:alnum:]_]|$)/\1H\2/g
+s/(^|[^[:alnum:]_])down([^[:alnum:]_]|$)/\1J\2/g
+s/(^|[^[:alnum:]_])up([^[:alnum:]_]|$)/\1K\2/g
+s/(^|[^[:alnum:]_])right([^[:alnum:]_]|$)/\1L\2/g
+s/(^|[^[:alnum:]_])lnbegin([^[:alnum:]_]|$)/\1_H\2/g
+s/(^|[^[:alnum:]_])lnend([^[:alnum:]_]|$)/\1L_\2/g
+s/(^|[^[:alnum:]_])lngoto([^[:alnum:]_]|$)/\1G\2/g
+s/(^|[^[:alnum:]_])insert([^[:alnum:]_]|$)/\1I\2/g
+s/(^|[^[:alnum:]_])yank([^[:alnum:]_]|$)/\1Y_\2/g
+s/(^|[^[:alnum:]_])deld([^[:alnum:]_]|$)/\1X\2/g
+s/(^|[^[:alnum:]_])delx([^[:alnum:]_]|$)/\1x_\2/g
+s/(^|[^[:alnum:]_])delX([^[:alnum:]_]|$)/\1_x\2/g
+s/(^|[^[:alnum:]_])pastel([^[:alnum:]_]|$)/\1p_\2/g
+s/(^|[^[:alnum:]_])paste([^[:alnum:]_]|$)/\1_p\2/g
+s/(^|[^[:alnum:]_])flipcase([^[:alnum:]_]|$)/\1C_\2/g
+s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1S\2/
+s/(^|[^[:alnum:]_])redraw([^[:alnum:]_]|$)/\1R\2/g
+s/(^|[^[:alnum:]_])quit([^[:alnum:]_]|$)/\1Q\2/g
+s/(^|[^[:alnum:]_])display([^[:alnum:]_]|$)/\1Y\2/
+s/(^|[^[:alnum:]_])search([^[:alnum:]_]|$)/\1F_\2/
+s/(^|[^[:alnum:]_])next([^[:alnum:]_]|$)/\1F\2/
+s/(^|[^[:alnum:]_])clr_to_eol([^[:alnum:]_]|$)/\1C\2/
+s/(^|[^[:alnum:]_])gomark([^[:alnum:]_]|$)/\1G_\2/
+s/(^|[^[:alnum:]_])setmark([^[:alnum:]_]|$)/\1S_\2/
+s/(^|[^[:alnum:]_])setundo([^[:alnum:]_]|$)/\1U\2/
+s/(^|[^[:alnum:]_])undo([^[:alnum:]_]|$)/\1U_\2/
 
 #
 #  Variables
@@ -157,42 +175,40 @@ s/[[:<:]]setundo[[:>:]]/U/
 
 s/argc/x/g
 s/argv/y/g
-s/[[:<:]]off\(set\)*[[:>:]]/n/g
-s/[[:<:]]cur[[:>:]]/m/g
-s/[[:<:]]col\(umn\)*[[:>:]]/a/g
-s/[[:<:]]maxcol[[:>:]]/n/g
-s/[[:<:]]key[[:>:]]/k_/g
-s/[[:<:]]func[[:>:]]/k/g
-s/[[:<:]]done[[:>:]]/d/g
-s/[[:<:]]here[[:>:]]/o/g
-s/[[:<:]]page[[:>:]]/u/g
-s/[[:<:]]epage[[:>:]]/v/g
-s/[[:<:]]eof[[:>:]]/j/g
-s/[[:<:]]mark[[:>:]]/i/g
-s/[[:<:]]count[[:>:]]/z/g
-s/[[:<:]]buf[[:>:]]/b/g
-s/[[:<:]]ebuf[[:>:]]/c/g
-s/[[:<:]]gap[[:>:]]/g/g
-s/[[:<:]]egap[[:>:]]/h/g
-#s/[[:<:]]fp[[:>:]]/f/g
-s/[[:<:]]filename[[:>:]]/f/g
-s/[[:<:]]cur_row[[:>:]]/y/g
-s/[[:<:]]cur_col[[:>:]]/x/g
-s/[[:<:]]ch[[:>:]]/a/g
-s/[[:<:]]ere[[:>:]]/e/g
-s/[[:<:]]ere_dollar_only[[:>:]]/w/g
-s/[[:<:]]match_length[[:>:]]/l/g
-s/[[:<:]]matches[[:>:]]/p/g
-s/[[:<:]]marks[[:>:]]/m/g
-s/[[:<:]]uhere[[:>:]]/oo/g
-s/[[:<:]]ugap[[:>:]]/og/g
-s/[[:<:]]uegap[[:>:]]/oh/g
-s/[[:<:]]scrap[[:>:]]/s/g
-s/[[:<:]]scrap_length[[:>:]]/t/g
-s/[[:<:]]pipein[[:>:]]/m/g
-s/[[:<:]]pipeout[[:>:]]/n/g
-s/[[:<:]]child[[:>:]]/a/g
-s/[[:<:]]ex[[:>:]]/i/g
+s/(^|[^[:alnum:]_])col(umn)*([^[:alnum:]_]|$)/\1a\3/g
+s/(^|[^[:alnum:]_])off(set)*([^[:alnum:]_]|$)/\1n\3/g
+s/(^|[^[:alnum:]_])cur_row([^[:alnum:]_]|$)/\1y\2/g
+s/(^|[^[:alnum:]_])cur_col([^[:alnum:]_]|$)/\1x\2/g
+s/(^|[^[:alnum:]_])cur([^[:alnum:]_]|$)/\1m\2/g
+s/(^|[^[:alnum:]_])maxcol([^[:alnum:]_]|$)/\1n\2/g
+s/(^|[^[:alnum:]_])key([^[:alnum:]_]|$)/\1k_\2/g
+s/(^|[^[:alnum:]_])func([^[:alnum:]_]|$)/\1k\2/g
+s/(^|[^[:alnum:]_])uhere([^[:alnum:]_]|$)/\1oo\2/g
+s/(^|[^[:alnum:]_])uegap([^[:alnum:]_]|$)/\1oh\2/g
+s/(^|[^[:alnum:]_])ugap([^[:alnum:]_]|$)/\1og\2/g
+s/(^|[^[:alnum:]_])here([^[:alnum:]_]|$)/\1o\2/g
+s/(^|[^[:alnum:]_])epage([^[:alnum:]_]|$)/\1v\2/g
+s/(^|[^[:alnum:]_])page([^[:alnum:]_]|$)/\1u\2/g
+s/(^|[^[:alnum:]_])eof([^[:alnum:]_]|$)/\1j\2/g
+s/(^|[^[:alnum:]_])mark([^[:alnum:]_]|$)/\1i\2/g
+s/(^|[^[:alnum:]_])count([^[:alnum:]_]|$)/\1z\2/g
+s/(^|[^[:alnum:]_])ebuf([^[:alnum:]_]|$)/\1c\2/g
+s/(^|[^[:alnum:]_])buf([^[:alnum:]_]|$)/\1b\2/g
+s/(^|[^[:alnum:]_])egap([^[:alnum:]_]|$)/\1h\2/g
+s/(^|[^[:alnum:]_])gap([^[:alnum:]_]|$)/\1g\2/g
+s/(^|[^[:alnum:]_])filename([^[:alnum:]_]|$)/\1f\2/g
+s/(^|[^[:alnum:]_])ch([^[:alnum:]_]|$)/\1a\2/g
+s/(^|[^[:alnum:]_])ere_dollar_only([^[:alnum:]_]|$)/\1w\2/g
+s/(^|[^[:alnum:]_])ere([^[:alnum:]_]|$)/\1e\2/g
+s/(^|[^[:alnum:]_])match_length([^[:alnum:]_]|$)/\1l\2/g
+s/(^|[^[:alnum:]_])matches([^[:alnum:]_]|$)/\1p\2/g
+s/(^|[^[:alnum:]_])marks([^[:alnum:]_]|$)/\1m\2/g
+s/(^|[^[:alnum:]_])scrap_length([^[:alnum:]_]|$)/\1t\2/g
+s/(^|[^[:alnum:]_])scrap([^[:alnum:]_]|$)/\1s\2/g
+s/(^|[^[:alnum:]_])pipein([^[:alnum:]_]|$)/\1x\2/g
+s/(^|[^[:alnum:]_])pipeout([^[:alnum:]_]|$)/\1y\2/g
+s/(^|[^[:alnum:]_])child([^[:alnum:]_]|$)/\1a\2/g
+s/(^|[^[:alnum:]_])ex([^[:alnum:]_]|$)/\1i\2/g
 
 
 #
@@ -212,30 +228,30 @@ s/ != 0//g
 s/0 != //g
 
 #    (v = func(expr)) == 0	->  !(v = func(expr))
-s/\(([a-zA-Z0-9][a-zA-Z0-9]* = [^)]*))\) == 0/!\1/g
+s/(\([a-zA-Z0-9][a-zA-Z0-9]* = [^)]*\)\)) == 0/!\1/g
 
 #    (expr) == 0	->  !(expr)
-s/\(([^(),]*)\) == 0/!\1/g
+s/(\([^(),]*\)) == 0/!\1/g
 
 #    expr == 0	->  !expr
-s/\([^(),]*\) == 0/!\1/g
+s/([^(),]*) == 0/!\1/g
 
 #    func(expr) == 0	->  !func(expr)
-s/\([a-zA-Z0-9][a-zA-Z0-9]*([^)]*)\) == 0/!\1/g
+s/([a-zA-Z0-9][a-zA-Z0-9]*\([^)]*\)) == 0/!\1/g
 
 
 #    array[0].mem	->  array->
-s/\([^ 	]*[^[]\)\[0\]\./\1->/g
+s/([^ 	]*[^[])\[0\]\./\1->/g
 
 
 #    array[0]	->  *array
-#s/\([^ 	]*[^[]\)\[0\]\([^.]\)/*\1\2/g
+#s/([^ 	]*[^[])\[0\]([^.])/*\1\2/g
 
 #    &array[n]	->  array+n
-#N#s/\&\([^[]*\)\[\([^]]*\)\]/\1+\2/g
+#N#s/\&([^[]*)\[([^]]*)\]/\1+\2/g
 
 #
 # Split `} else`
 #
-s/^\([[:blank:]]*\)} else/\1}\
+s/^([[:blank:]]*)} else/\1}\
 \1else/
