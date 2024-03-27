@@ -72,6 +72,8 @@ Other targets are:
 
     $ make clean strip size
 
+Note the differences between NetBSD Curses (main development) and Linux & Cygwin NCurses means that the test suite may fail, because of how the two libraries might reorder escape sequence to produce the same visual result.
+
 
 References
 ----------
@@ -87,7 +89,7 @@ References
 
 * POSIX 1003.2b Draft 11.1 ex & vi, Feb 1996, courtesy of Keith Bostic
 
-* Single Unix Specification, Base Specification 2018, vi(1)
+* Single Unix Specification, Base Specification 2018, vi(1)  
   <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/vi.html>
 
 * Single Unix Specification, Curses issue 7  

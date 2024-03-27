@@ -1,6 +1,8 @@
 #
 # Anthony's Editor - IOCCC 1991 - Winner Best Utility
 #
+# The main development platform is currently NetBSD.
+#
 
 .POSIX :
 
@@ -72,19 +74,22 @@ prog.c: ${BASE}.c transform.sed
 #######################################################################
 # Tests
 #
-# Use a classic common well defined terminal, like `vt100` or `ansi`,
-# which should keep the number of Curses operations to a minimum and
-# are a subset of `xterm`, `screen, or `tmux`.  It is possible to use
-# simple `ansi-mini`, `adm3a`, or `vt52` terminal definitions, but
-# they would cause Curses to perform more complex redraw sequences.
-#
 # The basic terminals, like `dumb`, `glasstty`, `vanilla`, `lpr` are
-# insufficient to drive Curses.  Try `TERM=ansi-mini` for bare bones.
+# insufficient to drive NetBSD Curses.  Try `TERM=ansi-mini` for bare
+# bones.
+#
+# For testing and debugging define a terminal where the defined escape
+# sequences are readable text.  This avoids differences between terminal
+# definitions across platforms.
+#
+# However, differences in Curses libraries, ie. NetBSD Curses vs Linux
+# NCurses can reorder escape sequences to produce the same visual result.
 #
 #######################################################################
 
 PROG	?= ./${BASE}$E
 REBUILD	?= false
+OS	?= ${.MAKE.OS}
 
 TESTDIR	= test/${TERM}
 RESET	= rm a.txt a.out *.core 2>/dev/null; true
@@ -137,7 +142,7 @@ arg0:
 # Dumb terminal.
 term0:
 	@${TITLE}
-	@TERM=dumb ${PROG} a.txt ||  test $$? -eq 1
+	@TERM=BOGUS ${PROG} a.txt ||  test $$? -eq 1
 	@${A_CORE}
 	@${PASS}
 
