@@ -88,17 +88,23 @@ prog.c: ${BASE}.c transform.sed
 #######################################################################
 
 PROG	?= ./${BASE}$E
-REBUILD	?= false
 OS	?= ${.MAKE.OS}
+
+# Set ASK=true to prompt to update a failed test.
+ASK	?= false
+
+# Set REBUILD=true to update all the failed tests.
+REBUILD	?= false
 
 TESTDIR	= test/${TERM}
 RESET	= rm a.txt a.out *.core 2>/dev/null; true
 TITLE	= printf "%s      %s: " ${PROG} $@ ; ${RESET}
 PASS	= printf "\r%s -OK-\r\n" ${PROG}
-SAVE	= ${REBUILD} && cp a.out ${TESTDIR}/$@.out
+PROMPT	= ( ${ASK} && echo -n "Replace y/N$$PS2" && read yn && test "$$yn" = 'y' )
+SAVE	= ( ${REBUILD} || ${PROMPT} ) && cp a.out ${TESTDIR}/$@.out
 EMPTY	= diff -u ${TESTDIR}/empty.out -
 A_CORE	= test ! -f *.core
-A_OUT	= ${SAVE} ; diff -u ${TESTDIR}/$@.out a.out
+A_OUT	= ( diff -u ${TESTDIR}/$@.out a.out || ${SAVE} )
 A_TXT	= diff -u test/$@.txt a.txt
 
 test-all: build
@@ -142,7 +148,7 @@ arg0:
 # Dumb terminal.
 term0:
 	@${TITLE}
-	@TERM=BOGUS ${PROG} a.txt ||  test $$? -eq 1
+	@TERM=BOGUS ${PROG} a.txt 2>/dev/null || test $$? -eq 1
 	@${A_CORE}
 	@${PASS}
 
