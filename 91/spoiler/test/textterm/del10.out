@@ -25,7 +25,8 @@ tab indent<11;1>
 <SMSO>a.txt<RMSO>
  <SMSO>64B<RMSO>
 <2;9>
-line <3;1>
+line<EL>
+<3;1>
 <EL>
 <4;1>
 blank line<EL>
@@ -42,7 +43,8 @@ qwerty butt<7;1>
 <11;1>
 <EL>
 <13;1>
-  <2;9>
+<EL>
+<2;9>
 <1;7>
 <SMSO>52<RMSO>
 <4;1>
@@ -51,8 +53,9 @@ tab indent<6;1>
 -last line-<7;9>
 <EL>
 <8;1>
-<SMSO>^D<RMSO>
-<EL>
+<SMSO>^D<EL>
+<RMSO>
 <10;1>
-  <2;9>
+<EL>
+<2;9>
 <24;1>

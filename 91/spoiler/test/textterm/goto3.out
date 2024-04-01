@@ -20,8 +20,8 @@ Commands<24;1>
 --------<2;1>
 <EL>
 <3;1>
-<SMSO>^D<RMSO>
-<EL>
+<SMSO>^D<EL>
+<RMSO>
 <5;1>
 <EL>
 <6;1>
@@ -29,8 +29,10 @@ Commands<24;1>
 <7;2>
 <EL>
 <10;1>
-     <11;1>
-     <13;5>
+<EL>
+<11;1>
+<EL>
+<13;5>
 <EL>
 <15;1>
 <EL>
@@ -50,21 +52,24 @@ Commands<24;1>
 <EL>
 <2;1>
     $ LINES=10 ./ae file<3;1>
-  <4;1>
+<EL>
+<4;1>
 <SMSO>^D<RMSO>
 <2;25>
 <2;5>
 <EL>
 <3;5>
 $ LINES=10 ./ae file<4;1>
-  <5;1>
+<EL>
+<5;1>
 <SMSO>^D<RMSO>
 <2;1>
 terminal window size for easier testing and debugging, eg.<3;5>
 <EL>
 <4;5>
 $ LINES=10 ./ae file<5;1>
-  <6;1>
+<EL>
+<6;1>
 <SMSO>^D<RMSO>
 <2;1>
 <24;1>

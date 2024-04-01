@@ -35,11 +35,13 @@ tab indent<11;1>
 <3;2>
 est/terminfo<EL>
 <4;1>
-test/terminfo.cdb    <5;1>
+test/terminfo.cdb<EL>
+<5;1>
 this file might be a<6;1>
 little rude fart face<7;1>
 empty<9;1>
-blank line <10;9>
+blank line<EL>
+<10;9>
 <EL>
 <11;1>
 qwerty butt<12;9>

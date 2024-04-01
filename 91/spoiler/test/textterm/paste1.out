@@ -17,8 +17,8 @@ tab indent<11;1>
 <2;1>
 <EL>
 <3;1>
-<SMSO>^D<RMSO>
-<EL>
+<SMSO>^D<EL>
+<RMSO>
 <4;1>
 <EL>
 <5;1>
@@ -32,7 +32,8 @@ tab indent<11;1>
 <11;1>
 <EL>
 <13;1>
-  <2;1>
+<EL>
+<2;1>
 <1;16>
 <SMSO>119B<RMSO>
 <2;1>

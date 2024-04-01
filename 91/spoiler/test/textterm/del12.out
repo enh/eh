@@ -28,8 +28,9 @@ tab indent<9;1>
 -last line-<10;9>
 <EL>
 <11;1>
-<SMSO>^D<RMSO>
-<EL>
+<SMSO>^D<EL>
+<RMSO>
 <13;1>
-  <2;9>
+<EL>
+<2;9>
 <24;1>

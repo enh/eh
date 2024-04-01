@@ -33,7 +33,8 @@ W<9;15>
 write buffer to file<10;1>
     Q<10;15>
 quit<11;1>
-     <12;1>
+<EL>
+<12;1>
 Any other key will redraw the screen.<13;5>
 <EL>
 <15;1>
@@ -50,7 +51,8 @@ Exit Status<EL>
 <EL>
 <22;1>
 Testing<23;1>
-------- <24;1>
+-------<EL>
+<24;1>
 <EL>
 <2;1>
 This document contains a mix of short and long physical lines.<3;5>
@@ -92,8 +94,8 @@ terminal window size for easier testing and debugging, eg.<EL>
     $ LINES=10 ./ae file<10;1>
 <EL>
 <11;1>
-<SMSO>^D<RMSO>
-<EL>
+<SMSO>^D<EL>
+<RMSO>
 <12;1>
 <EL>
 <13;1>

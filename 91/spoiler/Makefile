@@ -84,6 +84,8 @@ prog.c: ${BASE}.c transform.sed
 #
 # However, differences in Curses libraries, ie. NetBSD Curses vs Linux
 # NCurses can reorder escape sequences to produce the same visual result.
+# Similarly library upgrades might reorder escape sequences as seen between
+# NetBSD 9.3 and 10.0.
 #
 #######################################################################
 
@@ -102,7 +104,6 @@ TITLE	= printf "%s      %s: " ${PROG} $@ ; ${RESET}
 PASS	= printf "\r%s -OK-\r\n" ${PROG}
 PROMPT	= ( ${ASK} && echo -n "Replace y/N$$PS2" && read yn && test "$$yn" = 'y' )
 SAVE	= ( ${REBUILD} || ${PROMPT} ) && cp a.out ${TESTDIR}/$@.out
-EMPTY	= diff -u ${TESTDIR}/empty.out -
 A_CORE	= test ! -f *.core
 A_OUT	= ( diff -u ${TESTDIR}/$@.out a.out || ${SAVE} )
 A_TXT	= diff -u test/$@.txt a.txt
@@ -163,16 +164,18 @@ redraw0:
 # Start and stop.
 empty0:
 	@${TITLE}
-	@printf "Q" | ${PROG} a.txt | ${EMPTY}
+	@printf "Q" | ${PROG} a.txt >a.out
 	@${A_CORE}
+	@${A_OUT}
 	@${PASS}
 
 # Start, write an empty buffer, and stop.  Creates a.txt.
 empty1:
 	@${TITLE}
-	@printf "WQ" | ${PROG} a.txt | ${EMPTY}
+	@printf "WQ" | ${PROG} a.txt >a.out
 	@diff -u test/empty.txt a.txt
 	@${A_CORE}
+	@${A_OUT}
 	@${PASS}
 
 flip0:
@@ -253,8 +256,9 @@ ins5:
 # Delete from empty buffer.
 del0:
 	@${TITLE}
-	@printf "xQ" | ${PROG} a.txt | ${EMPTY}
+	@printf "xQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
+	@${A_OUT}
 	@${PASS}
 
 # Insert nothing, delete from empty buffer.

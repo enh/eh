@@ -16,7 +16,8 @@ tab indent<11;1>
 <1;9>
 <SMSO>4<RMSO>
 <3;6>
-might be a     <3;6>
+might be a <EL>
+<3;6>
 <1;9>
 <SMSO>9<RMSO>
 <3;6>
@@ -24,8 +25,8 @@ file might be a<3;6>
 <2;1>
 <EL>
 <3;1>
-<SMSO>^D<RMSO>
-<EL>
+<SMSO>^D<EL>
+<RMSO>
 <4;1>
 <EL>
 <5;1>
@@ -39,7 +40,8 @@ file might be a<3;6>
 <11;1>
 <EL>
 <13;1>
-  <2;1>
+<EL>
+<2;1>
 <1;8>
 <SMSO>24<RMSO>
 <2;1>

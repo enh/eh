@@ -33,7 +33,8 @@ W<9;15>
 write buffer to file<10;1>
     Q<10;15>
 quit<11;1>
-     <12;1>
+<EL>
+<12;1>
 Any other key will redraw the screen.<13;5>
 <EL>
 <15;1>
@@ -50,7 +51,8 @@ Exit Status<EL>
 <EL>
 <22;1>
 Testing<23;1>
-------- <24;1>
+-------<EL>
+<24;1>
 <EL>
 <2;1>
 This document contains a mix of short and long physical lines.<3;5>
@@ -107,7 +109,8 @@ Exit Status <EL>
 -----------<EL>
 <18;1>
 - 0 success<19;1>
-- 1 file read error    <21;1>
+- 1 file read error<EL>
+<21;1>
 <EL>
 <22;1>
 Testing<EL>
