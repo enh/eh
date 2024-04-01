@@ -1,0 +1,10 @@
+*.tws
+config.log
+config.status
+ant
+ae
+ae.rc
+.aerc
+*.exe
+*.obj
+*.o
