@@ -322,7 +322,10 @@ display(void)
 		}
 	} /* Else still within page bounds, update cursor. */
 	(void) standout();
-	(void) mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
+	(void) mvprintw(
+		0, 0, "%s %ldB %d%%", filename, (long) pos(ebuf),
+		(int)(here * 100 / (pos(ebuf)+(pos(ebuf) <= 0)))
+	);
 	clr_to_eol();
 	(void) mvaddstr(0, COLS-4, mode);
 	(void) mvaddch(0, COLS-1, chg);
