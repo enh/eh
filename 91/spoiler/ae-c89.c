@@ -26,6 +26,8 @@
 #define ALT
 #define EXT
 
+#define CHANGED		'*'
+#define NOCHANGE	' '
 #define MARKS		27
 #define MAX_COLS	999
 #define TABWIDTH	8
@@ -40,7 +42,7 @@
 static int cur_row, cur_col, count, ere_dollar_only;
 static char *filename, *scrap, *replace;
 static char *buf, *gap, *egap, *ebuf, *ugap, *uegap;
-static char ins[] = "INS", cmd[] = "   ", *mode = cmd;
+static char ins[] = "INS", cmd[] = "   ", *mode = cmd, chg = NOCHANGE;
 static off_t here, page, epage, uhere, match_length, scrap_length, marks[MARKS];
 static regex_t ere;
 
@@ -322,7 +324,8 @@ display(void)
 	(void) standout();
 	(void) mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
 	clr_to_eol();
-	(void) mvaddstr(0, COLS-3, mode);
+	(void) mvaddstr(0, COLS-4, mode);
+	(void) mvaddch(0, COLS-1, chg);
 	(void) standend();
 	(void) clrtobot();
 	for (i = TOP_LINE, j = 0, epage = page; i < LINES; epage++) {
@@ -591,6 +594,7 @@ insert(void)
 			epage++;
 		}
 		here = pos(egap);
+		chg = CHANGED;
 		display();
 	}
 	mode = cmd;
@@ -626,6 +630,7 @@ deld(void)
 {
 	yank();
 	egap += scrap_length;
+	chg = CHANGED;
 	adjmarks();
 }
 
@@ -663,6 +668,7 @@ paste(void)
 		here = pos(egap);
 		/* Force display() to reframe, ie. 1GdGP fails. */
 		epage = here+1;
+		chg = CHANGED;
 	}
 }
 
@@ -722,6 +728,7 @@ writefile(void)
 	movegap(0);
 	(void) write(i = creat(filename, MODE), egap, ebuf-egap);
 	(void) close(i);
+	chg = NOCHANGE;
 	count = 0;
 }
 
@@ -830,6 +837,7 @@ bang(void)
 		(void) fcntl(child_out[0], F_SETFL, O_NONBLOCK);
 		while (0 < (n = read(child_out[0], gap, egap-gap))) {
 			gap += n;
+			chg = CHANGED;
 			growgap(BUF/2);
 		}
 		here = pos(egap);
@@ -987,6 +995,7 @@ flipcase(void)
 	char *p = ptr(here);
 	/* Skip moving the gap and modify in place. */
 	*p = islower(*p) ? toupper(*p) : tolower(*p);
+	chg = CHANGED;
 	right();
 }
 
