@@ -1,7 +1,10 @@
 <CLEAR>
 <CLEAR>
-<SMSO>a.txt 0B                                                                        <RMSO>
+<SMSO>a.txt 0B 0%                                                                     <RMSO>
 <3;1>
 <SMSO>^D<RMSO>
+<2;1>
+<1;80>
+<SMSO>*<RMSO>
 <2;1>
 <24;1>

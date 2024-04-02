@@ -1,14 +1,17 @@
 <CLEAR>
 <CLEAR>
-<SMSO>a.txt 0B                                                                        <RMSO>
+<SMSO>a.txt 0B 0%                                                                     <RMSO>
 <3;1>
 <SMSO>^D<RMSO>
 <2;1>
-<1;78>
+<1;77>
 <SMSO>INS<RMSO>
 <2;1>
 <1;7>
 <SMSO>1<RMSO>
+  <SMSO>100%<RMSO>
+<1;80>
+<SMSO>*<RMSO>
 <2;1>
 H<1;7>
 <SMSO>2<RMSO>
@@ -35,7 +38,8 @@ o<1;7>
 <SMSO>9<RMSO>
 <2;9>
 r<1;7>
-<SMSO>10B<RMSO>
+<SMSO>10B 1<RMSO>
+ <SMSO>0%<RMSO>
 <2;10>
 l<1;8>
 <SMSO>1<RMSO>
@@ -43,37 +47,52 @@ l<1;8>
 d<1;8>
 <SMSO>2<RMSO>
 <2;12>
-!<1;78>
+!<1;77>
 <SMSO>   <RMSO>
 <2;13>
-<CR>Hello <1;78>
+<1;11>
+<SMSO>0%  <RMSO>
+<2;1>
+<1;11>
+<SMSO>50%<RMSO>
+<2;7>
+<1;77>
 <SMSO>INS<RMSO>
 <2;7>
 <1;8>
 <SMSO>3<RMSO>
+   <SMSO>3<RMSO>
 <2;7>
 Wworld!<2;8>
 <1;8>
 <SMSO>4<RMSO>
+   <SMSO>7<RMSO>
 <2;8>
 Oworld!<2;9>
 <1;8>
 <SMSO>5<RMSO>
+  <SMSO>60<RMSO>
 <2;9>
 Oworld!<2;10>
 <1;8>
 <SMSO>6<RMSO>
+   <SMSO>2<RMSO>
 <2;10>
 Tworld!<2;11>
 <1;8>
 <SMSO>7<RMSO>
+   <SMSO>4<RMSO>
 <2;11>
 !world!<2;12>
 <1;8>
 <SMSO>8<RMSO>
+   <SMSO>6<RMSO>
 <2;12>
  world!<2;13>
-<1;78>
+<1;77>
 <SMSO>   <RMSO>
+<2;13>
+<1;80>
+<SMSO> <RMSO>
 <2;13>
 <24;1>

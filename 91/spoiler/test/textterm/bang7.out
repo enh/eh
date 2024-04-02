@@ -1,6 +1,6 @@
 <CLEAR>
 <CLEAR>
-<SMSO>a.txt 119B                                                                      <RMSO>
+<SMSO>a.txt 119B 0%                                                                   <RMSO>
 <2;1>
 hello   world<3;1>
 this file might be a<4;1>
@@ -12,10 +12,13 @@ tab indent<11;1>
 -last line-<13;1>
 <SMSO>^D<RMSO>
 <2;1>
+<1;12>
+<SMSO>10%<RMSO>
 <3;1>
 <1;1>
 <SMSO>!    <RMSO>
  <SMSO>    <RMSO>
+ <SMSO>   <RMSO>
 <1;2>
 <SMSO>f<RMSO>
 <SMSO>m<RMSO>
@@ -29,9 +32,14 @@ tab indent<11;1>
 <SMSO>4<RMSO>
 <SMSO>0<RMSO>
 <1;1>
-<SMSO>a.txt 119B    <RMSO>
+<SMSO>a.txt 119B 46%<RMSO>
+<1;80>
+<SMSO>*<RMSO>
 <3;22>
 little rude<4;1>
 fart face<EL>
+<5;1>
+<1;80>
+<SMSO> <RMSO>
 <5;1>
 <24;1>

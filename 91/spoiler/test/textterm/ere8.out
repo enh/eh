@@ -1,6 +1,6 @@
 <CLEAR>
 <CLEAR>
-<SMSO>test/short-nonl.txt 118B                                                        <RMSO>
+<SMSO>test/short-nonl.txt 118B 0%                                                     <RMSO>
 <2;1>
 hello   world<3;1>
 this file might be a<4;1>
@@ -15,11 +15,13 @@ tab indent<11;1>
 <1;1>
 <SMSO>/                  <RMSO>
  <SMSO>    <RMSO>
+ <SMSO>  <RMSO>
 <1;2>
 <SMSO>^<RMSO>
 <SMSO>$<RMSO>
 <1;1>
 <SMSO>test/short-nonl.txt<RMSO>
  <SMSO>118B<RMSO>
+ <SMSO>55%<RMSO>
 <6;1>
 <24;1>
