@@ -23,9 +23,6 @@
 # define MODE		0600
 #endif
 
-#define ALT
-#define EXT
-
 #define CHANGED		'*'
 #define NOCHANGE	' '
 #define MARKS		27
@@ -339,7 +336,6 @@ display(void)
 		if (ebuf <= (p = ptr(epage))) {
 			break;
 		}
-#ifdef ALT
 		/* Handle tab expansion ourselves.  Historical
 		 * Curses addch() would advance to the next
 		 * tabstop (a multiple of 8, eg. 0, 8, 16, ...).
@@ -351,27 +347,6 @@ display(void)
 		 */
 		(void) mvaddch(i, j, isprint(*p) || *p == '\t' || *p == '\n' ? *p : A_STANDOUT|(*p+'@'));
 		j += *p == '\t' ? TABSTOP(j) : 1;
-#else
-		if (*p != '\r') {
-			/* Handle tab expansion ourselves.  Historical
-			 * Curses addch() would advance to the next
-			 * tabstop (a multiple of 8, eg. 0, 8, 16, ...).
-			 * See SUS Curses Issue 7 section 3.4.3.
-			 *
-			 * Note that the behaviour of LF will typically
-			 * blank-out or truncated the current line, which
-			 * means "text\r\n" would result in "text" being
-			 * erased, eg. CR move to column 0, LF clear to
-			 * end line and move to column 0 of next line.
-			 *
-			 * CR and other non-spacing control characters
-			 * still count as a byte when framing and placing
-			 * the cursor, but are not visible.
-			 */
-			(void) mvaddch(i, j, *p);
-			j += *p == '\t' ? TABSTOP(j) : 1;
-		}
-#endif /* ALT */
 		if (*p == '\n' || COLS <= j) {
 			j = 0;
 			i++;
@@ -578,7 +553,6 @@ insert(void)
 		if (ch == '\b') {
 			gap -= buf < gap;
 		} else if (gap < egap) {
-#ifdef EXT
 			/* Using cbreak() then ^V is handled
 			 * so ESC ^[ is inserted with ^V^V^[.
 			 * With raw() we handle ^V so ESC ^[
@@ -590,8 +564,6 @@ insert(void)
 				ch = getch();
 				(void) nl();	/* CR -> LF */
 			}
-#else
-#endif /* EXT */
 			growgap(COLS);
 			*gap++ = ch;
 			epage++;
@@ -1063,11 +1035,7 @@ main(int argc, char **argv)
 	/* Switching between cbreak() and raw() impacts terminal output
 	 * which can alter the expected test output files.
 	 */
-#ifdef ALT
 	(void) raw();
-#else
-	(void) cbreak();
-#endif /* ALT */
 	(void) noecho();
 	growgap(BUF);
 	if (fileread(filename = *++argv)) {
