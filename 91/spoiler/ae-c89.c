@@ -36,10 +36,11 @@
 #define MOTION_CMDS	18
 #define ALL_CMDS	99
 
+static char chg = NOCHANGE;
 static int cur_row, cur_col, count, ere_dollar_only;
 static char *filename, *scrap, *replace;
 static char *buf, *gap, *egap, *ebuf, *ugap, *uegap;
-static char ins[] = "INS", cmd[] = "   ", *mode = cmd, chg = NOCHANGE;
+static const char ins[] = "INS", cmd[] = "   ", *mode = cmd;
 static off_t here, page, epage, uhere, match_length, scrap_length, marks[MARKS];
 static regex_t ere;
 

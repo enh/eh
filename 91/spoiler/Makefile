@@ -26,9 +26,10 @@ DBG	:= -DNDEBUG
 
 # Cygwin gcc complains about ctype macros char-subscripts, but not for
 # ctype functions. eg. isspace(ch) vs (isspace)(ch)
-GCC	:= -Wno-char-subscripts
+GCC	:= -Wno-char-subscripts -fno-ident -flto
+#-fno-asynchronous-unwind-tables -fno-unroll-loops -fdelete-null-pointer-checks
 
-CFLAGS	:= -Os -Wall ${GCC} ${DBG}
+CFLAGS	:= -Os -Wall -std=c11 ${GCC} ${DBG}
 
 # Frack gcc needs extra #define to enable SUS standard strdup(), strndup().
 GCCCPP	:= -D_POSIX_C_SOURCE=200809L
