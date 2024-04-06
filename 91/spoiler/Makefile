@@ -131,7 +131,8 @@ tests:	tests_have_term_data \
 	goto0 goto1 goto2 goto3 \
 	pgdn0 pgdn1 pgdn2 pgdn3 pgdn4 pgup0 pgup1 pgup2 pgup3 \
 	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 ere10 ere11 \
-	mark0 mark1 del7 del8 del9 del10 del11 del12 del13 \
+	mark0 mark1 mark2 mark3 mark4 \
+	del7 del8 del9 del10 del11 del12 del13 \
 	undo0 undo1 undo2 undo3 \
 	paste0 paste1 paste2 paste3 \
 	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7
@@ -583,6 +584,29 @@ mark1:
 	@${A_CORE}
 	@${A_OUT}
 	@${PASS}
+
+# Set some marks, edit before the marks, marks remain unchanged.
+mark2:
+	@${TITLE}
+	@printf '/butt\nmajmb/rude\nifuzz\e`a`bu`a`bQ' | ${PROG} test/short.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+mark3:
+	@${TITLE}
+	@printf '/butt\nmajmb/rude\nd2w`a`bu`a`bQ' | ${PROG} test/short.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+mark4:
+	@${TITLE}
+	@printf '/butt\nmajmb/rude\ny2wPP`a`bu`a`bQ' | ${PROG} test/short.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
 
 # `dd` not supported.
 del7:
