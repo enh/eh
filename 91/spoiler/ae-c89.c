@@ -595,6 +595,16 @@ yank(void)
 		here ^= mark;
 		mark ^= here;
 	}
+	/* SUS 2018 vi(1) `y` yank sets the cursor on the last column
+	 * of the first character of the yanked region; results in yank
+	 * forward leaving the cursor as-is, while yank back moves the
+	 * cursor back.
+	 *
+	 * The alternatives are to either always update cursor according
+	 * to the motion (better reflects GUI editors, select then copy
+	 * or cut, and better visual feedback) or not update cursor at
+	 * all (functional but lacks visual feedback ie. did it work).
+	 */
 	free(scrap);
 	movegap(here);
 	scrap = strndup(egap, scrap_length = mark-here);
@@ -641,6 +651,7 @@ paste(void)
 		 * is the cursor.
 		 */
 		here = pos(egap);
+		adjmarks();
 		/* Force display() to reframe, ie. 1GdGP fails. */
 		epage = here+1;
 		chg = CHANGED;
