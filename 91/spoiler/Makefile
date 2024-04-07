@@ -1,5 +1,5 @@
 #
-# Anthony's Editor - IOCCC 1991 - Winner Best Utility
+# Edit Here
 #
 # The main development platform is currently NetBSD.
 #
@@ -17,7 +17,7 @@ E :=
 .SUFFIXES :
 .SUFFIXES : .c .h .i $O $E
 
-BASE	?= ae-c89
+BASE	?= eh
 BUF	:= 65536
 MODE	:= 0600
 
@@ -50,14 +50,14 @@ LIBS	:= -lcurses
 
 all: build
 
-build: ae$E ae-c89$E prog$E
+build: ae$E eh$E prog$E
 
 clean:
-	-rm -f ae$E ae-c89$E prog* *.core *.stackdump *.i a.out a.txt b.txt
+	-rm -f ae$E eh$E prog* *.core *.stackdump *.i a.out a.txt b.txt
 	-rm -rf test/terminfo.cdb
 
 strip: build
-	strip ae$E ae-c89$E prog$E
+	strip ae$E eh$E prog$E
 	ls -l
 
 size: prog.c
