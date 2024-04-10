@@ -41,7 +41,7 @@ static int cur_row, cur_col, count, ere_dollar_only;
 static char *filename, *scrap, *replace;
 static char *buf, *gap, *egap, *ebuf, *ugap, *uegap;
 static const char ins[] = "INS", cmd[] = "   ", *mode = cmd;
-static off_t here, page, epage, uhere, match_length, scrap_length, marks[MARKS];
+static off_t here, page, epage, uhere, match_length, scrap_length, marks[MARKS], marker = -1;
 static regex_t ere;
 
 void
@@ -295,6 +295,7 @@ display(void)
 {
 	char *p;
 	int i, j;
+	off_t from, to;
 	if (here < page) {
 		/* Scroll up one logical line or goto physical line. */
 		page = row_start(bol(here), here);
@@ -329,6 +330,15 @@ display(void)
 	(void) mvaddch(0, COLS-1, chg);
 	(void) standend();
 	(void) clrtobot();
+	if (marker < 0) {
+		from = to = -1;
+	} else if (here < marker) {
+		from = here;
+		to = marker;
+	} else {
+		from = marker;
+		to = here;
+	}
 	for (i = TOP_LINE, j = 0, epage = page; i < LINES; epage++) {
 		if (here == epage) {
 			cur_row = i;
@@ -336,6 +346,11 @@ display(void)
 		}
 		if (ebuf <= (p = ptr(epage))) {
 			break;
+		}
+		if (from <= epage && epage < to) {
+			standout();
+		} else {
+			standend();
 		}
 		/* Handle tab expansion ourselves.  Historical
 		 * Curses addch() would advance to the next
@@ -346,7 +361,7 @@ display(void)
 		 * highlighted upper case letter (instead of two
 		 * byte ^X).
 		 */
-		(void) mvaddch(i, j, isprint(*p) || *p == '\t' || *p == '\n' ? *p : A_STANDOUT|(*p+'@'));
+		(void) mvaddch(i, j, isprint(*p) || *p == '\t' || *p == '\n' ? *p : A_REVERSE|(*p+'@'));
 		j += *p == '\t' ? TABSTOP(j) : 1;
 		if (*p == '\n' || COLS <= j) {
 			j = 0;
@@ -589,8 +604,13 @@ append(void)
 void
 yank(void)
 {
-	off_t mark = here;
-	getcmd(MOTION_CMDS);
+	off_t mark;
+	if (marker < 0) {
+		mark = here;
+		getcmd(MOTION_CMDS);
+	} else {
+		mark = marker;
+	}
 	if (mark < here) {
 		mark ^= here;
 		here ^= mark;
@@ -616,21 +636,27 @@ deld(void)
 {
 	yank();
 	egap += scrap_length;
+	here = pos(egap);
 	chg = CHANGED;
+	marker = -1;
 	adjmarks();
 }
 
 void
 delx(void)
 {
-	(void) ungetc('l', stdin);
+	if (marker < 0) {
+		(void) ungetc('l', stdin);
+	}
 	deld();
 }
 
 void
 delX(void)
 {
-	(void) ungetc('h', stdin);
+	if (marker < 0) {
+		(void) ungetc('h', stdin);
+	}
 	deld();
 }
 
@@ -992,7 +1018,13 @@ quit(void)
 	filename = NULL;
 }
 
-static char key[] = "hjklbwHJKL^$|G/n`'~iaxXydPpu!mRWQ\003";
+void
+anchor(void)
+{
+	marker = marker < 0 ? here : -1;
+}
+
+static char key[] = "hjklbwHJKL^$|G/n`'~iaxXydPpu!\\mRWQ\003";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1004,7 +1036,7 @@ static void (*func[])(void) = {
 	flipcase, insert, append, delx, delX,
 	yank, deld, paste, pastel, undo, bang,
 	/* Other */
-	setmark, readfile, writefile, quit, quit,
+	anchor, setmark, readfile, writefile, quit, quit,
 	redraw
 };
 

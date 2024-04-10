@@ -32,8 +32,9 @@ Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`)
     ` char      Goto position of mark `a..z` or ` (previous).
     ' char      Goto start of line with mark `a..z` or ` (previous).
     G           Goto line (count) number; 1G top of file, G bottom.
-    d motion    Delete text region given by motion.
-    y motion    Yank (copy) text region given by motion.
+    \           Toggle text selection.
+    d motion    Delete text selection or region given by motion.
+    y motion    Yank (copy) text selection or region given by motion.
     P p         Paste last deleted or yanked text region before or after
                 the cursor.
     i a         Insert text mode before or after the cursor, ESC ends insert.
