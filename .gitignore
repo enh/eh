@@ -9,6 +9,7 @@ ae-alt
 prog*
 a.out
 a.txt
+b.txt
 ae.rc
 .aerc
 *.stackdump

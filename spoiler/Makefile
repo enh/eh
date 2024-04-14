@@ -148,11 +148,12 @@ tests_have_term_data:
 	@test -d ${TESTDIR}
 	@echo TERM=${TERM}
 
-# Missing filename argument.
+# Allow missing filename argument.
 arg0:
 	@${TITLE}
-	@${PROG} >/dev/null && test $$? -eq 0
+	@printf "\aQ" | ${PROG} >a.out
 	@${A_CORE}
+	@${A_OUT}
 	@${PASS}
 
 # Dumb terminal.
@@ -181,15 +182,25 @@ empty0:
 # Start, write an empty buffer, and stop.  Creates a.txt.
 empty1:
 	@${TITLE}
-	@printf "WQ" | ${PROG} a.txt >a.out
+	@printf "W\nQ" | ${PROG} a.txt >a.out
 	@diff -u test/empty.txt a.txt
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# This test does not work since backspace in redirected input is
+# treated differently from a tty.  See NetBSD 10.0 lib/58151
+empty2:
+	@${TITLE}
+	@printf 'W\b\b\b\b\bb.txt\nQ' | ${PROG} a.txt >a.out
+	@test ! -f a.txt && diff -u test/empty.txt b.txt
 	@${A_CORE}
 	@${A_OUT}
 	@${PASS}
 
 flip0:
 	@${TITLE}
-	@printf "iHELLO world!\e|~~~~~~~~~~~~WQ" | ${PROG} a.txt >a.out
+	@printf "iHELLO world!\e|~~~~~~~~~~~~W\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -197,7 +208,7 @@ flip0:
 
 flip1:
 	@${TITLE}
-	@printf "iHello World!\e|12~WQ" | ${PROG} a.txt >a.out
+	@printf "iHello World!\e|12~W\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -214,7 +225,7 @@ ins0:
 # Insert newline terminated, write, and stop.
 ins1:
 	@${TITLE}
-	@printf "iHello\n\tworld!\n\eWQ" | ${PROG} a.txt >a.out
+	@printf "iHello\n\tworld!\n\eW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -226,7 +237,7 @@ ins1:
 #   remain unchanged, newline pushes `^D` down a row.
 ins2:
 	@${TITLE}
-	@printf "iHello\n\twoot!\eWQ" | ${PROG} a.txt >a.out
+	@printf "iHello\n\twoot!\eW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -236,7 +247,7 @@ ins2:
 #   right of cursor should shift as new text inserted.
 ins3:
 	@${TITLE}
-	@printf "iHello world!\e|wiWOOT! \eWQ" | ${PROG} a.txt >a.out
+	@printf "iHello world!\e|wiWOOT! \eW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -247,7 +258,7 @@ ins3:
 ins4:
 	@${TITLE}
 	@printf "Hello\n\tworld!\n" >a.txt
-	@printf "Giinsert at EOF\npush EOF down\neach newline\n\eWQ" | ${PROG} a.txt >a.out
+	@printf "Giinsert at EOF\npush EOF down\neach newline\n\eW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -256,7 +267,7 @@ ins4:
 ins5:
 	@${TITLE}
 	@printf "Hello\n\tworld!\n" >a.txt
-	@printf 'j99|i WOOT!\eWQ' | ${PROG} a.txt >a.out
+	@printf 'j99|i WOOT!\eW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -281,7 +292,7 @@ del1:
 # Insert single character, delete from buffer.
 del2:
 	@${TITLE}
-	@printf "iZ\ehxWQ" | ${PROG} a.txt >a.out
+	@printf "iZ\ehxW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@diff -u test/empty.txt a.txt
@@ -290,7 +301,7 @@ del2:
 # Insert some characters, delete last from buffer.
 del3:
 	@${TITLE}
-	@printf "i123Z\ehxWQ" | ${PROG} a.txt >a.out
+	@printf "i123Z\ehxW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -299,7 +310,7 @@ del3:
 # Insert some characters with newline, delete newline from buffer.
 del4:
 	@${TITLE}
-	@printf "i123Z\n\ehxWQ" | ${PROG} a.txt >a.out
+	@printf "i123Z\n\ehxW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -309,7 +320,7 @@ del4:
 del5:
 	@${TITLE}
 	@printf "Hello\n\tworld!\n" >a.txt
-	@printf "GkxhxWQ" | ${PROG} a.txt >a.out
+	@printf "GkxhxW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -318,7 +329,7 @@ del5:
 del6:
 	@${TITLE}
 	@printf "Hello\n\tworld!\n" >a.txt
-	@printf "Gk6xWQ" | ${PROG} a.txt >a.out
+	@printf "Gk6xW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -627,7 +638,7 @@ del7:
 del8:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf '3wdjWQ' | ${PROG} a.txt >a.out
+	@printf '3wdjW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -637,7 +648,7 @@ del8:
 del9:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf '3w|djWQ' | ${PROG} a.txt >a.out
+	@printf '3w|djW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -647,7 +658,7 @@ del9:
 del10:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf 'wd/line\ndnWQ' | ${PROG} a.txt >a.out
+	@printf 'wd/line\ndnW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -657,7 +668,7 @@ del10:
 del11:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf 'dGWQ' | ${PROG} a.txt >a.out
+	@printf 'dGW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -667,7 +678,7 @@ del11:
 del12:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf 'wma2jd`aWQ' | ${PROG} a.txt >a.out
+	@printf 'wma2jd`aW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -677,7 +688,7 @@ del12:
 del13:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf '3w2d3wWQ' | ${PROG} a.txt >a.out
+	@printf '3w2d3wW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -695,7 +706,7 @@ undo0:
 undo1:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf '3liWOOT!\euuWQ' | ${PROG} a.txt >a.out
+	@printf '3liWOOT!\euuW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -705,7 +716,7 @@ undo1:
 undo2:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf '3wd3wuuWQ' | ${PROG} a.txt >a.out
+	@printf '3wd3wuuW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -739,7 +750,7 @@ paste1:
 paste2:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf '3wdwj2w3PWQ' | ${PROG} a.txt >a.out
+	@printf '3wdwj2w3PW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -749,7 +760,7 @@ paste2:
 paste3:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf '3wdwuGPkWQ' | ${PROG} a.txt >a.out
+	@printf '3wdwuGPkW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -786,7 +797,7 @@ bang2:
 bang3:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf 'j!!ls test/term*\nWQ' | ${PROG} a.txt >a.out
+	@printf 'j!!ls test/term*\nW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -796,7 +807,7 @@ bang3:
 bang4:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf 'j!2jcat >b.txt\nWQ' | ${PROG} a.txt >a.out
+	@printf 'j!2jcat >b.txt\nW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -807,7 +818,7 @@ bang4:
 bang5:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf 'j!2jtee b.txt\nWQ' | ${PROG} a.txt >a.out
+	@printf 'j!2jtee b.txt\nW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -818,7 +829,7 @@ bang5:
 bang6:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf 'j!2jfmt -w40\nWQ' | ${PROG} a.txt >a.out
+	@printf 'j!2jfmt -w40\nW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
@@ -828,7 +839,7 @@ bang6:
 bang7:
 	@${TITLE}
 	@cp test/short.txt a.txt
-	@printf 'j!2jfmt -g32 -w40\nWQ' | ${PROG} a.txt >a.out
+	@printf 'j!2jfmt -g32 -w40\nW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
