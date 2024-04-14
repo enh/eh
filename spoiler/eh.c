@@ -789,17 +789,6 @@ lnmark(void)
 }
 
 void
-writefile(void)
-{
-	int i;
-	movegap(0);
-	(void) write(i = creat(filename, MODE), egap, ebuf-egap);
-	(void) close(i);
-	chg = NOCHANGE;
-	count = 0;
-}
-
-void
 prompt(int ch)
 {
 	(void) echo();
@@ -811,6 +800,41 @@ prompt(int ch)
 	(void) mvgetnstr(0, 1, gap, egap-gap);
 	(void) standend();
 	(void) noecho();
+}
+
+int
+filewrite(const char *fn)
+{
+	int fd;
+	movegap(0);
+	ssize_t n = 0;
+	if (0 < (fd = creat(fn, MODE))) {
+		n = write(fd, egap, ebuf-egap);
+		(void) close(fd);
+	}
+	return fd < 0 || n < 0;
+}
+
+void
+writefile(void)
+{
+	/* Prime the input with the current filename. */
+	ssize_t n = strlen(filename);
+	assert(n < COLS && COLS <= egap-gap);
+	while (0 <= --n) {
+		(void) ungetc(filename[n], stdin);
+	}
+	prompt('>');
+	if (*gap != '\0') {
+		free(filename);
+		filename = strdup(gap);
+		if (!filewrite(filename)) {
+			chg = NOCHANGE;
+		}
+	} else {
+		(void) beep();
+	}
+	count = 0;
 }
 
 int
@@ -1136,7 +1160,8 @@ main(int argc, char **argv)
 	(void) raw();
 	(void) noecho();
 	growgap(BUF);
-	if (fileread(filename = *++argv)) {
+	filename = strdup(argv[1] == NULL ? "" : *++argv);
+	if (fileread(filename)) {
 		/* Good grief Charlie Brown! */
 		return 2;
 	}

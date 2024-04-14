@@ -7,7 +7,7 @@ NAME
 
 SYNOPSIS
 
-    eh filename
+    eh [filename]
 
 
 DESCRIPTION
