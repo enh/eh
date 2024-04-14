@@ -38,6 +38,8 @@ CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} ${GCCCPP}
 
 LIBS	:= -lcurses
 
+MANDIR	!= find /usr/local -type d -name man -maxdepth 2 | head -n1
+
 .c.i:
 	${CC} ${CFLAGS} ${CPPFLAGS} -E $*.c >$*.i
 
@@ -62,6 +64,11 @@ strip: build
 
 size: prog.c
 	-iocccsize -v1 prog.c
+
+install: eh.0 eh$E
+	install -o 0 -g 0 -m 555 eh$E /usr/local/bin
+	install -o 0 -g 0 -d ${MANDIR}/cat1
+	install -o 0 -g 0 -p -m 444 eh.0 ${MANDIR}/cat1
 
 #######################################################################
 # Generated files.
