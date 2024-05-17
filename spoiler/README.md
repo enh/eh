@@ -27,10 +27,10 @@ Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`)
                 a digit `0..9` is replaced by the nth subexpression of the
                 matched text; `$0` is the whole matched text. `\x` is a
                 an escape sequence, ie. \a \b \e \f \n \r \t \? or `x`.
-    m char      Set a mark letter `a..z` or `.
+    m char      Set a positional mark letter a..z.
     n           Find next occurence of ERE (and replace); see `u`.
-    ` char      Goto position of mark `a..z` or ` (previous).
-    ' char      Goto start of line with mark `a..z` or ` (previous).
+    ` char      Goto position of mark `a .. `z or `` (previous).
+    ' char      Goto start of line with mark 'a .. 'z or '' (previous).
     G           Goto line (count) number; 1G top of file, G bottom.
     \           Toggle text selection.
     d motion    Delete text selection or region given by motion.
