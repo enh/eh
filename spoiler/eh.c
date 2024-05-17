@@ -792,6 +792,7 @@ void
 prompt(int ch)
 {
 	(void) echo();
+	(void) noraw();
 	(void) standout();
 	(void) mvaddch(0, 0, ch);
 	clr_to_eol();
@@ -800,6 +801,7 @@ prompt(int ch)
 	(void) mvgetnstr(0, 1, gap, egap-gap);
 	(void) standend();
 	(void) noecho();
+	(void) raw();
 }
 
 int
