@@ -29,6 +29,7 @@ COMMANDS
 
     h j k l     Left, down, up, right cursor movement.
     H J K L     Page top, page down, page up, page bottom.
+    ^F ^B       Page down, page up
     b w         Word left, word right.
     ^ $         Start and end of line.
     |           Goto column (count) of physical line.

@@ -19,6 +19,7 @@ Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`)
 
     h j k l     Left, down, up, right cursor movement
     H J K L     Page top, page down, page up, page bottom
+    ^F ^B       Page down, page up
     b w         Word left, word right
     ^ $         Start and end of line
     |           Goto column (count) of physical line.
@@ -37,7 +38,10 @@ Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`)
     y motion    Yank (copy) text selection or region given by motion.
     P p         Paste last deleted or yanked text region before or after
                 the cursor.
-    i a         Insert text mode before or after the cursor, ESC ends insert.
+    i a         Insert text mode before or after the cursor, ESC or CTRL+C
+                ends insert.  While inserting text, backspace will erase
+                the previous character; CTRL+V treats the next character
+                as a literal character.
     X x         Delete character before or after cursor, ie. `dh` or `dl`.
     u           Undo last modification, except invert case.
     ~           Invert character case.
@@ -45,6 +49,7 @@ Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`)
     R           Read a file into buffer after cursor.
     W           Write buffer to file.
     Q           Quit.
+    ^C          Quit.
 
 Any other key will redraw the screen.
 

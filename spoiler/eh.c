@@ -1104,7 +1104,7 @@ anchor(void)
 	marker = marker < 0 ? here : -1;
 }
 
-static char key[] = "hjklbwHJKL^$|G/n`'~iaxXydPpu!\\mRWQ\003";
+static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpu!\\mRWQ\003";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1112,6 +1112,7 @@ static void (*func[])(void) = {
 	pgtop, pgdown, pgup, pgbottom,
 	lnbegin, lnend, column, lngoto,
 	search, next, gomark, lnmark,
+	pgdown, pgup,
 	/* Modify */
 	flipcase, insert, append, delx, delX,
 	yank, deld, paste, pastel, undo, bang,
