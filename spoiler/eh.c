@@ -359,10 +359,7 @@ display(void)
 		(int)(here * 100 / (pos(ebuf)+(pos(ebuf) <= 0)))
 	);
 	clr_to_eol();
-#ifndef SCREEN_COLUMN
-	(void) mvaddstr(0, COLS-4, mode);
-	(void) mvaddch(0, COLS-1, chg);
-#endif
+	(void) mvprintw(0, COLS-4,"%s%c",mode, chg);
 	(void) standend();
 #ifdef RULER
 /* I like the idea of a ruler, but it eats a screen line for little
