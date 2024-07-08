@@ -885,62 +885,56 @@ bang(void)
 	int child_in[2], child_out[2], ex = 74;
 	deld();
 	prompt('!');
-	if (pipe(child_in)) {
-		goto error0;
-	}
-	if (pipe(child_out)) {
-		goto error1;
-	}
-	if ((child = fork()) < 0) {
-		goto error2;
-	}
-	if (child == 0) {
-		/* Redirect standard I/O for the child. */
-		if (STDIN_FILENO == dup2(child_in[0], STDIN_FILENO)
-		&& STDOUT_FILENO == dup2(child_out[1], STDOUT_FILENO)
-		&& STDERR_FILENO == dup2(child_out[1], STDERR_FILENO)) {
-			const char *sh, *shell = getenv("SHELL");
-			if (NULL == (sh = strrchr(shell, '/'))) {
-				sh = shell;
-			} else {
-				sh++;
+	if (0 == pipe(child_in)) {
+		if (0 == pipe(child_out)) {
+			if ((child = fork()) >= 0) {
+				if (child == 0) {
+					/* Redirect standard I/O for the child. */
+					if (STDIN_FILENO == dup2(child_in[0], STDIN_FILENO)
+					&& STDOUT_FILENO == dup2(child_out[1], STDOUT_FILENO)
+					&& STDERR_FILENO == dup2(child_out[1], STDERR_FILENO)) {
+						const char *sh, *shell = getenv("SHELL");
+						if (NULL == (sh = strrchr(shell, '/'))) {
+							sh = shell;
+						} else {
+							sh++;
+						}
+						/* Close duplicates and unused. */
+						(void) close(child_out[0]);
+						(void) close(child_out[1]);
+						(void) close(child_in[0]);
+						(void) close(child_in[1]);
+						/* Pass command(s) through a shell. */
+						(void) execl(shell, sh, "-c", gap, NULL);
+					}
+					/* Use instead of exit() to avoid flushing standard I/O. */
+					_exit(127);
+				}
+				/* Finally write text region to filter and read result. */
+				if (scrap != NULL && (scrap_length == 0 || (n = write(child_in[1], scrap, scrap_length)) == scrap_length)) {
+					/* Signal EOF write to child. */
+					(void) close(child_in[1]);
+					/* Wait for the child _before_ reading input. */
+					(void) waitpid(child, &ex, 0);
+					ex = WIFEXITED(ex) ? WEXITSTATUS(ex) : 127;
+					/* Avoid blocking on read() and allow for long or no output. */
+					(void) fcntl(child_out[0], F_SETFL, O_NONBLOCK);
+					while (0 < (n = read(child_out[0], gap, egap-gap))) {
+						gap += n;
+						chg = CHANGED;
+						growgap(BUF/2);
+					}
+					here = pos(egap);
+					epage = here+1;
+					adjmarks();
+				}
 			}
-			/* Close duplicates and unused. */
 			(void) close(child_out[0]);
 			(void) close(child_out[1]);
-			(void) close(child_in[0]);
-			(void) close(child_in[1]);
-			/* Pass command(s) through a shell. */
-			(void) execl(shell, sh, "-c", gap, NULL);
 		}
-		/* Use instead of exit() to avoid flushing standard I/O. */
-		_exit(127);
-	}
-	/* Finally write text region to filter and read result. */
-	if (scrap != NULL && (scrap_length == 0 || (n = write(child_in[1], scrap, scrap_length)) == scrap_length)) {
-		/* Signal EOF write to child. */
+		(void) close(child_in[0]);
 		(void) close(child_in[1]);
-		/* Wait for the child _before_ reading input. */
-		(void) waitpid(child, &ex, 0);
-		ex = WIFEXITED(ex) ? WEXITSTATUS(ex) : 127;
-		/* Avoid blocking on read() and allow for long or no output. */
-		(void) fcntl(child_out[0], F_SETFL, O_NONBLOCK);
-		while (0 < (n = read(child_out[0], gap, egap-gap))) {
-			gap += n;
-			chg = CHANGED;
-			growgap(BUF/2);
-		}
-		here = pos(egap);
-		epage = here+1;
-		adjmarks();
 	}
-error2:
-	(void) close(child_out[0]);
-	(void) close(child_out[1]);
-error1:
-	(void) close(child_in[0]);
-	(void) close(child_in[1]);
-error0:
 	if (ex != 0) {
 		(void) beep();
 	}
