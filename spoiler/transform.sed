@@ -24,6 +24,11 @@
 /^#include.*limits/d
 /^#pragma/d
 
+#/\(/s/(\([^[:blank:]][^[:blank:]]*)[[:blank:]]/\1/g
+s/, /,/g
+s/ \(/(/g
+s/\) \{/){/
+
 /^#ifdef.*FAST/,/^#else/d
 /^#endif.*FAST/d
 
@@ -31,6 +36,16 @@
 
 /^#if.*MODE/,/^#endif/d
 #s/MODE/0600/
+
+/^#if.*RULER/,/^#endif/d
+
+/^#ifdef.*SCREEN_COLUMN/,/^#endif/d
+
+/#define CHANGED/d
+s/CHANGED/'*'/
+
+/#define NOCHANGE/d
+s/NOCHANGE/' '/
 
 /#define TOP_LINE/d
 #/^#if.*TOP_LINE/,/^#endif/d
@@ -125,8 +140,10 @@ s/'\\0'/0/g
 #  Functions & Types
 #
 
+s/(^|[^[:alnum:]_])adjmarks([^[:alnum:]_]|$)/\1j\2/g
 s/(^|[^[:alnum:]_])ptr([^[:alnum:]_]|$)/\1Z\2/g
 s/(^|[^[:alnum:]_])pos([^[:alnum:]_]|$)/\1P\2/g
+s/(^|[^[:alnum:]_])growgap([^[:alnum:]_]|$)/\1_V\2/g
 s/(^|[^[:alnum:]_])movegap([^[:alnum:]_]|$)/\1V\2/g
 s/(^|[^[:alnum:]_])prevline([^[:alnum:]_]|$)/\1M\2/g
 s/(^|[^[:alnum:]_])nextline([^[:alnum:]_]|$)/\1N\2/g
@@ -155,17 +172,25 @@ s/(^|[^[:alnum:]_])delX([^[:alnum:]_]|$)/\1_x\2/g
 s/(^|[^[:alnum:]_])pastel([^[:alnum:]_]|$)/\1p_\2/g
 s/(^|[^[:alnum:]_])paste([^[:alnum:]_]|$)/\1_p\2/g
 s/(^|[^[:alnum:]_])flipcase([^[:alnum:]_]|$)/\1C_\2/g
+s/(^|[^[:alnum:]_])readfile([^[:alnum:]_]|$)/\1_S\2/
 s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1S\2/
 s/(^|[^[:alnum:]_])redraw([^[:alnum:]_]|$)/\1R\2/g
-s/(^|[^[:alnum:]_])quit([^[:alnum:]_]|$)/\1Q\2/g
+s/quit([^[:alnum:]_]|$)/Q\1/g
 s/(^|[^[:alnum:]_])display([^[:alnum:]_]|$)/\1Y\2/
 s/(^|[^[:alnum:]_])search([^[:alnum:]_]|$)/\1F_\2/
 s/(^|[^[:alnum:]_])next([^[:alnum:]_]|$)/\1F\2/
 s/(^|[^[:alnum:]_])clr_to_eol([^[:alnum:]_]|$)/\1C\2/
 s/(^|[^[:alnum:]_])gomark([^[:alnum:]_]|$)/\1G_\2/
+s/(^|[^[:alnum:]_])lnmark([^[:alnum:]_]|$)/\1_G\2/
 s/(^|[^[:alnum:]_])setmark([^[:alnum:]_]|$)/\1S_\2/
 s/(^|[^[:alnum:]_])setundo([^[:alnum:]_]|$)/\1U\2/
 s/(^|[^[:alnum:]_])undo([^[:alnum:]_]|$)/\1U_\2/
+s/(^|[^[:alnum:]_])bang([^[:alnum:]_]|$)/\1_B\2/
+s/(^|[^[:alnum:]_])cescape([^[:alnum:]_]|$)/\1B_\2/
+s/(^|[^[:alnum:]_])anchor([^[:alnum:]_]|$)/\1_A\2/
+s/(^|[^[:alnum:]_])append([^[:alnum:]_]|$)/\1A_\2/
+s/(^|[^[:alnum:]_])error([0-9])/\1_\2/
+
 
 #
 #  Variables
@@ -203,10 +228,13 @@ s/(^|[^[:alnum:]_])ere([^[:alnum:]_]|$)/\1e\2/g
 s/(^|[^[:alnum:]_])match_length([^[:alnum:]_]|$)/\1l\2/g
 s/(^|[^[:alnum:]_])matches([^[:alnum:]_]|$)/\1p\2/g
 s/(^|[^[:alnum:]_])marks([^[:alnum:]_]|$)/\1m\2/g
+s/(^|[^[:alnum:]_])marker([^[:alnum:]_]|$)/\1n\2/g
 s/(^|[^[:alnum:]_])scrap_length([^[:alnum:]_]|$)/\1t\2/g
 s/(^|[^[:alnum:]_])scrap([^[:alnum:]_]|$)/\1s\2/g
 s/(^|[^[:alnum:]_])pipein([^[:alnum:]_]|$)/\1x\2/g
 s/(^|[^[:alnum:]_])pipeout([^[:alnum:]_]|$)/\1y\2/g
+s/(^|[^[:alnum:]_])child_in([^[:alnum:]_]|$)/\1x\2/g
+s/(^|[^[:alnum:]_])child_out([^[:alnum:]_]|$)/\1y\2/g
 s/(^|[^[:alnum:]_])child([^[:alnum:]_]|$)/\1a\2/g
 s/(^|[^[:alnum:]_])ex([^[:alnum:]_]|$)/\1i\2/g
 
@@ -255,3 +283,5 @@ s/([^ 	]*[^[])\[0\]\./\1->/g
 #
 s/^([[:blank:]]*)} else/\1}\
 \1else/
+
+#s/\t/ /g

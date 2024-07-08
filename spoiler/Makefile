@@ -2,6 +2,7 @@
 # Edit Here
 #
 # The main development platform is currently NetBSD.
+# Other platforms may require `bmake`.
 #
 
 .POSIX :
