@@ -1,5 +1,5 @@
-ae 1.4.0
-========
+eh - Edit Here - vi(1) the good parts version
+=============================================
 
 A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method outlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by many Emacs style editors.  (Yep I mixed `vi` and `emacs` in the same paragraph; I'm going to hell for that one.)
 
@@ -7,7 +7,7 @@ A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method ou
 Usage
 -----
 
-    ae filename
+    eh [filename]
 
 Create or read a text file to edit.  Text files consists of lines of printable ASCII text, tabs, or newline characters.  A physical line can be of arbitrary length and is delimited by either a newline or the end of file.  Tab stops are every eight columns.  The behaviour of non-printable characters may vary depending on the implementation of the Curses library, `stty(1)` settings, or terminal emulator.
 
@@ -15,11 +15,11 @@ Create or read a text file to edit.  Text files consists of lines of printable A
 Commands
 --------
 
-Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`), or `2d3w` (`d6w`).  Motion commands, optionally prefixed by a count, are those that move the cursor without modifying the buffer.
+The commands are similar, but not the same as `vi(1)`.  Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`), or `2d3w` (`d6w`).  Motion commands, optionally prefixed by a count, are those that move the cursor without modifying the buffer.  Some edit commands can be followed by a motion.
 
     h j k l     Left, down, up, right cursor movement
     H J K L     Page top, page down, page up, page bottom
-    ^F ^B       Page down, page up
+    ^F ^B       Page down (forward), page up (back).
     b w         Word left, word right
     ^ $         Start and end of line
     |           Goto column (count) of physical line.
@@ -52,6 +52,19 @@ Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`)
     ^C          Quit.
 
 Any other key will redraw the screen.
+
+
+Environment
+-----------
+
+    SHELL       The user's shell of choice.
+
+    TERM        The user's terminal type.  If the environmental variable
+                `TERM` is not set or insufficient then terminate with non-
+                zero exit status.
+
+    TERMINFO    The absolute file path of a `terminfo` database.  See
+                `terminfo(5)`.
 
 
 Exit Status

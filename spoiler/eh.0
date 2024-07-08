@@ -22,14 +22,15 @@ DESCRIPTION
 
 COMMANDS
 
-    The commands a similar, but not the same as `vi(1)`.  Most commands
+    The commands are similar, but not the same as `vi(1)`.  Most commands
     can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`),
     or `2d3w` (`d6w`).  Motion commands, optionally prefixed by a count,
-    are those that move the cursor without modifying the buffer.
+    are those that move the cursor without modifying the buffer.  Some
+    edit commands can be followed by a motion.
 
     h j k l     Left, down, up, right cursor movement.
     H J K L     Page top, page down, page up, page bottom.
-    ^F ^B       Page down, page up
+    ^F ^B       Page down (forward), page up (back).
     b w         Word left, word right.
     ^ $         Start and end of line.
     |           Goto column (count) of physical line.
@@ -84,3 +85,22 @@ EXIT STATUS
     1           Insufficient capabilities for `TERM`.
     2           Read file error
 
+
+REFERENCES
+
+* Craig A. Finseth, "Craft Of Text Editing", 1991
+  Springer-Verlag, ISBN 0-387-97616-7, ISBN 3-3540-97616-7
+
+* Craig A. Finseth, "Craft Of Text Editing", 1999
+  <http://www.finseth.com/craft/>
+
+* Webb Miller, "A Software Tools Sampler", Prentice Hall, 1987
+  ISBN 0-13-822305-X, chapter 5
+
+* POSIX 1003.2b Draft 11.1 ex & vi, Feb 1996, courtesy of Keith Bostic
+
+* Single Unix Specification, Base Specification 2018, vi(1)
+  <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/vi.html>
+
+* Single Unix Specification, Curses issue 7
+  <https://pubs.opengroup.org/onlinepubs/9699909599/toc.pdf>
