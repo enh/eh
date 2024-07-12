@@ -132,7 +132,7 @@ test: build test/terminfo.cdb
 	-${MAKE} PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/test/terminfo.cdb tests
 
 tests:	tests_have_term_data \
-	arg0 term0 empty0 empty1 redraw0 flip0 flip1 \
+	arg0 term0 empty0 empty1 empty3 redraw0 flip0 flip1 \
 	ins0 ins1 ins2 ins3 ins4 ins5 \
 	del0 del1 del2 del3 del4 del5 del6 \
 	scroll0 scroll1 scroll2 \
@@ -195,6 +195,14 @@ empty2:
 	@${TITLE}
 	@printf 'W\b\b\b\b\bb.txt\nQ' | ${PROG} a.txt >a.out
 	@test ! -f a.txt && diff -u test/empty.txt b.txt
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# Start and stop.
+empty3:
+	@${TITLE}
+	@printf "\003" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${PASS}
