@@ -605,12 +605,10 @@ append(void)
 void
 yank(void)
 {
-	off_t mark;
+	off_t mark = marker;
 	if (marker < 0) {
 		mark = here;
 		getcmd(MOTION_CMDS);
-	} else {
-		mark = marker;
 	}
 	if (mark < here) {
 		mark ^= here;
