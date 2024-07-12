@@ -30,11 +30,7 @@
 #define TABWIDTH	8
 #define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
 
-#ifdef RULER
-#define TOP_LINE	2
-#else
 #define TOP_LINE	1
-#endif
 #define ROWS		(LINES-TOP_LINE)
 
 #define MOTION_CMDS	18
@@ -294,35 +290,6 @@ clr_to_eol(void)
 	(void) printw("%*s", COLS-getcurx(stdscr), "");
 }
 
-#ifdef RULER
-void
-ruler(void)
-{
-	int r, col;
-	(void) standout();
-	r = getcury(stdscr);
-	for (col = 1; col <= COLS; ++col) {
-		switch (col % 10) {
-		case 0:
-			(void) mvprintw(r, col - (col < 100 ? 2 : 3), "%d", col);
-			break;
-		case 5:
-			(void) addch(':');
-			break;
-		default:
-			(void) addch('.');
-		}
-	}
-	/* Write off the end of the line, curses should auto line wrap.
-	 * Using a newline would introduce a blank line after the ruler.
-	 * This wasn't required in 1993; suspect difference between
-	 * original BSD / SystemV curses and newer implementations.
-	 */
-	(void) addch(' ');
-	(void) standend();
-}
-#endif
-
 void
 display(void)
 {
@@ -361,14 +328,6 @@ display(void)
 	clr_to_eol();
 	(void) mvprintw(0, COLS-4,"%s%c",mode, chg);
 	(void) standend();
-#ifdef RULER
-/* I like the idea of a ruler, but it eats a screen line for little
- * functional return.  Maybe if it showed the current screen column
- * of the cursor it might be neat, but again lots of extra code for
- * little functionality.
- */
-	(void) ruler();
-#endif
 	(void) clrtobot();
 	if (marker < 0) {
 		from = to = -1;
@@ -409,17 +368,6 @@ display(void)
 		}
 	}
 	assert(page <= here && here <= epage);
-#ifdef SCREEN_COLUMN
-/* Display the screen column.  This is cheaper than a ruler line.
- * Ideally I'd prefer to display the physical line's absolute column,
- * but that's a little more fussy as you have to track the current
- * BOL at which point it would be better to display the current line
- * number and column.
- */
-	(void) standout();
-	(void) mvprintw(0, COLS-9, "C%-3d %s%c", cur_col+1, mode, chg);
-	(void) standend();
-#endif
 	if (i++ < LINES) {
 		(void) standout();
 		(void) mvaddstr(i, 0, "^D");
