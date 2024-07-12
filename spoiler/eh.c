@@ -23,6 +23,11 @@
 # define MODE		0600
 #endif
 
+#define CTRL_C		'\003'
+#define CTRL_V		'\026'
+#define CTRL_Z		'\032'
+#define ESC		'\033'
+
 #define CHANGED		'*'
 #define NOCHANGE	' '
 #define MARKS		27
@@ -551,7 +556,7 @@ int
 getsigch(void)
 {
 	int ch;
-	while ((ch = getch()) == '\032' /* ^Z */) {
+	while ((ch = getch()) == CTRL_Z) {
 		(void) raise(SIGTSTP);
 	}
 	return ch;
@@ -564,7 +569,7 @@ insert(void)
 	mode = ins;
 	display();
 	movegap(here);
-	while ((ch = getsigch()) != '\033' /* ^[ */ && ch != '\003' /* ^C */) {
+	while ((ch = getsigch()) != ESC && ch != CTRL_C) {
 		if (ch == '\b') {
 			gap -= buf < gap;
 		} else if (gap < egap) {
@@ -574,7 +579,7 @@ insert(void)
 			 * is inserted with ^V^[ and we'd have
 			 * to handle ^C ourselves.
 			 */
-			if (ch == '\026' /* ^V */) {
+			if (ch == CTRL_V) {
 				(void) nonl();	/* CR as-is */
 				ch = getch();
 				(void) nl();	/* CR -> LF */

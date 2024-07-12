@@ -109,6 +109,14 @@ s/STDIN_FILENO/0/g
 s/STDOUT_FILENO/1/g
 s/STDERR_FILENO/2/g
 
+/#define CTRL_/d
+/#define ESC/d
+s/CTRL_C/3/
+s/CTRL_V/22/
+s/CTRL_Z/26/
+s/ESC/27/
+s/'\\b'/8/
+
 #
 #  Types
 #
