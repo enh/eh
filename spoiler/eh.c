@@ -325,6 +325,7 @@ display(void)
 			page = epage;
 		}
 	} /* Else still within page bounds, update cursor. */
+	(void) erase();
 	(void) standout();
 	(void) mvprintw(
 		0, 0, "%s %ldB %d%%", filename, (long) pos(ebuf),
@@ -332,10 +333,8 @@ display(void)
 	);
 	clr_to_eol();
 	(void) mvprintw(0, COLS-4,"%s%c",mode, chg);
-	(void) standend();
-	(void) clrtobot();
 	if (marker < 0) {
-		from = to = -1;
+		from = to = marker;
 	} else if (here < marker) {
 		from = here;
 		to = marker;
@@ -343,7 +342,7 @@ display(void)
 		from = marker;
 		to = here;
 	}
-	for (i = TOP_LINE, j = 0, epage = page; i < LINES; epage++) {
+	for (i = TOP_LINE, j = 0, epage = page; (void) standend(), i < LINES; epage++) {
 		if (here == epage) {
 			cur_row = i;
 			cur_col = j;
@@ -353,19 +352,17 @@ display(void)
 		}
 		if (from <= epage && epage < to) {
 			standout();
-		} else {
-			standend();
 		}
-		/* Handle tab expansion ourselves.  Historical
-		 * Curses addch() would advance to the next
-		 * tabstop (a multiple of 8, eg. 0, 8, 16, ...).
-		 * See SUS Curses Issue 7 section 3.4.3.
-		 *
-		 * Display control characters as a single byte
+		/* Display control characters as a single byte
 		 * highlighted upper case letter (instead of two
 		 * byte ^X).
 		 */
 		(void) mvaddch(i, j, isprint(*p) || *p == '\t' || *p == '\n' ? *p : A_REVERSE|(*p+'@'));
+		/* Handle tab expansion ourselves.  Historical
+		 * Curses addch() would advance to the next
+		 * tabstop (a multiple of 8, eg. 0, 8, 16, ...).
+		 * See SUS Curses Issue 7 section 3.4.3.
+		 */
 		j += *p == '\t' ? TABSTOP(j) : 1;
 		if (*p == '\n' || COLS <= j) {
 			j = 0;
