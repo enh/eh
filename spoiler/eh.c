@@ -30,6 +30,7 @@
 #define CHANGED		'*'
 #define NOCHANGE	' '
 #define MARKS		27
+#define MATCHES		10
 #define MAX_COLS	999
 #define TABWIDTH	8
 #define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
@@ -932,7 +933,7 @@ cescape(int ch)
 void
 next(void)
 {
-	regmatch_t matches[10];
+	regmatch_t matches[MATCHES];
 	/* Move the gap out of the way in case it sits in the middle
 	 * of a potential match and NUL terminate the buffer.
 	 */
@@ -941,11 +942,11 @@ next(void)
 	marks[0] = here;
 	*gap = '\0';
 	/* REG_NOTBOL allows /^/ to advance to start of next line. */
-	if (here+match_length < pos(ebuf) && 0 == regexec(&ere, ptr(here+match_length), 10, matches, REG_NOTBOL)) {
+	if (here+match_length < pos(ebuf) && 0 == regexec(&ere, ptr(here+match_length), MATCHES, matches, REG_NOTBOL)) {
 		here += match_length + matches[0].rm_so;
 	}
 	/* Wrap-around search. */
-	else if (0 == regexec(&ere, buf, 10, matches, 0)) {
+	else if (0 == regexec(&ere, buf, MATCHES, matches, 0)) {
 		here = matches[0].rm_so;
 	}
 	/* No match after wrap-around. */
