@@ -33,7 +33,7 @@ GCC	:= -Wno-char-subscripts -fno-ident -flto
 CFLAGS	:= -Os -Wall -std=c11 ${GCC} ${DBG}
 
 # Frack gcc needs extra #define to enable SUS standard strdup(), strndup().
-GCCCPP	:= -D_POSIX_C_SOURCE=200809L
+GCCCPP	:= -D_XOPEN_SOURCE=700
 
 CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} ${GCCCPP}
 
