@@ -143,7 +143,8 @@ tests:	tests_have_term_data \
 	del7 del8 del9 del10 del11 del12 del13 \
 	undo0 undo1 undo2 undo3 \
 	paste0 paste1 paste2 paste3 \
-	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7
+	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7 \
+	replace0 replace1 replace2
 
 tests_have_term_data:
 	@test -d ${TESTDIR}
@@ -861,4 +862,28 @@ bang7:
 	@${A_CORE}
 	@${A_OUT}
 	@${A_TXT}
+	@${PASS}
+
+replace0:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf '/butt/xyzzy\nW\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+replace1:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf '/butt/$0hole\nW\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+replace2:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf '/line/plugh!\nnnnW\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
 	@${PASS}
