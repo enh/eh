@@ -132,9 +132,10 @@ setundo(void)
 void
 adjmarks(void)
 {
+	off_t p = pos(egap);
 	off_t n = /* insert, paste */(gap-ugap) - /* delete */(egap-uegap);
 	for (int i = 0; i < MARKS; i++) {
-		if (here < marks[i]) {
+		if (p < marks[i]) {
 			marks[i] += n;
 		}
 	}

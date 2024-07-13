@@ -139,7 +139,7 @@ tests:	tests_have_term_data \
 	goto0 goto1 goto2 goto3 \
 	pgdn0 pgdn1 pgdn2 pgdn3 pgdn4 pgup0 pgup1 pgup2 pgup3 \
 	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 ere10 ere11 \
-	mark0 mark1 mark2 mark3 mark4 \
+	mark0 mark1 mark2 mark3 mark4 mark5 \
 	del7 del8 del9 del10 del11 del12 del13 \
 	undo0 undo1 undo2 undo3 \
 	paste0 paste1 paste2 paste3 \
@@ -630,6 +630,15 @@ mark3:
 mark4:
 	@${TITLE}
 	@printf '/butt\nmajmb/rude\ny2wPP`a`bu`a`bQ' | ${PROG} test/short.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# BUG: The last undo failed to adjmarks correctly.  Must adjustment
+# marks above the `gap`, _not_ `here`.
+mark5:
+	@${TITLE}
+	@printf '/butt\nma/rude\nifuzz\e`au`au`aQ' | ${PROG} test/short.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${PASS}
