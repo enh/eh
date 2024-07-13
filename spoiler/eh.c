@@ -745,7 +745,6 @@ prompt(int ch)
 	assert(COLS <= egap - gap);
 	/* NetBSD 9.3 erase ^H works fine, but not the kill ^U character. */
 	(void) mvgetnstr(0, 1, gap, egap-gap);
-	(void) standend();
 	(void) noecho();
 	(void) raw();
 }
