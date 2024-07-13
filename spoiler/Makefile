@@ -144,7 +144,10 @@ tests:	tests_have_term_data \
 	undo0 undo1 undo2 undo3 \
 	paste0 paste1 paste2 paste3 \
 	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7 \
-	replace0 replace1 replace2
+	replace0 replace1 replace2 write0 read0 read1
+
+tests-skipped:
+	empty2 write1
 
 tests_have_term_data:
 	@test -d ${TESTDIR}
@@ -884,6 +887,41 @@ replace2:
 	@${TITLE}
 	@cp test/short.txt a.txt
 	@printf '/line/plugh!\nnnnW\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+write0:
+	@${TITLE}
+	@printf 'iThe quick brown fox jumps over the lazy dog.\n\eWa.txt\nQ' | ${PROG} >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# This test does not work since line erase in redirected input is
+# treated differently from a tty.  See NetBSD 10.0 lib/58151.
+# NetBSD 10 kill character visual behaviour in noraw()/nocbreak()
+# (line displine on) does appear correctly, though the string buffer
+# appears correct.
+write1:
+	@${TITLE}
+	@printf 'iThe quick brown fox jumps over the lazy dog.\n\eWa.txt\nW\025b.txt\nQ' | ${PROG} >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# Read file into an empty buffer.
+read0:
+	@${TITLE}
+	@printf 'Rtest/short.txtWa.txt\nQ' | ${PROG} >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# Add text, then read a file into the middle, and save.
+read1:
+	@${TITLE}
+	@printf 'iThe quick brown fox jumps over the lazy dog.\n\e/fox\nRtest/short.txt\nW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
 	@${PASS}
