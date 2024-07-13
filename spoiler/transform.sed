@@ -82,8 +82,11 @@ s/[[:blank:]]*\/\/[[:blank:]]*$//
 # Comment blocks
 /^[[:blank:]]*\/\*/,/^[[:blank:]]*\*\//d
 
+# Trailing comment block.
+s/[[:blank:]]+\/\*.*\*\/[[:blank:]]*$//
+
 # Inline comment.
-s/\/\*.*\*\///
+s,/\*[^*]+\*/,,g
 
 #
 # Replace macros.
