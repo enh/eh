@@ -666,10 +666,8 @@ paste(void)
 	growgap(COLS+(count+(count == 0))*scrap_length);
 	if (scrap != NULL) {
 		movegap(here);
-		do {
-			(void) memcpy(gap, scrap, scrap_length);
-			gap += scrap_length;
-		} while (1 < count--);
+		(void) memcpy(gap, scrap, scrap_length);
+		gap += scrap_length;
 		/* SUS 2018 vi(1) `P` paste-before unnamed buffer leaves
 		 * the cursor on the last column of the last character.
 		 * Instead keep the cursor on the same character before
