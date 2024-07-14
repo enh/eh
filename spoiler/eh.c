@@ -374,7 +374,7 @@ display(void)
 	if (i++ < LINES) {
 		(void) standout();
 		(void) mvaddstr(i, 0, "^D");
-		(void) standend();
+		/* A refresh() side effect is to standend(). */
 	}
 	(void) move(cur_row, cur_col);
 	(void) refresh();
