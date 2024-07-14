@@ -144,7 +144,8 @@ tests:	tests_have_term_data \
 	undo0 undo1 undo2 undo3 \
 	paste0 paste1 paste2 paste3 \
 	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7 \
-	replace0 replace1 replace2 write0 read0 read1
+	replace0 replace1 replace2 write0 read0 read1 \
+	select0 select1 select2 select3 select4 select5
 
 tests-skipped:
 	empty2 write1
@@ -924,4 +925,58 @@ read1:
 	@printf 'iThe quick brown fox jumps over the lazy dog.\n\e/fox\nRtest/short.txt\nW\nQ' | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
+	@${PASS}
+
+# Toggle select on/off without selecting anything.
+select0:
+	@${TITLE}
+	@printf '\\\\Q' | ${PROG} test/short.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# Select some words right.
+select1:
+	@${TITLE}
+	@printf '/rude\n\\3w\\Q' | ${PROG} test/short.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# Select some words left.
+select2:
+	@${TITLE}
+	@printf '/rude\n\\4b\\Q' | ${PROG} test/short.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${PASS}
+
+# Select some words right, yank, paste.
+select3:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf '/rude\n\\3wy/but\nPW\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${A_TXT}
+	@${PASS}
+
+# Select some words left, delete, paste.
+select4:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf '/rude\n\\4bd/but\nPW\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${A_TXT}
+	@${PASS}
+
+# Select format selection.
+select5:
+	@${TITLE}
+	@cp test/short.txt a.txt
+	@printf 'j\\3j!fmt -g16 -w24\nW\nQ' | ${PROG} a.txt >a.out
+	@${A_CORE}
+	@${A_OUT}
+	@${A_TXT}
 	@${PASS}
