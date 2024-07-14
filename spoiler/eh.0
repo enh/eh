@@ -32,7 +32,7 @@ COMMANDS
     H J K L     Page top, page down, page up, page bottom.
     ^F ^B       Page down (forward), page up (back).
     b w         Word left, word right.
-    ^ $         Start and end of line.
+    ^ $         Start and end of line, ie. `0|` or `999|`.
     |           Goto column (count) of physical line.
     /ERE        Find first occurrence of ERE pattern after the cursor.
     /ERE/REPL   Find ERE and replace.  In the `REPL`, a `$n` where `n` is
@@ -97,9 +97,8 @@ REFERENCES
 * Webb Miller, "A Software Tools Sampler", Prentice Hall, 1987
   ISBN 0-13-822305-X, chapter 5
 
-* POSIX 1003.2b Draft 11.1 ex & vi, Feb 1996, courtesy of Keith Bostic
-
-* Single Unix Specification, Base Specification 2018, vi(1)
+* Single Unix Specification, Base Specification 2018, ex(1) & vi(1)
+  <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/ex.html>
   <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/vi.html>
 
 * Single Unix Specification, Curses issue 7

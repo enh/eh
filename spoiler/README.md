@@ -21,7 +21,7 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
     H J K L     Page top, page down, page up, page bottom
     ^F ^B       Page down (forward), page up (back).
     b w         Word left, word right
-    ^ $         Start and end of line
+    ^ $         Start and end of line, ie. `0|` or `999|`
     |           Goto column (count) of physical line.
     /ERE        Find first occurence of ERE pattern after the cursor.
     /ERE/REPL   Find ERE and replace.  In the `REPL`, a `$n` where `n` is
@@ -85,7 +85,7 @@ To build simply:
 There is a basic regression test:
 
     $ make test
-    $ make test PROG=./ae-c89
+    $ make test PROG=./prog
 
 Other targets are:
 
@@ -106,9 +106,8 @@ References
 * Webb Miller, "A Software Tools Sampler", Prentice Hall, 1987  
   ISBN 0-13-822305-X, chapter 5
 
-* POSIX 1003.2b Draft 11.1 ex & vi, Feb 1996, courtesy of Keith Bostic
-
-* Single Unix Specification, Base Specification 2018, vi(1)  
+* Single Unix Specification, Base Specification 2018, ex(1) & vi(1)  
+  <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/ex.html>  
   <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/vi.html>
 
 * Single Unix Specification, Curses issue 7  
@@ -134,40 +133,3 @@ Bugs & Differences
 * `[count]dd` not supported, try `^[count]dj`.
 
 * `[count]yy` not supported, try `^[count]yj` or `^[count]dju`.
-
-
-Notes
------
-
-Version 1.0.0
-* Original 1990 K&R `ae.c`.
-
-Version 1.1.0
-* `ae-c89.c` is the C89 version of K&R `ae.c`.
-* Address Curses library differences.
-* Address compiler warnings.
-
-Version 1.2.0
-* Replaced `t` and `b` commands with `G`, while slightly more code, it provides more functionality.
-* Fixed the behaviour of `H` word left.
-* Minor code compaction.
-
-Version 1.3.0
-* Resolves original 1991 (ae91-1.0.0) issues with scrolling and paging a file with long physical lines.
-* Rename word left `H` and word right `L` commands to `b` and `w` more like `vi(1)`.
-* Rename line begin `[` and line end `]` commands to `^` and `$` more like `vi(1)`.
-* Add page top `H` and bottom `L` commands.
-* Add `/` and `n` commands.
-* Add set `m` and goto mark `` ` `` commands.
-* Add delete `d motion` (eg. 3dw = d2w, 2d3w = d6w), yank `y motion`, paste before `P`, and undo last `u`.
-* Add a regression test suite.
-
-Version 1.4.0
-* Adjust marks after the cursor when the buffer is altered to maintain relative position.
-* Add `'` goto marked line, delete before `X`, paste after `p`, append `a`, read file `R` commands.
-* Switch from cbreak() to raw() input; handle INTR `^C`, LNEXT `^V`, and SUSP `^Z`.
-* INTR `^C` can leave insert mode same as `vi(1)` or quit (for those who don't read documentation).
-* Fix `[count]p` to ensure sufficent space before pasting and fix undo of last `[count]p` command.
-* ASCII control characters are displayed as highlighted characters.
-* Support search & replace `/ERE/REPL/`.
-* Add filter `!` text region through external program.
