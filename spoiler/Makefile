@@ -54,18 +54,19 @@ MANDIR	!= find /usr/local -maxdepth 2 -type d -name man | head -n1
 
 all: build
 
-build: eh$E prog$E
+build: eh$E ../prog$E
 
 clean:
-	-rm -f eh$E prog* *.core *.stackdump *.i a.out a.txt b.txt
+	-rm -f eh$E ../prog$E *.core *.stackdump *.i a.out a.txt b.txt
 	-rm -rf test/terminfo.cdb
 
 strip: build
-	strip eh$E prog$E
+	strip eh$E ../prog$E
+	ls -l ..
 	ls -l
 
-size: prog.c
-	-iocccsize -v1 prog.c
+size: ../prog.c
+	-iocccsize -v1 $>
 
 install: eh.0 eh$E
 	install -o 0 -g 0 -m 555 eh$E /usr/local/bin
@@ -76,10 +77,12 @@ install: eh.0 eh$E
 # Generated files.
 #######################################################################
 
-prog.c: eh.c transform.sed
+../prog.c: eh.c transform.sed
 	sed -E -f transform.sed eh.c | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
 	sed -e'/^[[:blank:]]*$$/d' >$@
+
+../prog$E: ../prog.c
 
 #######################################################################
 # Tests
