@@ -18,22 +18,23 @@ E :=
 .SUFFIXES :
 .SUFFIXES : .c .h .i $O $E
 
-BASE	?= eh
 BUF	:= 65536
 MODE	:= 0600
 
 # Override from the command-line, eg. make DBG='-O0 -g'
 DBG	:= -DNDEBUG
 
+.if ${CC} == 'gcc' || ${CC} == 'cc'
 # Cygwin gcc complains about ctype macros char-subscripts, but not for
 # ctype functions. eg. isspace(ch) vs (isspace)(ch)
-GCC	:= -Wno-char-subscripts -fno-ident -flto
+GCC	:= -fno-ident -flto
 #-fno-asynchronous-unwind-tables -fno-unroll-loops -fdelete-null-pointer-checks
-
-CFLAGS	:= -Os -Wall -std=c11 ${GCC} ${DBG}
 
 # Frack gcc needs extra #define to enable SUS standard strdup(), strndup().
 GCCCPP	:= -D_XOPEN_SOURCE=700
+.endif
+
+CFLAGS	:= -std=gnu17 -Os -Wall -Wextra -pedantic -Wno-char-subscripts ${GCC} ${DBG}
 
 CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} ${GCCCPP}
 
@@ -53,14 +54,14 @@ MANDIR	!= find /usr/local -maxdepth 2 -type d -name man | head -n1
 
 all: build
 
-build: ae$E eh$E prog$E
+build: eh$E prog$E
 
 clean:
-	-rm -f ae$E eh$E prog* *.core *.stackdump *.i a.out a.txt b.txt
+	-rm -f eh$E prog* *.core *.stackdump *.i a.out a.txt b.txt
 	-rm -rf test/terminfo.cdb
 
 strip: build
-	strip ae$E eh$E prog$E
+	strip eh$E prog$E
 	ls -l
 
 size: prog.c
@@ -75,8 +76,8 @@ install: eh.0 eh$E
 # Generated files.
 #######################################################################
 
-prog.c: ${BASE}.c transform.sed
-	sed -E -f transform.sed ${BASE}.c | \
+prog.c: eh.c transform.sed
+	sed -E -f transform.sed eh.c | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
 	sed -e'/^[[:blank:]]*$$/d' >$@
 
@@ -98,8 +99,7 @@ prog.c: ${BASE}.c transform.sed
 #
 #######################################################################
 
-PROG	?= ./${BASE}$E
-OS	?= ${.MAKE.OS}
+PROG	?= ./eh$E
 
 # Set ASK=true to prompt to update a failed test.
 ASK	?= false
@@ -118,7 +118,7 @@ A_OUT	= ( diff -u ${TESTDIR}/$@.out a.out || ${SAVE} )
 A_TXT	= diff -u test/$@.txt a.txt
 
 test-all: build
-	${MAKE} PROG=./${BASE}$E test
+	${MAKE} PROG=./eh$E test
 	${MAKE} PROG=./prog$E test
 
 # While the terminal definition will probably contain definitions for
