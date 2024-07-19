@@ -39,7 +39,7 @@ CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} ${GCCCPP}
 
 LIBS	:= -lcurses
 
-MANDIR	!= find /usr/local -type d -name man -maxdepth 2 | head -n1
+MANDIR	!= find /usr/local -maxdepth 2 -type d -name man | head -n1
 
 .c.i:
 	${CC} ${CFLAGS} ${CPPFLAGS} -E $*.c >$*.i
@@ -128,7 +128,11 @@ test-all: build
 test/terminfo.cdb : test/terminfo
 	tic -x -o $@ test/terminfo
 
-test: build test/terminfo.cdb
+always:
+
+# Be sure to build the target binary separately before hand.  This allows
+# testing an alternative binary by setting PROG, eg. make PROG=./boo test
+test: always ${PROG} test/terminfo.cdb
 	-${MAKE} PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/test/terminfo.cdb tests
 
 tests:	tests_have_term_data \
