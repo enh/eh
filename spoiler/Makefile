@@ -108,6 +108,7 @@ ASK	?= false
 REBUILD	?= false
 
 TESTDIR	= test/${TERM}
+DATA	= test/data
 RESET	= rm a.txt a.out *.core 2>/dev/null; true
 TITLE	= printf "%s      %s: " ${PROG} $@ ; ${RESET}
 PASS	= printf "\r%s -OK-\r\n" ${PROG}
@@ -115,7 +116,7 @@ PROMPT	= ( ${ASK} && echo -n "Replace y/N$$PS2" && read yn && test "$$yn" = 'y' 
 SAVE	= ( ${REBUILD} || ${PROMPT} ) && cp a.out ${TESTDIR}/$@.out
 A_CORE	= test ! -f *.core
 A_OUT	= ( diff -u ${TESTDIR}/$@.out a.out || ${SAVE} )
-A_TXT	= diff -u test/$@.txt a.txt
+A_TXT	= diff -u ${DATA}/$@.txt a.txt
 
 test-all: build
 	${MAKE} PROG=./eh$E test
@@ -193,7 +194,7 @@ empty0:
 empty1:
 	@${TITLE}
 	@printf "W\nQ" | ${PROG} a.txt >a.out
-	@diff -u test/empty.txt a.txt
+	@diff -u ${DATA}/empty.txt a.txt
 	@${A_CORE}
 	@${A_OUT}
 	@${PASS}
@@ -203,7 +204,7 @@ empty1:
 empty2:
 	@${TITLE}
 	@printf 'W\b\b\b\b\bb.txt\nQ' | ${PROG} a.txt >a.out
-	@test ! -f a.txt && diff -u test/empty.txt b.txt
+	@test ! -f a.txt && diff -u ${DATA}/empty.txt b.txt
 	@${A_CORE}
 	@${A_OUT}
 	@${PASS}
@@ -313,7 +314,7 @@ del2:
 	@printf "iZ\ehxW\nQ" | ${PROG} a.txt >a.out
 	@${A_CORE}
 	@${A_OUT}
-	@diff -u test/empty.txt a.txt
+	@diff -u ${DATA}/empty.txt a.txt
 	@${PASS}
 
 # Insert some characters, delete last from buffer.
