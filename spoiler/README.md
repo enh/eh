@@ -106,8 +106,7 @@ References
 * Webb Miller, "A Software Tools Sampler", Prentice Hall, 1987  
   ISBN 0-13-822305-X, chapter 5
 
-* Single Unix Specification, Base Specification 2018, ex(1) & vi(1)  
-  <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/ex.html>  
+* Single Unix Specification, Base Specification 2018, vi(1)  
   <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/vi.html>
 
 * Single Unix Specification, Curses issue 7  
@@ -119,7 +118,7 @@ Bugs & Differences
 
 * The display of long physical lines that are larger than the terminal screen is untested, so considered undefined.  In computing, its often bad form when functions are more than a screen length; similarly in English writing a paragraph (as a single long line) that occupies a screen is probably bad form too.
 
-* CRLF newlines (DOS, Windows) and other non-spacing control characters are not visible.  Consider converting newlines using POSIX tools like `awk(1)` or `sed(1)`:
+* CRLF newlines (DOS, FreeDOS, Windows) and other non-spacing control characters are not visible.  Consider converting newlines using POSIX tools like `awk(1)` or `sed(1)`:
 
     sed -e's/^M$//' dos.txt > unix.txt
     sed -e's/$/^M/' unix.txt > dos.txt

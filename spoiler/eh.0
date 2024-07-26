@@ -97,9 +97,29 @@ REFERENCES
 * Webb Miller, "A Software Tools Sampler", Prentice Hall, 1987
   ISBN 0-13-822305-X, chapter 5
 
-* Single Unix Specification, Base Specification 2018, ex(1) & vi(1)
-  <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/ex.html>
+* Single Unix Specification, Base Specification 2018, vi(1)
   <https://pubs.opengroup.org/onlinepubs/9699919799/utilities/vi.html>
 
 * Single Unix Specification, Curses issue 7
   <https://pubs.opengroup.org/onlinepubs/9699909599/toc.pdf>
+
+
+NOTES
+
+* The display of long physical lines that are larger than the terminal
+  screen is untested, so considered undefined.
+
+* CRLF newlines (DOS, FreeBSD Windows) and other non-spacing control
+  characters are not visible.  Consider converting newlines using SUS
+  tools like `awk(1)` or `sed(1)`:
+
+    sed -e's/^M$//' dos.txt > unix.txt
+    sed -e's/$/^M/' unix.txt > dos.txt
+
+
+IOCCC AWARD IDEAS
+
+- When are `é` `ë` `ê` `è` not same as `e`?
+- Most interesting use of accents, eh?
+- Best je ne sais quoi.
+- Best upgrade of `ae`.
