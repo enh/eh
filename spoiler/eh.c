@@ -4,6 +4,8 @@
  * Copyright 2024 by Anthony C Howe.  All rights reserved.
  */
 
+#define EXT
+
 #include <ctype.h>
 #include <assert.h>
 #include <curses.h>
@@ -11,9 +13,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <regex.h>
+#ifdef EXT
+#include <signal.h>
 #include <sys/wait.h>
+#else /* EXT */
+#endif /* EXT */
 
 #ifndef BUF
 # define BUF		(128*1024)
@@ -30,7 +35,6 @@
 #define CHANGED		'*'
 #define NOCHANGE	' '
 #define MARKS		27
-#define MATCHES		10
 #define MAX_COLS	999
 #define TABWIDTH	8
 #define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
@@ -38,8 +42,11 @@
 #define TOP_LINE	1
 #define ROWS		(LINES-TOP_LINE)
 
-#define MOTION_CMDS	18
 #define ALL_CMDS	99
+
+#ifdef EXT
+#define MATCHES		10
+#define MOTION_CMDS	18
 
 static char chg = NOCHANGE;
 static int cur_row, cur_col, count, ere_dollar_only;
@@ -48,6 +55,16 @@ static char *buf, *gap, *egap, *ebuf, *ugap, *uegap;
 static const char ins[] = "INS", cmd[] = "   ", *mode = cmd;
 static off_t here, page, epage, uhere, match_length, scrap_length, marks[MARKS], marker = -1;
 static regex_t ere;
+#else /* EXT */
+#define MATCHES		1
+#define MOTION_CMDS	14
+
+static int cur_row, cur_col, count, ere_dollar_only;
+static char *filename, *scrap;
+static char buf[BUF], *gap = buf, *egap, *ebuf, *ugap = buf, *uegap;
+static off_t here, page, epage, uhere, match_length, scrap_length, marker = -1;
+static regex_t ere;
+#endif /* EXT */
 
 void
 getcmd(int);
@@ -129,6 +146,7 @@ setundo(void)
 	uhere = here;
 }
 
+#ifdef EXT
 void
 adjmarks(void)
 {
@@ -140,6 +158,9 @@ adjmarks(void)
 		}
 	}
 }
+#else /* EXT */
+#define adjmarks()
+#endif /* EXT */
 
 void
 undo(void)
@@ -185,6 +206,7 @@ movegap(off_t cur)
 	setundo();
 }
 
+#ifdef EXT
 void
 growgap(size_t min)
 {
@@ -211,6 +233,9 @@ growgap(size_t min)
 		movegap(xhere);
 	}
 }
+#else /* EXT */
+#define growgap(n)
+#endif /* EXT */
 
 /*
  * Return the physical BOL or BOF containing cur.
@@ -328,12 +353,21 @@ display(void)
 	} /* Else still within page bounds, update cursor. */
 	(void) erase();
 	(void) standout();
+#ifdef EXT
 	(void) mvprintw(
 		0, 0, "%s %ldB %d%%", filename, (long) pos(ebuf),
 		(int)(here * 100 / (pos(ebuf)+(pos(ebuf) <= 0)))
 	);
 	clr_to_eol();
 	(void) mvprintw(0, COLS-4,"%s%c",mode, chg);
+#else /* EXT */
+//	(void) mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
+	(void) mvprintw(
+		0, 0, "%s %ldB %d%%", filename, (long) pos(ebuf),
+		(int)(here * 100 / (pos(ebuf)+(pos(ebuf) <= 0)))
+	);
+	clr_to_eol();
+#endif /* EXT */
 	if (marker < 0) {
 		from = to = marker;
 	} else if (here < marker) {
@@ -354,11 +388,15 @@ display(void)
 		if (from <= epage && epage < to) {
 			standout();
 		}
+#ifdef EXT
 		/* Display control characters as a single byte
 		 * highlighted upper case letter (instead of two
 		 * byte ^X).
 		 */
 		(void) mvaddch(i, j, isprint(*p) || *p == '\t' || *p == '\n' ? *p : A_REVERSE|(*p+'@'));
+#else /* EXT */
+		(void) mvaddch(i, j, *p);
+#endif /* EXT */
 		/* Handle tab expansion ourselves.  Historical
 		 * Curses addch() would advance to the next
 		 * tabstop (a multiple of 8, eg. 0, 8, 16, ...).
@@ -417,6 +455,7 @@ down(void)
 	here = col_or_eol(nextline(here), 0, cur_col);
 }
 
+#ifdef EXT
 /*
  * Beginning of physical line.
  */
@@ -434,6 +473,8 @@ lnend(void)
 {
 	here = col_or_eol(here, 0, MAX_COLS);
 }
+#else /* EXT */
+#endif /* EXT */
 
 /*
  * Goto column of physical line.
@@ -461,14 +502,20 @@ wleft(void)
 void
 pgtop(void)
 {
+#ifdef EXT
 	marks[0] = here;
+#else /* EXT */
+#endif /* EXT */
 	here = page;
 }
 
 void
 pgbottom(void)
 {
+#ifdef EXT
 	marks[0] = here;
+#else /* EXT */
+#endif /* EXT */
 	here = row_start(bol(epage-1), epage-1);
 }
 
@@ -531,7 +578,10 @@ wright(void)
 void
 lngoto(void)
 {
+#ifdef EXT
 	marks[0] = here;
+#else /* EXT */
+#endif /* EXT */
 	/* Count physcical lines, just as ed, grep, or wc would. */
 	off_t eof = pos(ebuf);
 	for (here = eof * (count == 0); here < eof && 1 < count; count--) {
@@ -550,6 +600,7 @@ lngoto(void)
 	page = eof;
 }
 
+#ifdef EXT
 int
 getsigch(void)
 {
@@ -559,18 +610,25 @@ getsigch(void)
 	}
 	return ch;
 }
+#else /* EXT */
+#define getsigch	getch
+#endif /* EXT */
 
 void
 insert(void)
 {
 	int ch;
+#ifdef EXT
 	mode = ins;
 	display();
+#else /* EXT */
+#endif /* EXT */
 	movegap(here);
-	while ((ch = getsigch()) != ESC && ch != CTRL_C) {
+	while ((ch = getsigch()) != CTRL_C && ch != ESC) {
 		if (ch == '\b') {
 			gap -= buf < gap;
 		} else if (gap < egap) {
+#ifdef EXT
 			/* Using cbreak() then ^V is handled
 			 * so ESC ^[ is inserted with ^V^V^[.
 			 * With raw() we handle ^V so ESC ^[
@@ -583,25 +641,36 @@ insert(void)
 				(void) nl();	/* CR -> LF */
 			}
 			growgap(COLS);
+#else /* EXT */
+#endif /* EXT */
 			*gap++ = ch;
 			epage++;
 		}
 		here = pos(egap);
+#ifdef EXT
 		chg = CHANGED;
+#else /* EXT */
+#endif /* EXT */
 		display();
 	}
+#ifdef EXT
 	mode = cmd;
 	adjmarks();
+#else /* EXT */
+#endif /* EXT */
 	/* Not repeatable yet. */
 	count = 0;
 }
 
+#ifdef EXT
 void
 append(void)
 {
 	right();
 	insert();
 }
+#else /* EXT */
+#endif /* EXT */
 
 void
 yank(void)
@@ -637,7 +706,10 @@ deld(void)
 	yank();
 	egap += scrap_length;
 	here = pos(egap);
+#ifdef EXT
 	chg = CHANGED;
+#else /* EXT */
+#endif /* EXT */
 	marker = -1;
 	adjmarks();
 }
@@ -651,6 +723,7 @@ delx(void)
 	deld();
 }
 
+#ifdef EXT
 void
 delX(void)
 {
@@ -659,6 +732,20 @@ delX(void)
 	}
 	deld();
 }
+#else /* EXT */
+// /*
+//  * Similar to `dl` command, eg.
+//  *
+//  *	ungetc('l', stdin);
+//  *	deld();
+//  */
+// void
+// delx(void)
+// {
+// 	movegap(here);
+// 	egap += egap < ebuf;
+// }
+#endif /* EXT */
 
 void
 paste(void)
@@ -679,10 +766,14 @@ paste(void)
 		adjmarks();
 		/* Force display() to reframe, ie. 1GdGP fails. */
 		epage = here+1;
+#ifdef EXT
 		chg = CHANGED;
+#else /* EXT */
+#endif /* EXT */
 	}
 }
 
+#ifdef EXT
 void
 pastel(void)
 {
@@ -896,6 +987,16 @@ cescape(int ch)
 	}
 	return ch;
 }
+#else /* EXT */
+void
+writefile(void)
+{
+	int i;
+	movegap(0);
+	(void) write(i = creat(filename, MODE), egap, ebuf-egap);
+	(void) close(i);
+}
+#endif /* EXT */
 
 /* In case we're sitting on a previous match, we need to search starting
  * from the end of that match.  Note some special cases:
@@ -937,7 +1038,10 @@ next(void)
 	 */
 	assert(gap < egap);
 	movegap(pos(ebuf));
+#ifdef EXT
 	marks[0] = here;
+#else /* EXT */
+#endif /* EXT */
 	*gap = '\0';
 	/* REG_NOTBOL allows /^/ to advance to start of next line. */
 	if (here+match_length < pos(ebuf) && 0 == regexec(&ere, ptr(here+match_length), MATCHES, matches, REG_NOTBOL)) {
@@ -953,6 +1057,7 @@ next(void)
 		return;
 	}
 	match_length = matches[0].rm_eo - matches[0].rm_so + ere_dollar_only;
+#ifdef EXT
 	if (NULL != replace) {
 		movegap(here);
 		for (const char *s = replace; *s != '\0'; s++) {
@@ -984,11 +1089,14 @@ next(void)
 		match_length = gap-ugap;
 		assert(gap < uegap);
 	}
+#else /* EXT */
+#endif /* EXT */
 }
 
 void
 search(void)
 {
+#ifdef EXT
 	char *t;
 	prompt('/');
 	free(replace);
@@ -1006,6 +1114,16 @@ search(void)
 		*t++ = '\0';
 		replace = strdup(t);
 	}
+#else /* EXT */
+	(void) echo();
+	(void) standout();
+	(void) mvaddch(0, 0, '/');
+	clr_to_eol();
+	assert(COLS <= egap - gap);
+	/* NetBSD 9.3 erase ^H works fine, but not the kill ^U character. */
+	(void) mvgetnstr(0, 1, gap, egap-gap);
+	(void) noecho();
+#endif /* EXT */
 	regfree(&ere);
 	if (regcomp(&ere, gap, REG_EXTENDED|REG_NEWLINE) != 0) {
 		/* Something about the pattern is fubar. */
@@ -1015,7 +1133,6 @@ search(void)
 		ere_dollar_only = gap[0] == '$' && '\0' == gap[1];
 		next();
 	}
-	/* Does not make sense to repeat. */
 	count = 0;
 }
 
@@ -1025,7 +1142,10 @@ flipcase(void)
 	char *p = ptr(here);
 	/* Skip moving the gap and modify in place. */
 	*p = islower(*p) ? toupper(*p) : tolower(*p);
+#ifdef EXT
 	chg = CHANGED;
+#else /* EXT */
+#endif /* EXT */
 	right();
 }
 
@@ -1041,6 +1161,7 @@ anchor(void)
 	marker = marker < 0 ? here : -1;
 }
 
+#ifdef EXT
 static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpu!\\mRWQ\003";
 
 static void (*func[])(void) = {
@@ -1057,6 +1178,23 @@ static void (*func[])(void) = {
 	anchor, setmark, readfile, writefile, quit, quit,
 	redraw
 };
+#else /* EXT */
+static char key[] = "hjklbwHJKL|G/n~ixydPu\\WQ\003";
+
+static void (*func[])(void) = {
+	/* Motion */
+	left, down, up, right, wleft, wright,
+	pgtop, pgdown, pgup, pgbottom,
+	column, lngoto,
+	search, next,
+	/* Modify */
+	flipcase, insert, delx,
+	yank, deld, paste, undo,
+	/* Other */
+	anchor, writefile, quit, quit,
+	redraw
+};
+#endif /* EXT */
 
 void
 getcmd(int m)
@@ -1077,6 +1215,7 @@ getcmd(int m)
 	count = 0;
 }
 
+#ifdef EXT
 void
 cleanup(void)
 {
@@ -1085,6 +1224,8 @@ cleanup(void)
 	free(replace);
 	free(scrap);
 }
+#else /* EXT */
+#endif /* EXT */
 
 int
 main(int argc, char **argv)
@@ -1093,12 +1234,13 @@ main(int argc, char **argv)
 		/* Try TERM=ansi-mini which works. */
 		return 1;
 	}
+	(void) noecho();
+#ifdef EXT
 	(void) atexit(cleanup);
 	/* Switching between cbreak() and raw() impacts terminal output
 	 * which can alter the expected test output files.
 	 */
 	(void) raw();
-	(void) noecho();
 	growgap(BUF);
 	filename = strdup(argv[1] == NULL ? "" : *++argv);
 	if (fileread(filename)) {
@@ -1106,6 +1248,19 @@ main(int argc, char **argv)
 		return 2;
 	}
 	uegap = egap;
+#else /* EXT */
+	(void) cbreak();
+	(void) atexit(endwin);
+	uegap = egap = ebuf = buf + BUF;
+	if (0 < (argc = open(filename = *++argv, 0))) {
+		gap += read(argc, buf, ebuf-buf);
+		(void) close(argc);
+		if (gap < buf || ebuf <= gap) {
+			/* Good grief Charlie Brown! */
+			return 2;
+		}
+	}
+#endif /* EXT */
 	/* Force display() to frame the initial screen. */
 	epage = 1;
 	while (filename != NULL) {

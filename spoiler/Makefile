@@ -18,7 +18,7 @@ E :=
 .SUFFIXES :
 .SUFFIXES : .c .h .i $O $E
 
-BUF	:= 65536
+BUF	:= 131072
 MODE	:= 0600
 
 # Override from the command-line, eg. make DBG='-O0 -g'
@@ -29,14 +29,12 @@ DBG	:= -DNDEBUG
 # ctype functions. eg. isspace(ch) vs (isspace)(ch)
 GCC	:= -fno-ident -flto
 #-fno-asynchronous-unwind-tables -fno-unroll-loops -fdelete-null-pointer-checks
-
-# Frack gcc needs extra #define to enable SUS standard strdup(), strndup().
-GCCCPP	:= -D_XOPEN_SOURCE=700
 .endif
 
 CFLAGS	:= -std=gnu17 -Os -Wall -Wextra -pedantic -Wno-char-subscripts ${GCC} ${DBG}
 
-CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} ${GCCCPP}
+# Frack need extra #define to enable SUS standard strdup(), strndup().
+CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} -D_XOPEN_SOURCE=700
 
 LIBS	:= -lcurses
 

@@ -88,6 +88,15 @@ s/[[:blank:]]+\/\*.*\*\/[[:blank:]]*$//
 # Inline comment.
 s,/\*[^*]+\*/,,g
 
+### IOCCC
+/adjmarks/d
+/growgap/d
+/#define MATCHES/d
+s/MATCHES/1/
+/^#define getsigch/d
+s/(^|[^[:alnum:]_])getsigch/getch/g
+### End IOCCC
+
 #
 # Replace macros.
 #
@@ -103,6 +112,12 @@ s/MAX_COLS/999/g
 
 /^#define MARKS/d
 s/MARKS/27/g
+
+/^#define NOCHANGE/d
+s/NOCHANGE/' '/g
+
+/^#define CHANGED/d
+s/CHANGED/'*'/g
 
 /^#define .*_CMDS/d
 s/MOTION_CMDS/18/g
@@ -202,7 +217,6 @@ s/(^|[^[:alnum:]_])anchor([^[:alnum:]_]|$)/\1Â\2/
 s/(^|[^[:alnum:]_])append([^[:alnum:]_]|$)/\1Ä\2/
 s/(^|[^[:alnum:]_])error([0-9])/\1_\2/
 
-
 #
 #  Variables
 #
@@ -248,6 +262,8 @@ s/(^|[^[:alnum:]_])child_in([^[:alnum:]_]|$)/\1x\2/g
 s/(^|[^[:alnum:]_])child_out([^[:alnum:]_]|$)/\1y\2/g
 s/(^|[^[:alnum:]_])child([^[:alnum:]_]|$)/\1a\2/g
 s/(^|[^[:alnum:]_])ex([^[:alnum:]_]|$)/\1i\2/g
+s/(^|[^[:alnum:]_])from([^[:alnum:]_]|$)/\1s\2/g
+s/(^|[^[:alnum:]_])to([^[:alnum:]_]|$)/\1t\2/g
 
 
 #
