@@ -18,15 +18,28 @@ BUF	:= 131072
 MODE	:= 0600
 
 # Override from the command-line, eg. make DBG='-O0 -g'
+# Assume ${DBG} is the tail of ${CFLAGS}
 DBG	:= -DNDEBUG
+
+#############################
+# shell used by this Makefile
+#############################
+
+SHELL= bash
 
 #######################
 # common tool locations
 #######################
-#
-CLANG= clang
-GCC= gcc
+
+CC= cc
+GINDENT= gindent
+MV= mv
 RM= rm
+TRUE= true
+
+#####################
+# C compiler settings
+#####################
 
 # Common C compiler warnings to silence
 #
@@ -37,7 +50,10 @@ RM= rm
 #
 # NOTE: Please don't add -Wno-unknown-warning-option to CSILENCE.
 #
-CSILENCE= -Wno-char-subscripts
+# -Wno-char-subscripts			ctypes macros
+# -Wno-incompatible-pointer-types	atexit(endwin)
+#
+CSILENCE= -Wno-char-subscripts -Wno-incompatible-pointer-types
 
 # Attempt to silence unknown warnings
 #
@@ -128,7 +144,6 @@ CWARN+=
 #
 endif
 
-
 ###########################################
 # Special Makefile variables for this entry
 ###########################################
@@ -136,45 +151,46 @@ endif
 # what to build
 #
 PROG= prog
-OBJ= ${PROG}.o
+OBJ= ${PROG}$O
 TARGET= ${PROG}$E
+
+#ALT_OBJ= ${PROG}.alt$O
+#ALT_TARGET= ${PROG}.alt$E
 
 # list any data files supplied with the submission
 #
 DATA=
 
+.c.i:
+	${CC} ${CFLAGS} -E $*.c >$*.i
 
 #################
 # build the entry
 #################
-#
-all: data ${TARGET}
-	@:
 
-.PHONY: all data try clean clobber
+all: data ${TARGET}
+
+.PHONY: all data try clean clobber install
 
 # how to compile
 #
-${PROG}: ${PROG}.c
-	${CC} ${CFLAGS} $< -o $@ ${LDFLAGS}
+${PROG}$E: ${PROG}.c
+	${CC} ${CFLAGS} ${PROG}.c -o $@ ${LDFLAGS}
 
 # alternative executable
 #
 alt: data ${ALT_TARGET}
-	@${TRUE}
 
-${PROG}.alt: ${PROG}.alt.c
-	${CC} ${CFLAGS} $< -o $@ ${LDFLAGS}
+${PROG}.alt$E: ${PROG}.alt.c
+	${CC} ${CFLAGS} ${PROG}.alt.c -o $@ ${LDFLAGS}
 
 # data files
 #
 data: ${DATA}
-	@${TRUE}
 
 # both all and alt
 #
 everything: all alt
-	@${TRUE}
 
 # one suggested way to run the program
 #
@@ -184,9 +200,15 @@ try: ${PROG} ${DATA}
 ###############
 # utility rules
 ###############
-#
+
 clean:
-	${RM} -f ${PROG}
+	-${RM} -f ${OBJ} *.i indent.c
 
 clobber: clean
-	${RM} -f ${TARGET}
+	-${RM} ${TARGET}
+
+######################################
+# optional include of 1337 hacker rulz
+######################################
+
+-include 1337.mk ../1337.mk ../../1337.mk

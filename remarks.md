@@ -11,11 +11,13 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 * This entry requires Curses.
 
-* This is an update with bug fixes of a previous IOCCC winner.
-
 * The source is UTF-8.  When are `é` `ë` `ê` `è` not same as `e`?
 
-* A regression test suite is available on demand.  See `make test`.  The test suite will likely require `tic(1)` to build the specialised test terminal entry.
+* This is an update with bug fixes of a previous IOCCC winner, with permission of the author.
+
+* The `iocccsize(1)` tool only counts bytes, not characters, ie. UTF-8 multibyte characters such that some characters cost 2, 3, or 4 bytes, thus penalising UTF-8 entries.
+
+* A regression test suite is available on demand.  The test suite requires `tic(1)` to build the specialised test terminal entry.
 
 * Original unobfuscated more fully featured source available.
 
@@ -24,7 +26,7 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 * Refactor page framing to address original issue of scrolling and paging up/down when the file contains long lines.
 
-* CTRL+C will exit insert mode as with `vi(1)`; CTRL+C will quit, unlike `vi(1)`.
+* CTRL+C will exit insert mode as with `vi(1)`; CTRL+C will also quit, unlike `vi(1)`.
 
 * Add extended regular expression forward search with buffer wrap-around.
 
@@ -43,11 +45,15 @@ Simply type `make` to build.  There are two macros that can be customised:
 * Add upper/lower case inverting.
 
 
-### Award Ideas
+#### Award Ideas
 
-* 40th Ruby Anniversary - What Took You So Long?  
+* When is C the same Ruby, when its your 40th Anniversary.
+
+* 40th Ruby Anniversary - What took you so long?
 
 * Most interesting use of accents, eh?
+
+* Best abuse of UTF-8 (or why ASCII doesn't love you any more).
 
 * Best of something not named Eric.
 
@@ -55,7 +61,9 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 * Best je ne sais quoi.
 
-* Best winner upgrade.
+* Best utility 2.0
+
+* Best upgrade.
 
 
 ### The Man Page
@@ -131,6 +139,8 @@ EXIT STATUS
 
 
 NOTES
+
+* No UTF-8 support yet.
 
 * The display of long physical lines that are larger than the terminal
   screen is untested, so considered undefined.

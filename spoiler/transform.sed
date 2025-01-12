@@ -60,10 +60,6 @@ s/ROWS/LINES-1/g
 /^#ifdef.*ALT/,/^#else/d
 /^#endif.*ALT/d
 
-/#define EXT/d
-/^#ifdef.*EXT/,/^#else/d
-/^#endif.*EXT/d
-
 #/standout()/d
 #/standend()/d
 
@@ -88,15 +84,6 @@ s/[[:blank:]]+\/\*.*\*\/[[:blank:]]*$//
 # Inline comment.
 s,/\*[^*]+\*/,,g
 
-### IOCCC
-/adjmarks/d
-/growgap/d
-/#define MATCHES/d
-s/MATCHES/1/
-/^#define getsigch/d
-s/(^|[^[:alnum:]_])getsigch/getch/g
-### End IOCCC
-
 #
 # Replace macros.
 #
@@ -118,6 +105,9 @@ s/NOCHANGE/' '/g
 
 /^#define CHANGED/d
 s/CHANGED/'*'/g
+
+/^#define MATCHES/d
+s/MATCHES/10/g
 
 /^#define .*_CMDS/d
 s/MOTION_CMDS/18/g
@@ -187,8 +177,8 @@ s/(^|[^[:alnum:]_])left([^[:alnum:]_]|$)/\1H\2/g
 s/(^|[^[:alnum:]_])down([^[:alnum:]_]|$)/\1J\2/g
 s/(^|[^[:alnum:]_])up([^[:alnum:]_]|$)/\1K\2/g
 s/(^|[^[:alnum:]_])right([^[:alnum:]_]|$)/\1L\2/g
-s/(^|[^[:alnum:]_])lnbegin([^[:alnum:]_]|$)/\1_H\2/g
-s/(^|[^[:alnum:]_])lnend([^[:alnum:]_]|$)/\1L_\2/g
+s/(^|[^[:alnum:]_])lnbegin([^[:alnum:]_]|$)/\1Ǝ\2/g
+s/(^|[^[:alnum:]_])lnend([^[:alnum:]_]|$)/\1Ə\2/g
 s/(^|[^[:alnum:]_])lngoto([^[:alnum:]_]|$)/\1G\2/g
 s/(^|[^[:alnum:]_])insert([^[:alnum:]_]|$)/\1I\2/g
 s/(^|[^[:alnum:]_])yank([^[:alnum:]_]|$)/\1Ô\2/g
@@ -198,7 +188,7 @@ s/(^|[^[:alnum:]_])delX([^[:alnum:]_]|$)/\1Ò\2/g
 s/(^|[^[:alnum:]_])pastel([^[:alnum:]_]|$)/\1Ì\2/g
 s/(^|[^[:alnum:]_])paste([^[:alnum:]_]|$)/\1Í\2/g
 s/(^|[^[:alnum:]_])flipcase([^[:alnum:]_]|$)/\1Ç\2/g
-s/(^|[^[:alnum:]_])readfile([^[:alnum:]_]|$)/\1_S\2/
+s/(^|[^[:alnum:]_])readfile([^[:alnum:]_]|$)/\1Ȓ\2/
 s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1S\2/
 s/(^|[^[:alnum:]_])redraw([^[:alnum:]_]|$)/\1R\2/g
 s/quit([^[:alnum:]_]|$)/Q\1/g
@@ -206,16 +196,22 @@ s/(^|[^[:alnum:]_])display([^[:alnum:]_]|$)/\1Y\2/
 s/(^|[^[:alnum:]_])search([^[:alnum:]_]|$)/\1Ñ\2/
 s/(^|[^[:alnum:]_])next([^[:alnum:]_]|$)/\1F\2/
 s/(^|[^[:alnum:]_])clr_to_eol([^[:alnum:]_]|$)/\1C\2/
-s/(^|[^[:alnum:]_])gomark([^[:alnum:]_]|$)/\1G_\2/
-s/(^|[^[:alnum:]_])lnmark([^[:alnum:]_]|$)/\1_G\2/
-s/(^|[^[:alnum:]_])setmark([^[:alnum:]_]|$)/\1S_\2/
+s/(^|[^[:alnum:]_])gomark([^[:alnum:]_]|$)/\1ǵ\2/
+s/(^|[^[:alnum:]_])lnmark([^[:alnum:]_]|$)/\1Ǵ\2/
+s/(^|[^[:alnum:]_])setmark([^[:alnum:]_]|$)/\1Ș\2/
 s/(^|[^[:alnum:]_])setundo([^[:alnum:]_]|$)/\1U\2/
 s/(^|[^[:alnum:]_])undo([^[:alnum:]_]|$)/\1Û\2/
-s/(^|[^[:alnum:]_])bang([^[:alnum:]_]|$)/\1_B\2/
-s/(^|[^[:alnum:]_])cescape([^[:alnum:]_]|$)/\1B_\2/
+s/(^|[^[:alnum:]_])bang([^[:alnum:]_]|$)/\1Ƃ\2/
+s/(^|[^[:alnum:]_])cescape([^[:alnum:]_]|$)/\1Ɔ\2/
 s/(^|[^[:alnum:]_])anchor([^[:alnum:]_]|$)/\1Â\2/
 s/(^|[^[:alnum:]_])append([^[:alnum:]_]|$)/\1Ä\2/
 s/(^|[^[:alnum:]_])error([0-9])/\1_\2/
+s/(^|[^[:alnum:]_])getsigch([^[:alnum:]_]|$)/\1q\2/
+s/(^|[^[:alnum:]_])cleanup([^[:alnum:]_]|$)/\1Ɵ\2/
+s/(^|[^[:alnum:]_])prompt([^[:alnum:]_]|$)/\1Ƌ\2/
+s/(^|[^[:alnum:]_])fileread([^[:alnum:]_]|$)/\1Ȑ\2/
+s/(^|[^[:alnum:]_])filewrite([^[:alnum:]_]|$)/\1ȑ\2/
+
 
 #
 #  Variables
@@ -246,10 +242,15 @@ s/(^|[^[:alnum:]_])ebuf([^[:alnum:]_]|$)/\1c\2/g
 s/(^|[^[:alnum:]_])buf([^[:alnum:]_]|$)/\1b\2/g
 s/(^|[^[:alnum:]_])egap([^[:alnum:]_]|$)/\1h\2/g
 s/(^|[^[:alnum:]_])gap([^[:alnum:]_]|$)/\1g\2/g
+s/(^|[^[:alnum:]_])chg([^[:alnum:]_]|$)/\1Ȉ\2/g
+s/(^|[^[:alnum:]_])ins([^[:alnum:]_]|$)/\1ȉ\2/g
+s/(^|[^[:alnum:]_])cmd([^[:alnum:]_]|$)/\1Ƹ\2/g
+s/(^|[^[:alnum:]_])mode([^[:alnum:]_]|$)/\1ƹ\2/g
 s/(^|[^[:alnum:]_])filename([^[:alnum:]_]|$)/\1f\2/g
 s/(^|[^[:alnum:]_])ch([^[:alnum:]_]|$)/\1a\2/g
 s/(^|[^[:alnum:]_])ere_dollar_only([^[:alnum:]_]|$)/\1w\2/g
 s/(^|[^[:alnum:]_])ere([^[:alnum:]_]|$)/\1e\2/g
+s/(^|[^[:alnum:]_])replace([^[:alnum:]_]|$)/\1r\2/g
 s/(^|[^[:alnum:]_])match_length([^[:alnum:]_]|$)/\1l\2/g
 s/(^|[^[:alnum:]_])matches([^[:alnum:]_]|$)/\1p\2/g
 s/(^|[^[:alnum:]_])marks([^[:alnum:]_]|$)/\1m\2/g
@@ -264,6 +265,11 @@ s/(^|[^[:alnum:]_])child([^[:alnum:]_]|$)/\1a\2/g
 s/(^|[^[:alnum:]_])ex([^[:alnum:]_]|$)/\1i\2/g
 s/(^|[^[:alnum:]_])from([^[:alnum:]_]|$)/\1s\2/g
 s/(^|[^[:alnum:]_])to([^[:alnum:]_]|$)/\1t\2/g
+s/(^|[^[:alnum:]_])min([^[:alnum:]_]|$)/\1a\2/g
+s/(^|[^[:alnum:]_])xbuf([^[:alnum:]_]|$)/\1i\2/g
+s/(^|[^[:alnum:]_])xhere([^[:alnum:]_]|$)/\1j\2/g
+s/(^|[^[:alnum:]_])buflen([^[:alnum:]_]|$)/\1m\2/g
+s/(^|[^[:alnum:]_])gap_off([^[:alnum:]_]|$)/\1n\2/g
 
 
 #

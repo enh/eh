@@ -221,13 +221,14 @@ growgap(size_t min)
 		ptrdiff_t buflen = ebuf-buf;
 		/* Append the new space to the end of the gap. */
 		movegap(pos(ebuf));
+		off_t gap_off = pos(gap);
 		if (NULL == (xbuf = realloc(buf, buflen+BUF))) {
 			/* Bugger.  Don't exit, allow user to write file. */
 			(void) beep();
 			return;
 		}
 		egap = ebuf = xbuf+buflen+BUF;
-		gap = xbuf+(gap-buf);
+		gap = xbuf+gap_off;
 		buf = xbuf;
 		/* Restore gap's previous location. */
 		movegap(xhere);
@@ -361,11 +362,7 @@ display(void)
 	clr_to_eol();
 	(void) mvprintw(0, COLS-4,"%s%c",mode, chg);
 #else /* EXT */
-//	(void) mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
-	(void) mvprintw(
-		0, 0, "%s %ldB %d%%", filename, (long) pos(ebuf),
-		(int)(here * 100 / (pos(ebuf)+(pos(ebuf) <= 0)))
-	);
+	(void) mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
 	clr_to_eol();
 #endif /* EXT */
 	if (marker < 0) {

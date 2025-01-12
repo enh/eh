@@ -86,6 +86,21 @@ EXIT STATUS
     2           Read file error
 
 
+NOTES
+
+* No UTF-8 support yet.
+
+* The display of long physical lines that are larger than the terminal
+  screen is untested, so considered undefined.
+
+* CRLF newlines (DOS, FreeBSD Windows) and other non-spacing control
+  characters are not visible.  Consider converting newlines using SUS
+  tools like `awk(1)` or `sed(1)`:
+
+    sed -e's/^M$//' dos.txt > unix.txt
+    sed -e's/$/^M/' unix.txt > dos.txt
+
+
 REFERENCES
 
 * Craig A. Finseth, "Craft Of Text Editing", 1991
@@ -102,24 +117,3 @@ REFERENCES
 
 * Single Unix Specification, Curses issue 7
   <https://pubs.opengroup.org/onlinepubs/9699909599/toc.pdf>
-
-
-NOTES
-
-* The display of long physical lines that are larger than the terminal
-  screen is untested, so considered undefined.
-
-* CRLF newlines (DOS, FreeBSD Windows) and other non-spacing control
-  characters are not visible.  Consider converting newlines using SUS
-  tools like `awk(1)` or `sed(1)`:
-
-    sed -e's/^M$//' dos.txt > unix.txt
-    sed -e's/$/^M/' unix.txt > dos.txt
-
-
-IOCCC AWARD IDEAS
-
-- When are `é` `ë` `ê` `è` not same as `e`?
-- Most interesting use of accents, eh?
-- Best je ne sais quoi.
-- Best upgrade of `ae`.

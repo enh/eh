@@ -18,7 +18,7 @@ E :=
 .SUFFIXES :
 .SUFFIXES : .c .h .i $O $E
 
-BUF	:= 131072
+BUF	:= 65536
 MODE	:= 0600
 
 # Override from the command-line, eg. make DBG='-O0 -g'
@@ -28,10 +28,17 @@ DBG	:= -DNDEBUG
 # Cygwin gcc complains about ctype macros char-subscripts, but not for
 # ctype functions. eg. isspace(ch) vs (isspace)(ch)
 GCC	:= -fno-ident -flto
-#-fno-asynchronous-unwind-tables -fno-unroll-loops -fdelete-null-pointer-checks
 .endif
 
-CFLAGS	:= -std=gnu17 -Os -Wall -Wextra -pedantic -Wno-char-subscripts ${GCC} ${DBG}
+# Common C compiler warnings to silence
+#
+# -Wno-char-subscripts			ctypes macros
+# -Wno-incompatible-pointer-types	atexit(endwin)
+# -Wno-unused-parameter			main(int argc, ...)
+#
+CSILENCE := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter
+
+CFLAGS	:= -std=gnu17 -Os -Wall -Wextra -pedantic ${CSILENCE} ${GCC} ${DBG}
 
 # Frack need extra #define to enable SUS standard strdup(), strndup().
 CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} -D_XOPEN_SOURCE=700
@@ -76,11 +83,28 @@ install: eh.0 eh$E
 #######################################################################
 
 ../prog.c: eh.c transform.sed
-	sed -E -f transform.sed eh.c | \
+	sed -E -f transform_ioccc.sed eh.c | \
+	sed -E -f transform.sed | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
 	sed -e'/^[[:blank:]]*$$/d' >$@
 
 ../prog$E: ../prog.c
+
+../prog.ext.c: eh.c transform.sed
+	sed -E -f transform_ext.sed eh.c | \
+	sed -E -f transform.sed | \
+	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
+	sed -e'/^[[:blank:]]*$$/d' >$@
+	cp $@ ../prog.alt.c
+
+../prog.ext$E: ../prog.ext.c
+
+../prog.alt$E: ../prog.alt.c
+	${CC} ${CFLAGS} ${CPPFLAGS} -I.. -o $@ ../prog.alt.c ${LIBS}
+
+../prog.alt.i: ../prog.alt.c
+	${CC} ${CFLAGS} ${CPPFLAGS} -I.. -E ../prog.alt.c >$*.i
+
 
 #######################################################################
 # Tests
@@ -134,7 +158,7 @@ always:
 
 # Be sure to build the target binary separately before hand.  This allows
 # testing an alternative binary by setting PROG, eg. make PROG=./boo test
-test: always ${PROG} test/terminfo.cdb
+test: always test/terminfo.cdb
 	-${MAKE} PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/test/terminfo.cdb tests
 
 tests:	tests_have_term_data \
