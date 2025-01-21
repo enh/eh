@@ -95,7 +95,6 @@ install: eh.0 eh$E
 	sed -E -f transform.sed | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
 	sed -e'/^[[:blank:]]*$$/d' >$@
-	cp $@ ../prog.alt.c
 
 ../prog.ext$E: ../prog.ext.c
 

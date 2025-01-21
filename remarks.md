@@ -45,7 +45,7 @@ Simply type `make` to build.  There are two macros that can be customised:
 * Add upper/lower case inverting.
 
 
-#### Award Ideas
+### Award Ideas
 
 * When is C the same Ruby, when its your 40th Anniversary.
 

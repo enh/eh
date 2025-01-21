@@ -32,6 +32,8 @@ SHELL= bash
 #######################
 
 CC= cc
+GCC= gcc
+CLANG= clang
 GINDENT= gindent
 MV= mv
 RM= rm
