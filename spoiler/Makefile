@@ -5,8 +5,9 @@
 # Other platforms may require `bmake`.
 #
 
-.POSIX :
+.POSIX:
 
+# Unix vs Windows extensions
 .if ${.MAKE.OS} == "Cygwin"
 O := .obj
 E := .exe
@@ -15,8 +16,8 @@ O := .o
 E :=
 .endif
 
-.SUFFIXES :
-.SUFFIXES : .c .h .i $O $E
+.SUFFIXES:
+.SUFFIXES: .c .h .i $O $E
 
 BUF	:= 65536
 MODE	:= 0600
@@ -57,6 +58,8 @@ MANDIR	!= find /usr/local -maxdepth 2 -type d -name man | head -n1
 #
 #######################################################################
 
+.PHONY: all clean clobber distclean install strip size test tests
+
 all: build
 
 build: eh$E ../prog$E
@@ -64,6 +67,8 @@ build: eh$E ../prog$E
 clean:
 	-rm -f eh$E ../prog$E *.core *.stackdump *.i a.out a.txt b.txt
 	-rm -rf test/terminfo.cdb
+
+distclean clobber: clean
 
 strip: build
 	strip eh$E ../prog$E
@@ -160,7 +165,7 @@ always:
 test: always test/terminfo.cdb
 	-${MAKE} PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/test/terminfo.cdb tests
 
-tests:	tests_have_term_data \
+TESTS:= tests_have_term_data \
 	arg0 term0 empty0 empty1 empty3 redraw0 flip0 flip1 \
 	ins0 ins1 ins2 ins3 ins4 ins5 \
 	del0 del1 del2 del3 del4 del5 del6 \
@@ -176,8 +181,11 @@ tests:	tests_have_term_data \
 	replace0 replace1 replace2 write0 read0 read1 \
 	select0 select1 select2 select3 select4 select5
 
-tests-skipped:
-	empty2 write1
+.SILENT: ${TESTS}
+
+tests: ${TESTS}
+
+tests_skipped: empty2 write1
 
 tests_have_term_data:
 	@test -d ${TESTDIR}
