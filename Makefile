@@ -55,7 +55,7 @@ TRUE= true
 # -Wno-char-subscripts			ctypes macros
 # -Wno-incompatible-pointer-types	atexit(endwin)
 #
-CSILENCE= -Wno-char-subscripts -Wno-incompatible-pointer-types
+CSILENCE= -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter
 
 # Attempt to silence unknown warnings
 #
@@ -130,7 +130,7 @@ CC= cc
 #
 ifeq "$(findstring $(CLANG),${CC})" "$(CLANG)"
 #
-CSILENCE+=
+CSILENCE+= -Wno-strict-prototypes
 #
 CWARN+= -Weverything
 #

@@ -37,7 +37,9 @@ GCC	:= -fno-ident -flto
 # -Wno-incompatible-pointer-types	atexit(endwin)
 # -Wno-unused-parameter			main(int argc, ...)
 #
-CSILENCE := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter
+# -Wno-strict-prototypes		clang functions no arguments
+#
+CSILENCE := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter -Wno-strict-prototypes
 
 CFLAGS	:= -std=gnu17 -Os -Wall -Wextra -pedantic ${CSILENCE} ${GCC} ${DBG}
 

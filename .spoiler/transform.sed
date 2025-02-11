@@ -153,7 +153,7 @@ s/NULL/0/g
 s/'\\0'/0/g
 
 #
-#  Functions & Types
+#  Functions & Types 👾 💣 🛸 🔥 🎃
 #
 
 s/(^|[^[:alnum:]_])adjmarks([^[:alnum:]_]|$)/\1j\2/g
@@ -190,8 +190,8 @@ s/(^|[^[:alnum:]_])paste([^[:alnum:]_]|$)/\1Í\2/g
 s/(^|[^[:alnum:]_])flipcase([^[:alnum:]_]|$)/\1Ç\2/g
 s/(^|[^[:alnum:]_])readfile([^[:alnum:]_]|$)/\1Ȓ\2/
 s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1S\2/
-s/(^|[^[:alnum:]_])redraw([^[:alnum:]_]|$)/\1R\2/g
-s/quit([^[:alnum:]_]|$)/Q\1/g
+s/(^|[^[:alnum:]_])redraw([^[:alnum:]_]|$)/\1🔥\2/g
+s/quit([^[:alnum:]_]|$)/🎃\1/g
 s/(^|[^[:alnum:]_])display([^[:alnum:]_]|$)/\1Y\2/
 s/(^|[^[:alnum:]_])search([^[:alnum:]_]|$)/\1Ñ\2/
 s/(^|[^[:alnum:]_])next([^[:alnum:]_]|$)/\1F\2/
