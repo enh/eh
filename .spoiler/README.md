@@ -57,22 +57,19 @@ Any other key will redraw the screen.
 Environment
 -----------
 
-    SHELL       The user's shell of choice.
+* `SHELL` : The user's shell of choice.
 
-    TERM        The user's terminal type.  If the environmental variable
-                `TERM` is not set or insufficient then terminate with non-
-                zero exit status.
+* `TERM` : The user's terminal type.  If the environmental variable `TERM` is not set or insufficient then terminate with non- zero exit status.
 
-    TERMINFO    The absolute file path of a `terminfo` database.  See
-                `terminfo(5)`.
+* `TERMINFO` : The absolute file path of a `terminfo` database.  See `terminfo(5)`.
 
 
 Exit Status
 -----------
 
-- 0 success (or missing filename)
-- 1 insufficient TERM
-- 2 read file error
+- 0     Success
+- 1     Insufficient capabilities for `TERM`.
+- 2     Read file error
 
 
 Build & Test
@@ -120,8 +117,10 @@ Bugs & Differences
 
 * CRLF newlines (DOS, FreeDOS, Windows) and other non-spacing control characters are not visible.  Consider converting newlines using POSIX tools like `awk(1)` or `sed(1)`:
 
-    sed -e's/^M$//' dos.txt > unix.txt
-    sed -e's/$/^M/' unix.txt > dos.txt
+        $ sed -e's/^V^M$//' dos.txt > unix.txt
+        $ sed -e's/$/^V^M/' unix.txt > dos.txt
+
+  `^V` is the default `stty(1)` insert literal prefix key.
 
 * Behaviour of `^` is more like `0` in `vi(1)`, try `^w` (roughly similar except on empty / blank lines).
 
