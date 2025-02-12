@@ -76,10 +76,10 @@ strip: build
 size: ../prog.c
 	-iocccsize -v1 $>
 
-install: eh.0 eh$E
+install: README.md eh$E
 	install -o 0 -g 0 -m 555 eh$E /usr/local/bin
 	install -o 0 -g 0 -d ${MANDIR}/cat1
-	install -o 0 -g 0 -p -m 444 eh.0 ${MANDIR}/cat1
+	install -o 0 -g 0 -p -m 444 README.md ${MANDIR}/cat1/eh.0
 
 #######################################################################
 # Generated files.
