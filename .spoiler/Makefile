@@ -7,29 +7,24 @@
 
 .POSIX:
 
-# Unix vs Windows extensions
-.if ${.MAKE.OS} == "Cygwin"
-O := .obj
-E := .exe
-.else
-O := .o
-E :=
-.endif
+# More portable between bmake and gmake that have different IF-ELSE syntax.
+# Unix vs Windows extensions; gmake supports BSD's X != cmdline vs X = $(cmdline)
+MAKE_OS	!= if test "${.MAKE.OS}" = ''; then uname|sed 's/^CYGWIN.*/Cygwin/'; else echo ${.MAKE.OS}; fi
+O	!= if test ${MAKE_OS} = 'Cygwin'; then echo '.obj'; else echo '.o'; fi
+E	!= if test ${MAKE_OS} = 'Cygwin'; then echo '.exe'; fi
 
 .SUFFIXES:
 .SUFFIXES: .c .h .i $O $E
 
+# User configurable.
 BUF	:= 65536
 MODE	:= 0600
 
 # Override from the command-line, eg. make DBG='-O0 -g'
 DBG	:= -DNDEBUG
 
-.if ${CC} == 'gcc' || ${CC} == 'cc'
-# Cygwin gcc complains about ctype macros char-subscripts, but not for
-# ctype functions. eg. isspace(ch) vs (isspace)(ch)
-GCC	:= -fno-ident -flto
-.endif
+CC	!= if test ${CC} = 'c99'; then echo gcc; else echo ${CC}; fi
+LDFLAGS	!= if test ${CC} = 'gcc'; then echo '-fno-ident -flto'; fi
 
 # Common C compiler warnings to silence
 #
@@ -39,22 +34,23 @@ GCC	:= -fno-ident -flto
 #
 # -Wno-strict-prototypes		clang functions no arguments
 #
-CSILENCE := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter -Wno-strict-prototypes
+CSILENT := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter -Wno-strict-prototypes
 
-CFLAGS	:= -std=gnu17 -Os -Wall -Wextra -pedantic ${CSILENCE} ${GCC} ${DBG}
+CFLAGS	:= -std=gnu17 -Os -Wall -Wextra -pedantic ${CSILENT} ${DBG}
 
 # Frack need extra #define to enable SUS standard strdup(), strndup().
 CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} -D_XOPEN_SOURCE=700
 
 LIBS	:= -lcurses
 
-MANDIR	!= find /usr/local -maxdepth 2 -type d -name man | head -n1
+MANDIR	!= dirname "$$(find /usr/local -maxdepth 3 -type d -name man1)"
+MANDIR  != if test "${MANDIR}" = '.'; then echo /usr/local/share/man; else echo ${MANDIR}; fi
 
 .c.i:
 	${CC} ${CFLAGS} ${CPPFLAGS} -E $*.c >$*.i
 
 .c$E :
-	${CC} ${CFLAGS} ${CPPFLAGS} -o $*$E $< ${LIBS}
+	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $*$E $< ${LIBS}
 
 #######################################################################
 #
