@@ -821,16 +821,21 @@ lnmark(void)
 }
 
 void
-prompt(int ch)
+prompt(int ch, const char *str)
 {
 	(void) echo();
 	(void) noraw();
 	(void) standout();
 	(void) mvaddch(0, 0, ch);
 	clr_to_eol();
-	assert(COLS <= egap - gap);
+	/* Prime the input with initial input. */
+	ssize_t n = strlen(str);
+	assert(n < COLS && COLS <= egap-gap);
+	while (0 < n && 0 == ungetch(str[--n])) {
+		;
+	}
 	/* NetBSD 9.3 erase ^H works fine, but not the kill ^U character. */
-	(void) mvgetnstr(0, 1, gap, egap-gap);
+	(void) mvgetnstr(0, 1, gap, COLS);
 	(void) noecho();
 	(void) raw();
 }
@@ -851,13 +856,7 @@ filewrite(const char *fn)
 void
 writefile(void)
 {
-	/* Prime the input with the current filename. */
-	ssize_t n = strlen(filename);
-	assert(n < COLS && COLS <= egap-gap);
-	while (0 <= --n) {
-		(void) ungetc(filename[n], stdin);
-	}
-	prompt('>');
+	prompt('>', filename);
 	if (*gap != '\0') {
 		free(filename);
 		filename = strdup(gap);
@@ -889,7 +888,7 @@ fileread(const char *fn)
 void
 readfile(void)
 {
-	prompt('<');
+	prompt('<', "");
 	if (fileread(gap)) {
 		/* ed(1) ? */
 		(void) beep();
@@ -918,7 +917,7 @@ bang(void)
 	pid_t child;
 	int child_in[2], child_out[2], ex = 74;
 	deld();
-	prompt('!');
+	prompt('!', "");
 	if (0 == pipe(child_in)) {
 		if (0 == pipe(child_out)) {
 			if ((child = fork()) >= 0) {
@@ -1095,7 +1094,7 @@ search(void)
 {
 #ifdef EXT
 	char *t;
-	prompt('/');
+	prompt('/', "");
 	free(replace);
 	/* Find end of pattern. */
 	for (t = gap; *t != '\0'; t++) {
