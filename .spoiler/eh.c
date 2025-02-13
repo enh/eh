@@ -715,7 +715,7 @@ void
 delx(void)
 {
 	if (marker < 0) {
-		(void) ungetc('l', stdin);
+		(void) ungetch('l');
 	}
 	deld();
 }
@@ -725,7 +725,7 @@ void
 delX(void)
 {
 	if (marker < 0) {
-		(void) ungetc('h', stdin);
+		(void) ungetch('h');
 	}
 	deld();
 }
@@ -733,7 +733,7 @@ delX(void)
 // /*
 //  * Similar to `dl` command, eg.
 //  *
-//  *	ungetc('l', stdin);
+//  *	ungetch('l');
 //  *	deld();
 //  */
 // void
@@ -815,7 +815,7 @@ lnmark(void)
 	if (ch == '\'') {
 		ch = '`';
 	}
-	(void) ungetc(ch, stdin);
+	(void) ungetch(ch);
 	gomark();
 	lnbegin();
 }
@@ -1072,7 +1072,7 @@ next(void)
 				/* End replacement string. */
 				if (*++s == 'a') {
 					/* a = all */
-					(void) ungetc('n', stdin);
+					(void) ungetch('n');
 				}
 				break;
 			}
