@@ -21,6 +21,9 @@ MODE	:= 0600
 # Assume ${DBG} is the tail of ${CFLAGS}
 DBG	:= -DNDEBUG
 
+BUILT	:= `date -u +'%a, %d %b %Y %H:%M:%SZ'`
+COMMIT	:= `git describe --tags`
+
 #############################
 # shell used by this Makefile
 #############################
@@ -183,7 +186,10 @@ ${PROG}$E: ${PROG}.c
 #
 alt: data ${ALT_TARGET}
 
-${PROG}.alt$E: ${PROG}.alt.c
+build.h :
+	printf '#define BUILT "%s"\n#define COMMIT "%s"\n' "${BUILT}" "${COMMIT}" >build.h
+
+${PROG}.alt$E: build.h ${PROG}.alt.c
 	${CC} ${CFLAGS} ${PROG}.alt.c -o $@ ${LDFLAGS}
 
 # data files
@@ -204,10 +210,10 @@ try: ${PROG} ${DATA}
 ###############
 
 clean:
-	-${RM} -f ${OBJ} *.i indent.c
+	-${RM} -f ${OBJ} *.i indent.c  build.h
 
 clobber: clean
-	-${RM} ${TARGET}
+	-${RM} ${TARGET} ${PROG}.alt$E
 
 ######################################
 # optional include of 1337 hacker rulz

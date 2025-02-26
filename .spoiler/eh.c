@@ -17,6 +17,7 @@
 #ifdef EXT
 #include <signal.h>
 #include <sys/wait.h>
+#include "build.h"
 #else /* EXT */
 #endif /* EXT */
 
@@ -360,7 +361,7 @@ display(void)
 		(int)(here * 100 / (pos(ebuf)+(pos(ebuf) <= 0)))
 	);
 	clr_to_eol();
-	(void) mvprintw(0, COLS-4,"%s%c",mode, chg);
+	(void) mvprintw(0, COLS-strlen(mode)-1,"%s%c",mode, chg);
 #else /* EXT */
 	(void) mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
 	clr_to_eol();
@@ -983,6 +984,13 @@ cescape(int ch)
 	}
 	return ch;
 }
+
+void
+version(void)
+{
+	mode = BUILT " " COMMIT;
+}
+
 #else /* EXT */
 void
 writefile(void)
@@ -1158,7 +1166,7 @@ anchor(void)
 }
 
 #ifdef EXT
-static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpu!\\mRWQ\003";
+static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpu!\\mRWQ\003V";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1172,7 +1180,7 @@ static void (*func[])(void) = {
 	yank, deld, paste, pastel, undo, bang,
 	/* Other */
 	anchor, setmark, readfile, writefile, quit, quit,
-	redraw
+	version, redraw
 };
 #else /* EXT */
 static char key[] = "hjklbwHJKL|G/n~ixydPu\\WQ\003";

@@ -59,6 +59,7 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
                 eg. `!!ls -l`.
     R           Read a file into buffer after cursor.
     W           Write buffer to file.
+    V           Show build and version.
     Q           Quit.
     CTRL+C      Quit.
 
