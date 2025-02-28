@@ -1144,13 +1144,15 @@ void
 flipcase(void)
 {
 	char *p = ptr(here);
-	/* Skip moving the gap and modify in place. */
-	*p = islower(*p) ? toupper(*p) : tolower(*p);
+	if (p < ebuf) {
+		/* Skip moving the gap and modify in place. */
+		*p = islower(*p) ? toupper(*p) : tolower(*p);
 #ifdef EXT
-	chg = CHANGED;
+		chg = CHANGED;
 #else /* EXT */
 #endif /* EXT */
-	right();
+		right();
+	}
 }
 
 void
