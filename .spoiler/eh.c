@@ -61,7 +61,7 @@ static regex_t ere;
 #define MOTION_CMDS	14
 
 static int cur_row, cur_col, count, ere_dollar_only;
-static char *filename, *scrap;
+static char *filename, *scrap, *mode = "";
 static char buf[BUF], *gap = buf, *egap, *ebuf, *ugap = buf, *uegap;
 static off_t here, page, epage, uhere, match_length, scrap_length, marker = -1;
 static regex_t ere;
@@ -1156,7 +1156,7 @@ flipcase(void)
 void
 quit(void)
 {
-	filename = NULL;
+	mode = NULL;
 }
 
 void
@@ -1223,10 +1223,17 @@ getcmd(int m)
 void
 cleanup(void)
 {
+	/* Most of these are to satisfy Valgrind or saniisers.  The OS
+	 * reclaims memory when the program exits, making the need to
+	 * free() theoritcally unnecessary.
+	 */
+	(void) delwin(stdscr);
 	(void) endwin();
+	free(filename);
 	regfree(&ere);
 	free(replace);
 	free(scrap);
+	free(buf);
 }
 #else /* EXT */
 #endif /* EXT */
@@ -1267,7 +1274,7 @@ main(int argc, char **argv)
 #endif /* EXT */
 	/* Force display() to frame the initial screen. */
 	epage = 1;
-	while (filename != NULL) {
+	while (mode != NULL) {
 		display();
 		getcmd(ALL_CMDS);
 	}

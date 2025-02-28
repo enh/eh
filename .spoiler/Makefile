@@ -27,6 +27,7 @@ GROUP	:= 0
 
 # Override from the command-line, eg. make DBG='-O0 -g'
 DBG	:= -DNDEBUG
+LDDBG	:=
 
 CC	!= if test ${CC} = 'c99'; then echo gcc; else echo ${CC}; fi
 LDFLAGS	!= if test ${CC} = 'gcc'; then echo '-fno-ident -flto'; fi
@@ -102,6 +103,10 @@ build.h :
 
 eh$E : build.h eh.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $*$E $< ${LIBS}
+
+debug: clean
+	make DBG='-O0 -g -fsanitize=address -lasan' build
+	paxctl +a ${PROG}
 
 #######################################################################
 # Generated files.
