@@ -276,12 +276,13 @@ col_or_eol(off_t cur, int col, int maxcol)
 off_t
 row_start(off_t cur, off_t offset)
 {
+	char *p;
 	int col = 0;
 	off_t mark = cur;
 	assert(/* 0 <= cur && cur <= offset &&*/ offset <= pos(ebuf));
 	while (cur < offset) {
 		cur++;
-		col += *ptr(cur) == '\t' ? TABSTOP(col) : 1;
+		col += ((p = ptr(cur)) < ebuf && *p == '\t') ? TABSTOP(col) : 1;
 		if (COLS <= col) {
 			mark = cur;
 			col = 0;
