@@ -105,7 +105,7 @@ eh$E : build.h eh.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $*$E $< ${LIBS}
 
 debug: clean
-	make DBG='-O0 -g -fsanitize=address -lasan' build
+	make DBG='-O0 -g -fsanitize=address -fsanitize=pointer-subtract -fsanitize=pointer-compare -lasan' build
 	paxctl +a ${PROG}
 
 #######################################################################
