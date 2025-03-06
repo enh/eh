@@ -997,6 +997,12 @@ version(void)
 	mode = BUILT " " COMMIT;
 }
 
+void
+quit(void)
+{
+	mode = NULL;
+}
+
 #else /* EXT */
 void
 writefile(void)
@@ -1005,6 +1011,12 @@ writefile(void)
 	movegap(0);
 	(void) write(i = creat(filename, MODE), egap, ebuf-egap);
 	(void) close(i);
+}
+
+void
+quit(void)
+{
+	filename = NULL;
 }
 #endif /* EXT */
 
@@ -1162,12 +1174,6 @@ flipcase(void)
 }
 
 void
-quit(void)
-{
-	mode = NULL;
-}
-
-void
 anchor(void)
 {
 	marker = marker < 0 ? here : -1;
@@ -1254,12 +1260,12 @@ main(int argc, char **argv)
 		return 1;
 	}
 	(void) noecho();
+	(void) raw();
 #ifdef EXT
 	(void) atexit(cleanup);
 	/* Switching between cbreak() and raw() impacts terminal output
 	 * which can alter the expected test output files.
 	 */
-	(void) raw();
 	growgap(BUF);
 	filename = strdup(argv[1] == NULL ? "" : *++argv);
 	if (fileread(filename)) {
@@ -1267,8 +1273,13 @@ main(int argc, char **argv)
 		return 2;
 	}
 	uegap = egap;
+	/* Force display() to frame the initial screen. */
+	epage = 1;
+	while (mode != NULL) {
+		display();
+		getcmd(ALL_CMDS);
+	}
 #else /* EXT */
-	(void) cbreak();
 	(void) atexit(endwin);
 	uegap = egap = ebuf = buf + BUF;
 	if (0 < (argc = open(filename = *++argv, 0))) {
@@ -1279,12 +1290,12 @@ main(int argc, char **argv)
 			return 2;
 		}
 	}
-#endif /* EXT */
 	/* Force display() to frame the initial screen. */
 	epage = 1;
-	while (mode != NULL) {
+	while (filename != NULL) {
 		display();
 		getcmd(ALL_CMDS);
 	}
+#endif /* EXT */
 	return 0;
 }
