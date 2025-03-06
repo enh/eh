@@ -191,7 +191,8 @@ s/(^|[^[:alnum:]_])flipcase([^[:alnum:]_]|$)/\1Ç\2/g
 s/(^|[^[:alnum:]_])readfile([^[:alnum:]_]|$)/\1Ȓ\2/
 s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1S\2/
 s/(^|[^[:alnum:]_])redraw([^[:alnum:]_]|$)/\1🔥\2/g
-s/quit([^[:alnum:]_]|$)/🎃\1/g
+#s/quit([^[:alnum:]_]|$)/🎃\1/g
+s/quit([^[:alnum:]_]|$)/Ф\1/g
 s/(^|[^[:alnum:]_])display([^[:alnum:]_]|$)/\1Y\2/
 s/(^|[^[:alnum:]_])search([^[:alnum:]_]|$)/\1Ñ\2/
 s/(^|[^[:alnum:]_])next([^[:alnum:]_]|$)/\1F\2/
@@ -211,7 +212,8 @@ s/(^|[^[:alnum:]_])cleanup([^[:alnum:]_]|$)/\1Ɵ\2/
 s/(^|[^[:alnum:]_])prompt([^[:alnum:]_]|$)/\1Ƌ\2/
 s/(^|[^[:alnum:]_])fileread([^[:alnum:]_]|$)/\1Ȑ\2/
 s/(^|[^[:alnum:]_])filewrite([^[:alnum:]_]|$)/\1ȑ\2/
-
+s/(^|[^[:alnum:]_])charwidth([^[:alnum:]_]|$)/\1ө\2/
+s/(^|[^[:alnum:]_])version([^[:alnum:]_]|$)/\1Ж\2/
 
 #
 #  Variables
