@@ -19,6 +19,8 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 * A regression test suite is available on demand.  The test suite requires `tic(1)` to build the specialised test terminal entry.
 
+* This entry IS NOT an "Abuse Of The Rules".  There is a submitted version of this entry that is an "Abuse Of The Rules" that is more fully featured.
+
 * Original unobfuscated more fully featured source available.
 
 
@@ -26,7 +28,7 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 * Refactor page framing to address original issue of scrolling and paging up/down when the file contains long lines.
 
-* CTRL+C will exit insert mode as with `vi(1)`; CTRL+C will also quit, unlike `vi(1)`.
+* CTRL+C will exit insert mode as with `vi(1)`; CTRL+C will also quit, unlike `vi(1)`, for those who cannot find `Q`.
 
 * Add extended regular expression forward search with buffer wrap-around.
 
