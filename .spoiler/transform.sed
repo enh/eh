@@ -229,7 +229,7 @@ s/(^|[^[:alnum:]_])cur_row([^[:alnum:]_]|$)/\1y\2/g
 s/(^|[^[:alnum:]_])cur_col([^[:alnum:]_]|$)/\1x\2/g
 s/(^|[^[:alnum:]_])cur([^[:alnum:]_]|$)/\1m\2/g
 s/(^|[^[:alnum:]_])maxcol([^[:alnum:]_]|$)/\1n\2/g
-s/(^|[^[:alnum:]_])key([^[:alnum:]_]|$)/\1k_\2/g
+s/(^|[^[:alnum:]_])key([^[:alnum:]_]|$)/\1Ќ\2/g
 s/(^|[^[:alnum:]_])func([^[:alnum:]_]|$)/\1k\2/g
 s/(^|[^[:alnum:]_])uhere([^[:alnum:]_]|$)/\1ö\2/g
 s/(^|[^[:alnum:]_])uegap([^[:alnum:]_]|$)/\1ò\2/g

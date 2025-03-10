@@ -80,10 +80,11 @@ all: build
 build: eh$E ../prog$E
 
 clean:
-	-rm -f eh$E build.h ../prog$E *.core *.stackdump *.i a.out a.txt b.txt
+	-rm -f *.core *.stackdump *.i a.out a.txt b.txt
 	-rm -rf test/terminfo.cdb
 
 distclean clobber: clean
+	-rm -f eh$E build.h ../prog.c ../prog$E ../prog.ext$E
 
 strip: build
 	strip eh$E ../prog$E
@@ -105,7 +106,7 @@ eh$E : build.h eh.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $*$E $< ${LIBS}
 
 debug: clean
-	make DBG='-O0 -g -fsanitize=address -fsanitize=pointer-subtract -fsanitize=pointer-compare -lasan' build
+	${MAKE} DBG='-O0 -g -fsanitize=address -fsanitize=pointer-subtract -fsanitize=pointer-compare -lasan' build
 	paxctl +a ${PROG}
 
 #######################################################################
@@ -208,7 +209,7 @@ TESTS:= tests_have_term_data \
 
 .SILENT: ${TESTS}
 
-tests: ${TESTS}
+tests: ${TESTS} clean
 
 tests_skipped: empty2 write1
 

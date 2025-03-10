@@ -28,19 +28,19 @@ COMMIT	:= `git describe --tags`
 # shell used by this Makefile
 #############################
 
-SHELL= bash
+SHELL	:= bash
 
 #######################
 # common tool locations
 #######################
 
-CC= cc
-GCC= gcc
-CLANG= clang
-GINDENT= gindent
-MV= mv
-RM= rm
-TRUE= true
+CC	:= cc
+GCC	:= gcc
+CLANG	:= clang
+GINDENT	:= gindent
+MV	:= mv
+RM	:= rm
+TRUE	:= true
 
 #####################
 # C compiler settings
@@ -213,7 +213,7 @@ clean:
 	-${RM} -f ${OBJ} *.i indent.c  build.h
 
 clobber: clean
-	-${RM} ${TARGET} ${PROG}.alt$E
+	-${RM} ${TARGET}
 
 ######################################
 # optional include of 1337 hacker rulz
