@@ -215,6 +215,18 @@ clean:
 clobber: clean
 	-${RM} ${TARGET}
 
+strip: build
+	strip ${BUILD}
+	ls -l ${BUILD}
+
+size: ../prog.c
+	-iocccsize -v1 $?
+
+entry:
+	-mkdir -p .stage
+	-rm -rf .stage/*
+	mkiocccentry -m $$(which ${MAKE}) -ILICENSE.md -Ieh.tws -Iprog.ext.c .stage `pwd`
+
 ######################################
 # optional include of 1337 hacker rulz
 ######################################
