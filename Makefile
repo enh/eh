@@ -225,7 +225,7 @@ size: ../prog.c
 entry:
 	-mkdir -p .stage
 	-rm -rf .stage/*
-	mkiocccentry -m $$(which ${MAKE}) -ILICENSE.md -Ieh.tws -Iprog.ext.c .stage `pwd`
+	mkiocccentry -m ${MAKE} -Y -i.answers -ILICENSE.md -Ieh.tws -Iprog.ext.c .stage `pwd`
 
 ######################################
 # optional include of 1337 hacker rulz
