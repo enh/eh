@@ -397,7 +397,7 @@ display(void)
 		 * highlighted upper case letter (instead of two
 		 * byte ^X).
 		 */
-		(void) mvaddch(i, j, isprint(*p) || *p == '\t' || *p == '\n' ? *p : A_REVERSE|(*p+'@'));
+		(void) mvaddch(i, j, iscntrl(*p) && *p != '\t' && *p != '\n' ? A_REVERSE|(*p+'@') : *p);
 #else /* EXT */
 		(void) mvaddch(i, j, *p);
 #endif /* EXT */
