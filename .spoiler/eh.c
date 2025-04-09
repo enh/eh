@@ -253,9 +253,9 @@ bol(off_t cur)
 }
 
 int
-charwidth(int s, int col)
+charwidth(const char *s, int col)
 {
-	return s == '\t' ? TABSTOP(col) : 1;
+	return *s == '\t' ? TABSTOP(col) : 1;
 }
 
 /*
@@ -269,7 +269,7 @@ col_or_eol(off_t cur, int col, int maxcol)
 {
 	char *p;
 	while (col < maxcol && (p = ptr(cur)) < ebuf && *p != '\n') {
-		col += charwidth(*p, col);
+		col += charwidth(p, col);
 		cur++;
 	}
 	assert(0 <= cur && cur <= pos(ebuf));
@@ -287,7 +287,7 @@ row_start(off_t cur, off_t offset)
 	off_t mark = cur;
 	assert(/* 0 <= cur && cur <= offset &&*/ offset <= pos(ebuf));
 	while (cur < offset && (p = ptr(++cur)) < ebuf) {
-		col += charwidth(*p, col);
+		col += charwidth(p, col);
 		if (COLS <= col) {
 			mark = cur;
 			col = 0;
@@ -406,7 +406,7 @@ display(void)
 		 * tabstop (a multiple of 8, eg. 0, 8, 16, ...).
 		 * See SUS Curses Issue 7 section 3.4.3.
 		 */
-		j += charwidth(*p, j);
+		j += charwidth(p, j);
 		if (*p == '\n' || COLS <= j) {
 			j = 0;
 			i++;
