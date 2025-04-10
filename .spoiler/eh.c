@@ -362,14 +362,14 @@ display(void)
 	(void) erase();
 	(void) standout();
 #ifdef EXT
-	(void) mvprintw(
-		0, 0, "%s %ldB %d%%", filename, (long) pos(ebuf),
+	(void) printw(
+		"%s %ldB %d%%", filename, pos(ebuf),
 		(int)(here * 100 / (pos(ebuf)+(pos(ebuf) <= 0)))
 	);
 	clr_to_eol();
 	(void) mvprintw(0, COLS-strlen(mode)-1,"%s%c",mode, chg);
 #else /* EXT */
-	(void) mvprintw(0, 0, "%s %ldB", filename, (long) pos(ebuf));
+	(void) printw("%s %ldB", filename, pos(ebuf));
 	clr_to_eol();
 #endif /* EXT */
 	if (marker < 0) {
