@@ -363,8 +363,8 @@ display(void)
 	(void) standout();
 #ifdef EXT
 	(void) printw(
-		"%s %ldB %d%%", filename, pos(ebuf),
-		(int)(here * 100 / (pos(ebuf)+(pos(ebuf) <= 0)))
+		"%s %ldB %ld%%", filename, pos(ebuf),
+		here * 100 / (pos(ebuf)+(pos(ebuf) <= 0))
 	);
 	clr_to_eol();
 	(void) mvprintw(0, COLS-strlen(mode)-1,"%s%c",mode, chg);
