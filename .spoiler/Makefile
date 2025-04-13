@@ -46,12 +46,15 @@ LDFLAGS	!= if test ${CC} = 'gcc'; then echo '-fno-ident -flto'; fi
 #
 CSILENT := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter -Wno-strict-prototypes
 
-CFLAGS	:= -std=gnu17 -Os -Wall -Wextra -pedantic ${CSILENT} ${DBG}
+CFLAGS	:= -std=gnu17 -Os -funsigned-char -Wall -Wextra -pedantic ${CSILENT} ${DBG}
 
 # Frack need extra #define to enable SUS standard strdup(), strndup().
 CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} -D_XOPEN_SOURCE=700
 
 LIBS	:= -lcurses
+
+# Linux NCurses with wide character support.
+#LIBS	:= -lncursesw
 
 MANDIR	!= dirname "$$(find /usr/local -maxdepth 3 -type d -name man1)"
 MANDIR  != if test "${MANDIR}" = '.'; then echo /usr/local/share/man; else echo ${MANDIR}; fi
@@ -67,7 +70,7 @@ COMMIT	:= `git describe --tags`
 	${CC} ${CFLAGS} ${CPPFLAGS} -E $*.c >$*.i
 
 .c$E :
-	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $*$E $< ${LIBS}
+	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $@ $< ${LIBS}
 
 #######################################################################
 #
@@ -80,11 +83,11 @@ all: build
 build: eh$E ../prog$E
 
 clean:
-	-rm -f *.core *.stackdump *.i a.out a.txt b.txt
+	-rm -f build.h *.core *.stackdump *.i a.out a.txt b.txt
 	-rm -rf test/terminfo.cdb
 
 distclean clobber: clean
-	-rm -f eh$E build.h ../prog.c ../prog$E ../prog.ext$E
+	-rm -f eh$E ../prog.c ../prog$E ../prog.ext$E
 
 strip: build
 	strip eh$E ../prog$E
@@ -103,10 +106,10 @@ build.h :
 	printf '#define BUILT "%s"\n#define COMMIT "%s"\n' "${BUILT}" "${COMMIT}" >build.h
 
 eh$E : build.h eh.c
-	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $*$E $< ${LIBS}
+	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o  $@ eh.c ${LIBS}
 
 debug: clean
-	${MAKE} DBG='-O0 -g -fsanitize=address -fsanitize=pointer-subtract -fsanitize=pointer-compare -lasan' build
+	${MAKE} DBG='-DWIDE -O0 -g -fsanitize=address -fsanitize=pointer-subtract -fsanitize=pointer-compare -lasan' build
 	paxctl +a ${PROG}
 
 #######################################################################
@@ -120,6 +123,7 @@ debug: clean
 	sed -e'/^[[:blank:]]*$$/d' >$@
 
 ../prog$E: ../prog.c
+	${CC} ${CFLAGS} ${CPPFLAGS} -UWIDE ${LDFLAGS} -o $@ ../prog.c ${LIBS}
 
 ../prog.ext.c: eh.c transform.sed
 	sed -E -f transform_ext.sed eh.c | \
@@ -130,11 +134,10 @@ debug: clean
 ../prog.ext$E: ../prog.ext.c
 
 ../prog.alt$E: ../prog.alt.c
-	${CC} ${CFLAGS} ${CPPFLAGS} -I.. -o $@ ../prog.alt.c ${LIBS}
+	${CC} ${CFLAGS} ${CPPFLAGS} -UWIDE -I.. -o $@ ../prog.alt.c ${LIBS}
 
 ../prog.alt.i: ../prog.alt.c
-	${CC} ${CFLAGS} ${CPPFLAGS} -I.. -E ../prog.alt.c >$*.i
-
+	${CC} ${CFLAGS} ${CPPFLAGS} -UWIDE -I.. -E ../prog.alt.c >$*.i
 
 #######################################################################
 # Tests
@@ -173,9 +176,9 @@ A_CORE	= test ! -f *.core
 A_OUT	= ( diff -u ${TESTDIR}/$@.out a.out || ${SAVE} )
 A_TXT	= diff -u ${DATA}/$@.txt a.txt
 
-test-all: build
+test-all: build ../prog.ext$E
 	${MAKE} PROG=./eh$E test
-	${MAKE} PROG=./prog$E test
+	${MAKE} PROG=../prog.ext$E test
 
 # While the terminal definition will probably contain definitions for
 # the number of hardware `lines` and `columns`, we explicitly override

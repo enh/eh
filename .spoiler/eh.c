@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <regex.h>
 #ifdef EXT
+#include <locale.h>
+#include <wctype.h>
 #include <signal.h>
 #include <sys/wait.h>
 #include "build.h"
@@ -139,6 +141,37 @@ ptr(off_t cur)
 	return buf+cur + (buf+cur < gap ? 0 : egap-gap);
 }
 
+#ifdef EXT
+int
+mblength(int ch)
+{
+//	return (1+(ch > 193)+(ch > 223)+(ch > 239)) * (ch < 128 || (193 < ch && ch < 245));
+	return 1+(ch > 193)+(ch > 223)+(ch > 239);
+}
+
+off_t
+nextch(off_t cur)
+{
+	/* Advance to next UTF-8 start byte. */
+	return cur + (cur < pos(ebuf)) * mblength(*ptr(cur));
+}
+
+off_t
+prevch(off_t cur)
+{
+	int ch;
+	/* Find UTF-8 start byte skipping continuation bytes. */
+	while (0 < cur && 127 < (ch = *ptr(--cur)) && ch < 194) {
+		;
+	}
+	assert(0 <= cur);
+	return cur;
+}
+#else /* EXT */
+#define nextch(cur)	((cur)+((cur)<pos(ebuf)))
+#define prevch(cur)	((cur)-(0<(cur)))
+#endif /* EXT */
+
 void
 setundo(void)
 {
@@ -252,11 +285,21 @@ bol(off_t cur)
 	return (cur+1) * (0 < cur);
 }
 
+#ifdef WIDE
+int
+charwidth(const char *s, int col)
+{
+	wchar_t wc;
+	(void) mbtowc(&wc, s, 4);
+	return wc == '\t' ? TABSTOP(col) : (col = wcwidth(wc)) < 0 ? 1 : col;
+}
+#else /* WIDE */
 int
 charwidth(const char *s, int col)
 {
 	return *s == '\t' ? TABSTOP(col) : 1;
 }
+#endif /* WIDE */
 
 /*
  * Return offset of column position, newline (EOL), or EOF; otherwise
@@ -270,7 +313,11 @@ col_or_eol(off_t cur, int col, int maxcol)
 	char *p;
 	while (col < maxcol && (p = ptr(cur)) < ebuf && *p != '\n') {
 		col += charwidth(p, col);
+#ifdef EXT
+		cur = nextch(cur);
+#else /* EXT */
 		cur++;
+#endif /* EXT */
 	}
 	assert(0 <= cur && cur <= pos(ebuf));
 	return cur;
@@ -286,8 +333,13 @@ row_start(off_t cur, off_t offset)
 	int col = 0;
 	off_t mark = cur;
 	assert(/* 0 <= cur && cur <= offset &&*/ offset <= pos(ebuf));
+#ifdef EXT
+	while (cur < offset && (p = ptr(cur = nextch(cur))) < ebuf) {
+		col += charwidth(p, col);
+#else /* EXT */
 	while (cur < offset && (p = ptr(++cur)) < ebuf) {
 		col += charwidth(p, col);
+#endif /* EXT */
 		if (COLS <= col) {
 			mark = cur;
 			col = 0;
@@ -319,8 +371,12 @@ prevline(off_t cur)
 off_t
 nextline(off_t cur)
 {
+#ifdef EXT
+	return nextch(col_or_eol(cur, cur_col, COLS-1));
+#else /* EXT */
 	cur = col_or_eol(cur, cur_col, COLS-1);
 	return cur + (cur < pos(ebuf));
+#endif /* EXT */
 }
 
 void
@@ -382,7 +438,11 @@ display(void)
 		from = marker;
 		to = here;
 	}
+#ifdef WIDE
+	for (i = TOP_LINE, j = 0, epage = page; (void) standend(), i < LINES; ) {
+#else /* WIDE */
 	for (i = TOP_LINE, j = 0, epage = page; (void) standend(), i < LINES; epage++) {
+#endif /* WIDE */
 		if (here == epage) {
 			cur_row = i;
 			cur_col = j;
@@ -394,11 +454,25 @@ display(void)
 			standout();
 		}
 #ifdef EXT
+#ifdef WIDE
+		/* A multibyte character never stradles the gap,
+		 * assumes the gap moves by character, not by byte.
+		 * See also nextch() and prevch().
+		 */
+		int mbl = mblength(*p);
+		/* Use addnstr() family that already handles UTF8
+		 * instead of add_wch() to avoid all the complexity
+		 * of using cchar_t.
+		 */
+		(void) mvaddnstr(i, j, p, mbl);
+		epage += mbl;
+#else
 		/* Display control characters as a single byte
 		 * highlighted upper case letter (instead of two
 		 * byte ^X).
 		 */
 		(void) mvaddch(i, j, iscntrl(*p) && *p != '\t' && *p != '\n' ? A_REVERSE|(*p+'@') : *p);
+#endif
 #else /* EXT */
 		(void) mvaddch(i, j, *p);
 #endif /* EXT */
@@ -430,6 +504,18 @@ redraw(void)
 	count = 0;
 }
 
+#ifdef EXT
+void
+left(void)
+{
+	here = prevch(here);
+}
+void
+right(void)
+{
+	here = nextch(here);
+}
+#else /* EXT */
 void
 left(void)
 {
@@ -441,6 +527,7 @@ right(void)
 {
 	here += here < pos(ebuf);
 }
+#endif /* EXT */
 
 /*
  * Move up one logical line.
@@ -1256,6 +1343,10 @@ cleanup(void)
 int
 main(int argc, char **argv)
 {
+#ifdef WIDE
+	(void) setlocale(LC_ALL, "");
+#else /* WIDE */
+#endif /* WIDE */
 	if (NULL == initscr()) {
 		/* Try TERM=ansi-mini which works. */
 		return 1;
