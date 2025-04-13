@@ -140,8 +140,8 @@ s/^([_[:alpha:]][_[:alnum:]]*)\(void\)(;)*$/\1()\2/
 # Otherwise long, off_t, and ptrdiff_t have prog < prog-alt
 #
 s/pid_t/int/g
-s/off_t */int /g
-s/ptrdiff_t */int /g
+s/off_t */long /g
+s/ptrdiff_t */long /g
 #s/off_t */long /g
 #s/ptrdiff_t */long /g
 
@@ -237,7 +237,7 @@ s/(^|[^[:alnum:]_])ugap([^[:alnum:]_]|$)/\1ó\2/g
 s/(^|[^[:alnum:]_])here([^[:alnum:]_]|$)/\1o\2/g
 s/(^|[^[:alnum:]_])epage([^[:alnum:]_]|$)/\1v\2/g
 s/(^|[^[:alnum:]_])page([^[:alnum:]_]|$)/\1u\2/g
-s/(^|[^[:alnum:]_])eof([^[:alnum:]_]|$)/\1j\2/g
+s/(^|[^[:alnum:]_])eof([^[:alnum:]_]|$)/\1a\2/g
 s/(^|[^[:alnum:]_])mark([^[:alnum:]_]|$)/\1i\2/g
 s/(^|[^[:alnum:]_])count([^[:alnum:]_]|$)/\1z\2/g
 s/(^|[^[:alnum:]_])ebuf([^[:alnum:]_]|$)/\1c\2/g
@@ -250,6 +250,7 @@ s/(^|[^[:alnum:]_])cmd([^[:alnum:]_]|$)/\1Ƹ\2/g
 s/(^|[^[:alnum:]_])mode([^[:alnum:]_]|$)/\1ƹ\2/g
 s/(^|[^[:alnum:]_])filename([^[:alnum:]_]|$)/\1f\2/g
 s/(^|[^[:alnum:]_])ch([^[:alnum:]_]|$)/\1a\2/g
+s/(^|[^[:alnum:]_])wc([^[:alnum:]_]|$)/\1t\2/g
 s/(^|[^[:alnum:]_])ere_dollar_only([^[:alnum:]_]|$)/\1w\2/g
 s/(^|[^[:alnum:]_])ere([^[:alnum:]_]|$)/\1e\2/g
 s/(^|[^[:alnum:]_])replace([^[:alnum:]_]|$)/\1r\2/g

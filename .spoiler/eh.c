@@ -334,7 +334,7 @@ display(void)
 {
 	char *p;
 	int i, j;
-	off_t from, to;
+	off_t from, to, eof = pos(ebuf);
 	if (here < page) {
 		/* Scroll up one logical line or goto physical line. */
 		page = row_start(bol(here), here);
@@ -348,7 +348,7 @@ display(void)
 		 * started.
 		 */
 		epage = page;
-		for (page = here, i = ROWS - (here == pos(ebuf)); 0 < --i && epage < page; ) {
+		for (page = here, i = ROWS - (here == eof); 0 < --i && epage < page; ) {
 			page = prevline(page);
 		}
 		/* When find the top line of the page over shoots the
@@ -363,13 +363,14 @@ display(void)
 	(void) standout();
 #ifdef EXT
 	(void) printw(
-		"%s %ldB %ld%%", filename, pos(ebuf),
-		here * 100 / (pos(ebuf)+(pos(ebuf) <= 0))
+		"%s %ldB %ld%%", filename, eof,
+		here * 100 / (eof+(eof <= 0))
 	);
 	clr_to_eol();
 	(void) mvprintw(0, COLS-strlen(mode)-1,"%s%c",mode, chg);
 #else /* EXT */
-	(void) printw("%s %ldB", filename, pos(ebuf));
+
+	(void) printw("%s %ldB", filename, eof);
 	clr_to_eol();
 #endif /* EXT */
 	if (marker < 0) {
@@ -644,9 +645,9 @@ insert(void)
 				ch = getch();
 				(void) nl();	/* CR -> LF */
 			}
-			growgap(COLS);
 #else /* EXT */
 #endif /* EXT */
+			growgap(COLS);
 			*gap++ = ch;
 			epage++;
 		}
