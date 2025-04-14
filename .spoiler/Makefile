@@ -171,6 +171,7 @@ DATA	= test/data
 RESET	= rm -f a.txt a.out *.core
 TITLE	= printf "%s      %s: " ${PROG} $@ ; ${RESET}
 PASS	= printf "\r%s -OK-\r\n" ${PROG}
+SKIP	= printf "\r%s SKIP\r\n" ${PROG}
 PROMPT	= ( ${ASK} && echo -n "Replace y/N$$PS2" && read yn && test "$$yn" = 'y' )
 SAVE	= ( ${REBUILD} || ${PROMPT} ) && cp a.out ${TESTDIR}/$@.out
 A_CORE	= test ! -f *.core
@@ -209,7 +210,8 @@ TESTS:= tests_have_term_data \
 	paste0 paste1 paste2 paste3 \
 	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7 \
 	replace0 replace1 replace2 write0 read0 read1 \
-	select0 select1 select2 select3 select4 select5
+	select0 select1 select2 select3 select4 select5 \
+	mb0 mb1 mb2
 
 .SILENT: ${TESTS}
 
@@ -1047,3 +1049,27 @@ select5:
 	${A_OUT}
 	${A_TXT}
 	-${PASS}
+
+# Insert multibyte character.
+mb0:
+	-${TITLE}
+	printf 'i🔥\n\eW\nQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	${A_TXT}
+	-( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
+
+# Move over 2 column wide multibyte character to newline, next line.
+mb1:
+	-${TITLE}
+	cp ${DATA}/$@.txt a.txt
+	printf 'llQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	-( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
+
+# Move goto end of line containing multibyte character, then next line.
+mb2:
+	-${TITLE}
+	cp ${DATA}/$@.txt a.txt
+	printf '$$lQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	-( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
