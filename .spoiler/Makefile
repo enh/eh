@@ -44,7 +44,8 @@ LDFLAGS	!= if test ${CC} = 'gcc'; then echo '-fno-ident -flto'; fi
 #
 # -Wno-strict-prototypes		clang functions no arguments
 #
-CSILENT := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter -Wno-strict-prototypes
+CSILENT := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter \
+	   -Wno-strict-prototypes -Wno-unused-value
 
 CFLAGS	:= -std=gnu17 -Os -funsigned-char -Wall -Wextra -pedantic ${CSILENT} ${DBG}
 

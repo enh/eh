@@ -142,6 +142,13 @@ ptr(off_t cur)
 }
 
 #ifdef EXT
+/**
+ * Alternative to mblen() that assumes ch is a the start byte of
+ * UTF-8 multibyte character.  Returns the multibyte length; if
+ * ch is a continuation byte, it returns 1, so a scanner will
+ * move across a partial multibyte character to the start of the
+ * next sequence.
+ */
 int
 mblength(int ch)
 {
@@ -425,7 +432,6 @@ display(void)
 	clr_to_eol();
 	(void) mvprintw(0, COLS-strlen(mode)-1,"%s%c",mode, chg);
 #else /* EXT */
-
 	(void) printw("%s %ldB", filename, eof);
 	clr_to_eol();
 #endif /* EXT */
@@ -732,11 +738,18 @@ insert(void)
 				ch = getch();
 				(void) nl();	/* CR -> LF */
 			}
+#ifdef WIDE
+			for (int n = mblength(ch); 0 < n--; 0 < n && (ch = getch())) {
+#else /* WIDE */
+			{
+#endif /* WIDE */
 #else /* EXT */
+			{
 #endif /* EXT */
-			growgap(COLS);
-			*gap++ = ch;
-			epage++;
+				growgap(COLS);
+				*gap++ = ch;
+				epage++;
+			}
 		}
 		here = pos(egap);
 #ifdef EXT
