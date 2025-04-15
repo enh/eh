@@ -456,30 +456,45 @@ display(void)
 		if (ebuf <= (p = ptr(epage))) {
 			break;
 		}
-		if (from <= epage && epage < to) {
+#ifdef EXT
+		int is_ctrl = iscntrl(*p) && *p != '\t' && *p != '\n';
+		if ((from <= epage && epage < to) || is_ctrl) {
 			standout();
 		}
-#ifdef EXT
 #ifdef WIDE
 		/* A multibyte character never stradles the gap,
 		 * assumes the gap moves by character, not by byte.
 		 * See also nextch() and prevch().
 		 */
 		int mbl = mblength(*p);
-		/* Use addnstr() family that already handles UTF8
-		 * instead of add_wch() to avoid all the complexity
-		 * of using cchar_t.
-		 */
-		(void) mvaddnstr(i, j, p, mbl);
+		if (is_ctrl) {
+			/* Display control characters as a single byte
+			 * highlighted upper case letter (instead of two
+			 * byte ^X).
+			 */
+			(void) mvaddch(i, j, *p+'@');
+		} else {
+			/* Use addnstr() family that already handles UTF8
+			 * instead of add_wch() to avoid all the complexity
+			 * of using cchar_t.
+			 */
+			(void) mvaddnstr(i, j, p, mbl);
+		}
 		epage += mbl;
 #else
+		if (from <= epage && epage < to) {
+			standout();
+		}
 		/* Display control characters as a single byte
 		 * highlighted upper case letter (instead of two
 		 * byte ^X).
 		 */
-		(void) mvaddch(i, j, iscntrl(*p) && *p != '\t' && *p != '\n' ? A_REVERSE|(*p+'@') : *p);
+		(void) mvaddch(i, j, is_ctrl ? *p+'@' : *p);
 #endif
 #else /* EXT */
+		if (from <= epage && epage < to) {
+			standout();
+		}
 		(void) mvaddch(i, j, *p);
 #endif /* EXT */
 		/* Handle tab expansion ourselves.  Historical
@@ -1356,10 +1371,7 @@ cleanup(void)
 int
 main(int argc, char **argv)
 {
-#ifdef WIDE
 	(void) setlocale(LC_ALL, "");
-#else /* WIDE */
-#endif /* WIDE */
 	if (NULL == initscr()) {
 		/* Try TERM=ansi-mini which works. */
 		return 1;

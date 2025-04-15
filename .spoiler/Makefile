@@ -20,7 +20,7 @@ E	!= if test ${MAKE_OS} = 'Cygwin'; then echo '.exe'; fi
 # User configurable.
 #######################################################################
 
-BUF	:= 65536
+BUF	:= 131072
 MODE	:= 0600
 USER	:= 0
 GROUP	:= 0
