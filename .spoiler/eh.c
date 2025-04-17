@@ -279,6 +279,18 @@ growgap(size_t min)
 #define growgap(n)
 #endif /* EXT */
 
+int
+charwidth(const char *s, int col)
+{
+#ifdef WIDE
+	wchar_t wc;
+	(void) mbtowc(&wc, s, 4);
+	return wc == '\t' ? TABSTOP(col) : (col = wcwidth(wc)) < 0 ? 1 : col;
+#else /* WIDE */
+	return *s == '\t' ? TABSTOP(col) : 1;
+#endif /* WIDE */
+}
+
 /*
  * Return the physical BOL or BOF containing cur.
  */
@@ -291,22 +303,6 @@ bol(off_t cur)
 	assert(-1 <= cur);
 	return (cur+1) * (0 < cur);
 }
-
-#ifdef WIDE
-int
-charwidth(const char *s, int col)
-{
-	wchar_t wc;
-	(void) mbtowc(&wc, s, 4);
-	return wc == '\t' ? TABSTOP(col) : (col = wcwidth(wc)) < 0 ? 1 : col;
-}
-#else /* WIDE */
-int
-charwidth(const char *s, int col)
-{
-	return *s == '\t' ? TABSTOP(col) : 1;
-}
-#endif /* WIDE */
 
 /*
  * Return offset of column position, newline (EOL), or EOF; otherwise
@@ -782,16 +778,6 @@ insert(void)
 	count = 0;
 }
 
-#ifdef EXT
-void
-append(void)
-{
-	right();
-	insert();
-}
-#else /* EXT */
-#endif /* EXT */
-
 void
 yank(void)
 {
@@ -851,6 +837,13 @@ delX(void)
 		(void) ungetch('h');
 	}
 	deld();
+}
+
+void
+append(void)
+{
+	right();
+	insert();
 }
 #else /* EXT */
 // /*
