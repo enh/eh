@@ -159,8 +159,8 @@ mblength(int ch)
 off_t
 nextch(off_t cur)
 {
-	/* Advance to next UTF-8 start byte. */
-	return cur + (cur < pos(ebuf)) * mblength(*ptr(cur));
+	/* Advance to next UTF-8 start byte.  Do not read past eof. */
+	return cur + (cur < pos(ebuf) ?  mblength(*ptr(cur)) : 0);
 }
 
 off_t

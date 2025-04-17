@@ -88,7 +88,7 @@ clean:
 	-rm -rf test/terminfo.cdb
 
 distclean clobber: clean
-	-rm -f eh$E ../prog.c ../prog$E ../prog.ext$E
+	-rm -f eh$E ../prog.c ../prog$E ../prog.ext$E typescript
 
 strip: build
 	strip eh$E ../prog$E
