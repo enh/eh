@@ -211,7 +211,7 @@ TESTS:= tests_have_term_data \
 	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7 \
 	replace0 replace1 replace2 write0 read0 read1 \
 	select0 select1 select2 select3 select4 select5 \
-	mb0 mb1 mb2
+	mb0 mb1 mb2 mb3
 
 .SILENT: ${TESTS}
 
@@ -1056,7 +1056,7 @@ mb0:
 	printf 'i🔥\n\eW\nQ' | ${PROG} a.txt >a.out
 	${A_CORE}
 	${A_TXT}
-	-( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
+	( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
 
 # Move over 2 column wide multibyte character to newline, next line.
 #
@@ -1069,7 +1069,7 @@ mb1:
 	cp ${DATA}/$@.txt a.txt
 	printf 'llQ' | ${PROG} a.txt >a.out
 	${A_CORE}
-	-( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
+	( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
 
 # Move goto end of line containing multibyte character, then next line.
 mb2:
@@ -1077,4 +1077,12 @@ mb2:
 	cp ${DATA}/$@.txt a.txt
 	printf '$$lQ' | ${PROG} a.txt >a.out
 	${A_CORE}
-	-( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
+	( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
+
+# Cursor back from eof.
+mb3:
+	-${TITLE}
+	cp ${DATA}/$@.txt a.txt
+	printf '2jhhhhhhhhQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
