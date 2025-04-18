@@ -282,13 +282,13 @@ growgap(size_t min)
 int
 charwidth(const char *s, int col)
 {
-#ifdef WIDE
+#ifdef EXT
 	wchar_t wc;
 	(void) mbtowc(&wc, s, 4);
 	return wc == '\t' ? TABSTOP(col) : (col = wcwidth(wc)) < 0 ? 1 : col;
-#else /* WIDE */
+#else /* EXT */
 	return *s == '\t' ? TABSTOP(col) : 1;
-#endif /* WIDE */
+#endif /* EXT */
 }
 
 /*
@@ -440,11 +440,7 @@ display(void)
 		from = marker;
 		to = here;
 	}
-#ifdef WIDE
 	for (i = TOP_LINE, j = 0, epage = page; (void) standend(), i < LINES; ) {
-#else /* WIDE */
-	for (i = TOP_LINE, j = 0, epage = page; (void) standend(), i < LINES; epage++) {
-#endif /* WIDE */
 		if (here == epage) {
 			cur_row = i;
 			cur_col = j;
@@ -457,7 +453,6 @@ display(void)
 		if ((from <= epage && epage < to) || is_ctrl) {
 			standout();
 		}
-#ifdef WIDE
 		/* A multibyte character never stradles the gap,
 		 * assumes the gap moves by character, not by byte.
 		 * See also nextch() and prevch().
@@ -477,21 +472,12 @@ display(void)
 			(void) mvaddnstr(i, j, p, mbl);
 		}
 		epage += mbl;
-#else
-		if (from <= epage && epage < to) {
-			standout();
-		}
-		/* Display control characters as a single byte
-		 * highlighted upper case letter (instead of two
-		 * byte ^X).
-		 */
-		(void) mvaddch(i, j, is_ctrl ? *p+'@' : *p);
-#endif
 #else /* EXT */
 		if (from <= epage && epage < to) {
 			standout();
 		}
 		(void) mvaddch(i, j, *p);
+		epage++;
 #endif /* EXT */
 		/* Handle tab expansion ourselves.  Historical
 		 * Curses addch() would advance to the next
@@ -749,11 +735,7 @@ insert(void)
 				ch = getch();
 				(void) nl();	/* CR -> LF */
 			}
-#ifdef WIDE
 			for (int n = mblength(ch); 0 < n--; 0 < n && (ch = getch())) {
-#else /* WIDE */
-			{
-#endif /* WIDE */
 #else /* EXT */
 			{
 #endif /* EXT */

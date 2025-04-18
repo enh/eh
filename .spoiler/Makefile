@@ -110,7 +110,7 @@ eh$E : build.h eh.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o  $@ eh.c ${LIBS}
 
 debug: clean
-	${MAKE} DBG='-DWIDE -O0 -g -fsanitize=address -fsanitize=pointer-subtract -fsanitize=pointer-compare -lasan' build
+	${MAKE} DBG='-O0 -g -fsanitize=address -fsanitize=pointer-subtract -fsanitize=pointer-compare -lasan' build
 	paxctl +a ${PROG}
 
 #######################################################################
@@ -124,7 +124,7 @@ debug: clean
 	sed -e'/^[[:blank:]]*$$/d' >$@
 
 ../prog$E: ../prog.c
-	${CC} ${CFLAGS} ${CPPFLAGS} -UWIDE ${LDFLAGS} -o $@ ../prog.c ${LIBS}
+	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $@ ../prog.c ${LIBS}
 
 ../prog.ext.c: eh.c transform.sed
 	sed -E -f transform_ext.sed eh.c | \
@@ -135,10 +135,10 @@ debug: clean
 ../prog.ext$E: ../prog.ext.c
 
 ../prog.alt$E: ../prog.alt.c
-	${CC} ${CFLAGS} ${CPPFLAGS} -UWIDE -I.. -o $@ ../prog.alt.c ${LIBS}
+	${CC} ${CFLAGS} ${CPPFLAGS} -I.. -o $@ ../prog.alt.c ${LIBS}
 
 ../prog.alt.i: ../prog.alt.c
-	${CC} ${CFLAGS} ${CPPFLAGS} -UWIDE -I.. -E ../prog.alt.c >$*.i
+	${CC} ${CFLAGS} ${CPPFLAGS} -I.. -E ../prog.alt.c >$*.i
 
 #######################################################################
 # Tests
@@ -1059,6 +1059,11 @@ mb0:
 	-( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
 
 # Move over 2 column wide multibyte character to newline, next line.
+#
+# There is a visual/redraw bug here with NetBSD Curses that messes
+# with the % position and cursor position moving over the wide
+# characters and newline; force a redraw fixes it.  NCurses is fine.
+#
 mb1:
 	-${TITLE}
 	cp ${DATA}/$@.txt a.txt
