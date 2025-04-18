@@ -166,9 +166,8 @@ nextch(off_t cur)
 off_t
 prevch(off_t cur)
 {
-	int ch;
 	/* Find UTF-8 start byte skipping continuation bytes. */
-	while (0 < cur && 127 < (ch = *ptr(--cur)) && ch < 194) {
+	while (0 < cur && (192 & *ptr(--cur)) == 128) {
 		;
 	}
 	assert(0 <= cur);
