@@ -17,4 +17,6 @@
 s/MATCHES/1/
 /^#define getsigch/d
 s/(^|[^[:alnum:]_])getsigch/getch/g
+s/(^|[^[:alnum:]_])func([^[:alnum:]_]|$)/\1k\2/g
+s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1S\2/
 ### End IOCCC

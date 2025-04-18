@@ -153,7 +153,9 @@ s/NULL/0/g
 s/'\\0'/0/g
 
 #
-#  Functions & Types 👾 💣 🛸 🔥 🎃
+#  Functions & Types
+#	👾 💣 🛸 🔥 🎃
+#	U+0194=Ɣ U+03A1=Ρ U+03B3=γ U+03C6=φ U+0B67=୧ U+039a=Κ
 #
 
 s/(^|[^[:alnum:]_])adjmarks([^[:alnum:]_]|$)/\1j\2/g
@@ -177,9 +179,9 @@ s/(^|[^[:alnum:]_])left([^[:alnum:]_]|$)/\1H\2/g
 s/(^|[^[:alnum:]_])down([^[:alnum:]_]|$)/\1J\2/g
 s/(^|[^[:alnum:]_])up([^[:alnum:]_]|$)/\1K\2/g
 s/(^|[^[:alnum:]_])right([^[:alnum:]_]|$)/\1L\2/g
-s/(^|[^[:alnum:]_])lnbegin([^[:alnum:]_]|$)/\1Ǝ\2/g
+s/(^|[^[:alnum:]_])lnbegin([^[:alnum:]_]|$)/\1ə\2/g
 s/(^|[^[:alnum:]_])lnend([^[:alnum:]_]|$)/\1Ə\2/g
-s/(^|[^[:alnum:]_])lngoto([^[:alnum:]_]|$)/\1G\2/g
+s/(^|[^[:alnum:]_])lngoto([^[:alnum:]_]|$)/\1ө\2/g
 s/(^|[^[:alnum:]_])insert([^[:alnum:]_]|$)/\1I\2/g
 s/(^|[^[:alnum:]_])yank([^[:alnum:]_]|$)/\1Ô\2/g
 s/(^|[^[:alnum:]_])deld([^[:alnum:]_]|$)/\1X\2/g
@@ -189,9 +191,7 @@ s/(^|[^[:alnum:]_])pastel([^[:alnum:]_]|$)/\1Ì\2/g
 s/(^|[^[:alnum:]_])paste([^[:alnum:]_]|$)/\1Í\2/g
 s/(^|[^[:alnum:]_])flipcase([^[:alnum:]_]|$)/\1Ç\2/g
 s/(^|[^[:alnum:]_])readfile([^[:alnum:]_]|$)/\1Ȓ\2/
-s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1S\2/
 s/(^|[^[:alnum:]_])redraw([^[:alnum:]_]|$)/\1🔥\2/g
-#s/quit([^[:alnum:]_]|$)/🎃\1/g
 s/quit([^[:alnum:]_]|$)/Ф\1/g
 s/(^|[^[:alnum:]_])display([^[:alnum:]_]|$)/\1Y\2/
 s/(^|[^[:alnum:]_])search([^[:alnum:]_]|$)/\1Ñ\2/
@@ -212,7 +212,7 @@ s/(^|[^[:alnum:]_])cleanup([^[:alnum:]_]|$)/\1Ɵ\2/
 s/(^|[^[:alnum:]_])prompt([^[:alnum:]_]|$)/\1Ƌ\2/
 s/(^|[^[:alnum:]_])fileread([^[:alnum:]_]|$)/\1Ȑ\2/
 s/(^|[^[:alnum:]_])filewrite([^[:alnum:]_]|$)/\1ȑ\2/
-s/(^|[^[:alnum:]_])charwidth([^[:alnum:]_]|$)/\1ө\2/
+s/(^|[^[:alnum:]_])charwidth([^[:alnum:]_]|$)/\1G\2/
 s/(^|[^[:alnum:]_])version([^[:alnum:]_]|$)/\1Ж\2/
 
 #
@@ -230,7 +230,6 @@ s/(^|[^[:alnum:]_])cur_col([^[:alnum:]_]|$)/\1x\2/g
 s/(^|[^[:alnum:]_])cur([^[:alnum:]_]|$)/\1m\2/g
 s/(^|[^[:alnum:]_])maxcol([^[:alnum:]_]|$)/\1n\2/g
 s/(^|[^[:alnum:]_])key([^[:alnum:]_]|$)/\1Ќ\2/g
-s/(^|[^[:alnum:]_])func([^[:alnum:]_]|$)/\1k\2/g
 s/(^|[^[:alnum:]_])uhere([^[:alnum:]_]|$)/\1ö\2/g
 s/(^|[^[:alnum:]_])uegap([^[:alnum:]_]|$)/\1ò\2/g
 s/(^|[^[:alnum:]_])ugap([^[:alnum:]_]|$)/\1ó\2/g
