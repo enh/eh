@@ -36,6 +36,9 @@ LDFLAGS	!= if test ${CC} = 'gcc'; then echo '-fno-ident -flto'; fi
 #
 #######################################################################
 
+BUILT	!= date -u +'%a, %d %b %Y %H:%M:%SZ'
+COMMIT	!= git describe --tags
+
 # Common C compiler warnings to silence
 #
 # -Wno-char-subscripts			ctypes macros
@@ -50,7 +53,7 @@ CSILENT := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-para
 CFLAGS	:= -std=gnu17 -Os -funsigned-char -Wall -Wextra -pedantic ${CSILENT} ${DBG}
 
 # Frack need extra #define to enable SUS standard strdup(), strndup().
-CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} -D_XOPEN_SOURCE=700
+CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} -DBUILT="\"${BUILT}\"" -DCOMMIT="\"${COMMIT}\"" -D_XOPEN_SOURCE=700
 
 LIBS	:= -lcurses
 
@@ -59,9 +62,6 @@ LIBS	:= -lcurses
 
 MANDIR	!= dirname "$$(find /usr/local -maxdepth 3 -type d -name man1)"
 MANDIR  != if test "${MANDIR}" = '.'; then echo /usr/local/share/man; else echo ${MANDIR}; fi
-
-BUILT	:= `date -u +'%a, %d %b %Y %H:%M:%SZ'`
-COMMIT	:= `git describe --tags`
 
 #######################################################################
 # Inference Rules
@@ -103,10 +103,7 @@ install: README.md eh$E
 	install -o ${USER} -g ${GROUP} -d ${MANDIR}/cat1
 	install -o ${USER} -g ${GROUP} -p -m 444 README.md ${MANDIR}/cat1/eh.0
 
-build.h :
-	printf '#define BUILT "%s"\n#define COMMIT "%s"\n' "${BUILT}" "${COMMIT}" >build.h
-
-eh$E : build.h eh.c
+eh$E : eh.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o  $@ eh.c ${LIBS}
 
 debug: clean

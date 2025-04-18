@@ -19,7 +19,6 @@
 #include <wctype.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include "build.h"
 #else /* EXT */
 #endif /* EXT */
 
