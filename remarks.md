@@ -19,7 +19,7 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 * A regression test suite is available on demand.  The test suite requires `tic(1)` to build the specialised test terminal entry.
 
-* Original unobfuscated more fully featured source available.
+* Original unobfuscated more fully featured source available (UTF-8, search/replace, pipe-filter selection, markers, insert file, edit buffer grows, literal character input).
 
 
 #### Updates
