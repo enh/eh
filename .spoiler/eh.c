@@ -63,7 +63,7 @@ static regex_t ere;
 #define MOTION_CMDS	14
 
 static int cur_row, cur_col, count, ere_dollar_only;
-static char *filename, *scrap, *mode = "";
+static char *filename, *scrap;
 static char buf[BUF], *gap = buf, *egap, *ebuf, *ugap = buf, *uegap;
 static off_t here, page, epage, uhere, match_length, scrap_length, marker = -1;
 static regex_t ere;
