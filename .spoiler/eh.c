@@ -337,11 +337,10 @@ row_start(off_t cur, off_t offset)
 	assert(/* 0 <= cur && cur <= offset &&*/ offset <= pos(ebuf));
 #ifdef EXT
 	while (cur < offset && (p = ptr(cur = nextch(cur))) < ebuf) {
-		col += charwidth(p, col);
 #else /* EXT */
 	while (cur < offset && (p = ptr(++cur)) < ebuf) {
-		col += charwidth(p, col);
 #endif /* EXT */
+		col += charwidth(p, col);
 		if (COLS <= col) {
 			mark = cur;
 			col = 0;
@@ -1372,7 +1371,6 @@ main(int argc, char **argv)
 		getcmd(ALL_CMDS);
 	}
 #else /* EXT */
-	(void) atexit(endwin);
 	uegap = egap = ebuf = buf + BUF;
 	if (0 < (argc = open(filename = *++argv, 0))) {
 		gap += read(argc, buf, ebuf-buf);
@@ -1388,6 +1386,7 @@ main(int argc, char **argv)
 		display();
 		getcmd(ALL_CMDS);
 	}
+	(void) endwin();
 #endif /* EXT */
 	return 0;
 }
