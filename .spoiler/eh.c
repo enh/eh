@@ -426,8 +426,7 @@ display(void)
 	clr_to_eol();
 	(void) mvprintw(0, COLS-strlen(mode)-1,"%s%c",mode, chg);
 #else /* EXT */
-	/* -7B */
-	(void) printw("%s %ldB/%ldB", filename, here, eof);
+	(void) printw("%s %ldB", filename, here);
 	clr_to_eol();
 #endif /* EXT */
 	if (marker < 0) {
