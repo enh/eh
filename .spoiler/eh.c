@@ -683,11 +683,6 @@ lngoto(void)
 		here = col_or_eol(here, 0, MAX_COLS);
 		here += here < eof;
 	}
-// 	/* Set page to eof if beyond page end to force display() to
-// 	 * reframe the page with target line at top.  Otherwise move
-// 	 * the cursor within the page.
-// 	 */
-// 	page = here <= epage ? page : eof;
 	/* Set page to eof if beyond page end to force display() to
 	 * reframe the page with target line at top.
 	 */
@@ -827,18 +822,6 @@ append(void)
 	insert();
 }
 #else /* EXT */
-// /*
-//  * Similar to `dl` command, eg.
-//  *
-//  *	ungetch('l');
-//  *	deld();
-//  */
-// void
-// delx(void)
-// {
-// 	movegap(here);
-// 	egap += egap < ebuf;
-// }
 #endif /* EXT */
 
 void
