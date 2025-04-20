@@ -215,6 +215,11 @@ s/(^|[^[:alnum:]_])filewrite([^[:alnum:]_]|$)/\1ȑ\2/
 s/(^|[^[:alnum:]_])charwidth([^[:alnum:]_]|$)/\1G\2/
 s/(^|[^[:alnum:]_])version([^[:alnum:]_]|$)/\1Ж\2/
 
+s/mblength([^[:alnum:]_]|$)/S\1/g
+s/nextch([^[:alnum:]_]|$)/k\1/g
+s/prevch([^[:alnum:]_]|$)/Ρ\1/g
+s/(^|[^[:alnum:]_])func([^[:alnum:]_]|$)/\1Κ\2/g
+
 #
 #  Variables
 #
@@ -273,6 +278,8 @@ s/(^|[^[:alnum:]_])xhere([^[:alnum:]_]|$)/\1j\2/g
 s/(^|[^[:alnum:]_])buflen([^[:alnum:]_]|$)/\1m\2/g
 s/(^|[^[:alnum:]_])gap_off([^[:alnum:]_]|$)/\1n\2/g
 s/(^|[^[:alnum:]_])str([^[:alnum:]_]|$)/\1s\2/g
+s/(^|[^[:alnum:]_])mbl([^[:alnum:]_]|$)/\1V\2/g
+s/(^|[^[:alnum:]_])is_ctrl([^[:alnum:]_]|$)/\1U\2/g
 
 
 #

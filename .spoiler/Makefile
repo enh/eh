@@ -119,7 +119,7 @@ test:
 # Generated files.
 #######################################################################
 
-../prog.c: eh.c transform.sed
+../prog.c: eh.c transform.sed transform_ioccc.sed
 	sed -E -f transform_ioccc.sed eh.c | \
 	sed -E -f transform.sed | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
@@ -128,7 +128,7 @@ test:
 ../prog$E: ../prog.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $@ ../prog.c ${LIBS}
 
-../prog.ext.c: eh.c transform.sed
+../prog.ext.c: eh.c transform.sed transform_ext.sed
 	sed -E -f transform_ext.sed eh.c | \
 	sed -E -f transform.sed | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \

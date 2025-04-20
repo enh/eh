@@ -9,6 +9,7 @@
 
 /#define nextch/d
 /#define prevch/d
+/#define setundo/d
 
 /adjmarks/d
 /growgap/d
@@ -16,7 +17,8 @@
 /#define MATCHES/d
 s/MATCHES/1/
 /^#define getsigch/d
+
 s/(^|[^[:alnum:]_])getsigch/getch/g
-s/(^|[^[:alnum:]_])func([^[:alnum:]_]|$)/\1k\2/g
 s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1S\2/
+
 ### End IOCCC
