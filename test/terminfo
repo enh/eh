@@ -1,0 +1,30 @@
+#
+# Expanded from:
+#
+# ansi-bare,
+#	use=ansi-mini, use=ansi+sgrso,
+#
+ansi-bare|Minimalist ANSI,
+	am, xon,
+	cols#80, lines#24,
+	bel=\a, cr=\r, ind=\n,
+	clear=\e[H\e[J, ed=\e[J, el=\e[K,
+	cub1=\b, cud1=\n, cup=\e[%i%p1%d;%p2%dH, home=\e[H,
+	rmso=\E[m, smso=\E[7m,
+
+textterm|Minimalist Textual Test,
+	am, xon,
+	cols#80, lines#24,
+	bel=<BEL>\r\n,
+	cr=<CR>,
+	nel=<NL>\r\n,
+	ind=<IND>\r\n,
+	clear=<CLEAR>\r\n,
+	ed=<ED>\r\n,
+	el=<EL>\r\n,
+	cub1=<CUB1>\r\n,
+	cud1=<CUD1>\r\n,
+	cup=<%i%p1%d;%p2%d>\r\n,
+	home=<HOME>\r\n,
+	rmso=<RMSO>\r\n,
+	smso=<SMSO>,

@@ -1,0 +1,53 @@
+<CLEAR>
+<CLEAR>
+<SMSO>a.txt 119B 0%                                                                   <RMSO>
+<2;1>
+hello   world<3;1>
+this file might be a<4;1>
+little rude fart face<5;1>
+empty line<7;1>
+blank line<9;1>
+qwerty butt<10;9>
+tab indent<11;1>
+-last line-<13;1>
+<SMSO>^D<RMSO>
+<2;1>
+<1;12>
+<SMSO>10%<RMSO>
+<3;1>
+<1;1>
+<SMSO>!    <RMSO>
+ <SMSO>    <RMSO>
+ <SMSO>   <RMSO>
+<1;2>
+<SMSO>t<RMSO>
+<SMSO>e<RMSO>
+<SMSO>e<RMSO>
+ <SMSO>b<RMSO>
+<SMSO>.<RMSO>
+<SMSO>t<RMSO>
+<SMSO>x<RMSO>
+<SMSO>t<RMSO>
+<1;1>
+<SMSO>a.txt 119B<RMSO>
+ <SMSO>46%<RMSO>
+<1;80>
+<SMSO>*<RMSO>
+<5;1>
+<1;1>
+<SMSO>>    <RMSO>
+ <SMSO>    <RMSO>
+ <SMSO>   <RMSO>
+<1;80>
+<SMSO> <RMSO>
+<1;2>
+<SMSO>a<RMSO>
+<SMSO>.<RMSO>
+<SMSO>t<RMSO>
+<SMSO>x<RMSO>
+<SMSO>t<RMSO>
+<1;1>
+<SMSO>a.txt 119B<RMSO>
+ <SMSO>46%<RMSO>
+<5;1>
+<24;1>

@@ -1,0 +1,40 @@
+<CLEAR>
+<CLEAR>
+<SMSO>a.txt 0B                                                                        <RMSO>
+<2;1>
+Hello<3;9>
+world!<5;1>
+<SMSO>^D<RMSO>
+<2;1>
+<1;7>
+<SMSO>6<RMSO>
+<3;1>
+<1;7>
+<SMSO>13B<RMSO>
+<3;15>
+<1;8>
+<SMSO>4<RMSO>
+<3;16>
+<1;8>
+<SMSO>5<RMSO>
+<3;16>
+W<1;8>
+<SMSO>6<RMSO>
+<3;17>
+O<1;8>
+<SMSO>7<RMSO>
+<3;18>
+O<1;8>
+<SMSO>8<RMSO>
+<3;19>
+T<1;8>
+<SMSO>9<RMSO>
+<3;20>
+!<CLEAR>
+<SMSO>a.txt 19B                                                                       <RMSO>
+<2;1>
+Hello<3;9>
+world! WOOT!<5;1>
+<SMSO>^D<RMSO>
+<3;21>
+<24;1>

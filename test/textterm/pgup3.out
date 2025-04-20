@@ -1,0 +1,117 @@
+<CLEAR>
+<CLEAR>
+<SMSO>test/usage.md 0B                                                                <RMSO>
+<2;1>
+ae 1.3.0<3;1>
+========<5;1>
+A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method ou<6;1>
+tlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by<7;2>
+many Emacs style editors.<10;1>
+Usage<11;1>
+-----<13;5>
+ae [filename]<15;1>
+Read or create a text file; default filename is `a.txt`.  Text files consists of<16;2>
+lines of printable text, tabs, or newline characters.  A physical line can be o<17;1>
+f arbitrary length and is delimited by either a newline or the end of file.  Tab<18;2>
+stops are every eight columns.  The behaviour of non-printable characters may v<19;1>
+ary depending on the implementation of the Curses library, `stty(1)` settings, o<20;1>
+r terminal emulator.<23;1>
+Commands<24;1>
+--------<2;1>
+<1;15>
+<SMSO>2570B<RMSO>
+<2;1>
+<EL>
+<3;1>
+<SMSO>^D<EL>
+<RMSO>
+<5;1>
+<EL>
+<6;1>
+<EL>
+<7;2>
+<EL>
+<10;1>
+<EL>
+<11;1>
+<EL>
+<13;5>
+<EL>
+<15;1>
+<EL>
+<16;2>
+<EL>
+<17;1>
+<EL>
+<18;2>
+<EL>
+<19;1>
+<EL>
+<20;1>
+<EL>
+<23;1>
+<EL>
+<24;1>
+<EL>
+<2;1>
+<1;16>
+<SMSO>08B <RMSO>
+<2;1>
+Usage<3;1>
+-----<5;5>
+ae [filename]<7;1>
+Read or create a text file; default filename is `a.txt`.  Text files consists of<8;2>
+lines of printable text, tabs, or newline characters.  A physical line can be o<9;1>
+f arbitrary length and is delimited by either a newline or the end of file.  Tab<10;2>
+stops are every eight columns.  The behaviour of non-printable characters may v<11;1>
+ary depending on the implementation of the Curses library, `stty(1)` settings, o<12;1>
+r terminal emulator.<15;1>
+Commands<16;1>
+--------<18;5>
+h j k l   left, down, up, right cursor movement<19;5>
+H J K L   word left, page down, page up, word right<20;5>
+[ ]       beginning and end of line<21;5>
+G<21;15>
+goto line number; 1G top of file, G bottom<22;5>
+i<22;15>
+enter insert mode, FF or ESC to quit<23;5>
+x<23;15>
+delete character under the cursor<24;5>
+W<24;15>
+write buffer to file<2;1>
+<1;15>
+<SMSO>0B  <RMSO>
+<2;1>
+ae 1.3.0<3;1>
+========<5;1>
+A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method ou<6;1>
+tlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by<7;1>
+ many Emacs style editors.<EL>
+<8;2>
+<EL>
+<9;1>
+<EL>
+<10;1>
+Usage<EL>
+<11;1>
+-----<EL>
+<12;1>
+<EL>
+<13;5>
+ae [filename]<15;1>
+Read or create a text file; default filename is `a.txt`.  Text files consists of<16;1>
+ lines of printable text, tabs, or newline characters.  A physical line can be o<17;1>
+f arbitrary length and is delimited by either a newline or the end of file.  Tab<18;2>
+stops are every eight columns.  The behaviour of non-printable characters may v<19;1>
+ary depending on the implementation of the Curses library, `stty(1)` settings, o<20;1>
+r terminal emulator.<EL>
+<21;5>
+<EL>
+<22;5>
+<EL>
+<23;1>
+Commands      <EL>
+<24;1>
+--------      <EL>
+<2;1>
+<24;1>

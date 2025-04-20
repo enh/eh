@@ -1,0 +1,48 @@
+<CLEAR>
+<CLEAR>
+<SMSO>a.txt 0B                                                                        <RMSO>
+<2;1>
+hello   world<3;1>
+this file might be a<4;1>
+little rude fart face<5;1>
+empty line<7;1>
+blank line<9;1>
+qwerty butt<10;9>
+tab indent<11;1>
+-last line-<13;1>
+<SMSO>^D<RMSO>
+<2;1>
+<1;7>
+<SMSO>17B<RMSO>
+<3;6>
+e rude fart face<4;1>
+empty line<EL>
+<5;1>
+<EL>
+<6;1>
+blank line<7;1>
+<EL>
+<8;1>
+qwerty butt<9;1>
+        tab indent<10;1>
+-last line- <EL>
+<11;1>
+<EL>
+<12;1>
+<SMSO>^D<RMSO>
+<13;1>
+<EL>
+<3;6>
+<CLEAR>
+<SMSO>a.txt 17B                                                                       <RMSO>
+<2;1>
+hello   world<3;1>
+this e rude fart face<4;1>
+empty line<6;1>
+blank line<8;1>
+qwerty butt<9;9>
+tab indent<10;1>
+-last line-<12;1>
+<SMSO>^D<RMSO>
+<3;6>
+<24;1>

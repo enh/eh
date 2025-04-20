@@ -1,0 +1,53 @@
+<CLEAR>
+<CLEAR>
+<SMSO>a.txt 119B 0%                                                                   <RMSO>
+<2;1>
+hello   world<3;1>
+this file might be a<4;1>
+little rude fart face<5;1>
+empty line<7;1>
+blank line<9;1>
+qwerty butt<10;9>
+tab indent<11;1>
+-last line-<13;1>
+<SMSO>^D<RMSO>
+<2;1>
+<1;12>
+<SMSO>10%<RMSO>
+<3;1>
+<1;1>
+<SMSO>!    <RMSO>
+ <SMSO>    <RMSO>
+ <SMSO>   <RMSO>
+<1;2>
+<SMSO>W<RMSO>
+<SMSO>O<RMSO>
+<SMSO>O<RMSO>
+<SMSO>T<RMSO>
+<BEL>
+<1;1>
+<SMSO>a.txt<RMSO>
+ <SMSO>157B<RMSO>
+ <SMSO>31%<RMSO>
+<1;80>
+<SMSO>*<RMSO>
+<3;1>
+mksh: WOOT: inaccessible or not found<4;1>
+this file might be a<EL>
+<5;1>
+little rude fart face<6;1>
+empty line<7;1>
+<EL>
+<8;1>
+blank line<9;1>
+<EL>
+<10;1>
+qwerty butt <EL>
+<11;1>
+        tab indent<12;1>
+-last line-<13;1>
+<EL>
+<14;1>
+<SMSO>^D<RMSO>
+<4;1>
+<24;1>

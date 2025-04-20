@@ -1,0 +1,75 @@
+<CLEAR>
+<CLEAR>
+<SMSO>test/short.txt 0B                                                               <RMSO>
+<2;1>
+hello   world<3;1>
+this file might be a<4;1>
+little rude fart face<5;1>
+empty line<7;1>
+blank line<9;1>
+qwerty butt<10;9>
+tab indent<11;1>
+-last line-<13;1>
+<SMSO>^D<RMSO>
+<2;1>
+<1;16>
+<SMSO>12B<RMSO>
+<3;1>
+<1;16>
+<SMSO>33<RMSO>
+<4;1>
+<1;16>
+<SMSO>55<RMSO>
+<5;1>
+<1;16>
+<SMSO>66<RMSO>
+<6;1>
+<1;17>
+<SMSO>7<RMSO>
+<7;1>
+<1;16>
+<SMSO>78<RMSO>
+<8;1>
+<1;16>
+<SMSO>83<RMSO>
+<9;1>
+<1;16>
+<SMSO>95<RMSO>
+<10;1>
+<1;16>
+<SMSO>107B<RMSO>
+<11;1>
+<1;17>
+<SMSO>19<RMSO>
+<12;1>
+<1;17>
+<SMSO>07<RMSO>
+<11;1>
+<1;16>
+<SMSO>95B <RMSO>
+<10;1>
+<1;16>
+<SMSO>83<RMSO>
+<9;1>
+<1;16>
+<SMSO>78<RMSO>
+<8;1>
+<1;16>
+<SMSO>67<RMSO>
+<7;1>
+<1;17>
+<SMSO>6<RMSO>
+<6;1>
+<1;16>
+<SMSO>55<RMSO>
+<5;1>
+<1;16>
+<SMSO>33<RMSO>
+<4;1>
+<1;16>
+<SMSO>12<RMSO>
+<3;1>
+<1;16>
+<SMSO>0B <RMSO>
+<2;1>
+<24;1>

@@ -1,0 +1,18 @@
+<CLEAR>
+<CLEAR>
+<SMSO>test/short-nonl.txt 0B                                                          <RMSO>
+<2;1>
+hello   world<3;1>
+this file might be a<4;1>
+little rude fart face<5;1>
+empty line<7;1>
+blank line<9;1>
+qwerty butt<10;9>
+tab indent<11;1>
+-last line-<12;1>
+<SMSO>^D<RMSO>
+<2;1>
+<1;21>
+<SMSO>118B<RMSO>
+<11;12>
+<24;1>

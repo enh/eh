@@ -155,9 +155,9 @@ endif
 
 # what to build
 #
-PROG= prog
-OBJ= ${PROG}$O
-TARGET= ${PROG}$E
+PROG	= ./prog
+OBJ	= ${PROG}$O
+TARGET	= ${PROG}$E
 
 #ALT_OBJ= ${PROG}.alt$O
 #ALT_TARGET= ${PROG}.alt$E
@@ -175,7 +175,7 @@ DATA=
 
 all: data ${TARGET}
 
-.PHONY: all data try clean clobber install
+.PHONY: all data try clean clobber install test
 
 # how to compile
 #
@@ -186,10 +186,7 @@ ${PROG}$E: ${PROG}.c
 #
 alt: data ${ALT_TARGET}
 
-build.h :
-	printf '#define BUILT "%s"\n#define COMMIT "%s"\n' "${BUILT}" "${COMMIT}" >build.h
-
-${PROG}.alt$E: build.h ${PROG}.alt.c
+${PROG}.alt$E: ${PROG}.alt.c
 	${CC} ${CFLAGS} ${PROG}.alt.c -o $@ ${LDFLAGS}
 
 # data files
@@ -210,7 +207,7 @@ try: ${PROG} ${DATA}
 ###############
 
 clean:
-	-${RM} -f ${OBJ} *.i indent.c  build.h
+	-${RM} -f ${OBJ} *.i indent.c
 
 clobber: clean
 	-${RM} ${TARGET}
@@ -219,13 +216,16 @@ strip: build
 	strip ${BUILD}
 	ls -l ${BUILD}
 
-size: ../prog.c
+size: prog.c
 	-iocccsize -v1 $?
 
 entry:
 	-mkdir -p .stage
 	-rm -rf .stage/*
 	mkiocccentry -m ${MAKE} -Y -i.answers -ILICENSE.md -Ieh.tws -Iprog.ext.c .stage `pwd`
+
+test:
+	${MAKE} -f test/Makefile PROG=${PROG} $@
 
 ######################################
 # optional include of 1337 hacker rulz
