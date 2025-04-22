@@ -58,7 +58,7 @@ TRUE	:= true
 # -Wno-char-subscripts			ctypes macros
 # -Wno-incompatible-pointer-types	atexit(endwin)
 #
-CSILENCE= -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter
+CSILENCE= -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter -Wno-unused-value
 
 # Attempt to silence unknown warnings
 #
@@ -102,7 +102,14 @@ CDEFINE= -DBUF=${BUF} -DMODE=${MODE} -D_XOPEN_SOURCE=700
 #
 # Example: CINCLUDE= -include stdio.h
 #
-CINCLUDE=
+# Some of the most commonly used includes like ctype.h, stdio.h,
+# stdlib.h, and string.h should be ignored or counted as 2, eg.
+#
+#   #include <stdlib.h>		// count as 2
+#
+# Including them here doesn't "feel right", bit of cheat.
+#
+CINCLUDE= -include ctype.h -include stdlib.h -include string.h
 
 # Other flags to pass to the C compiler
 #

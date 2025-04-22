@@ -1,14 +1,17 @@
 <CLEAR>
 <CLEAR>
-<SMSO>a.txt 7B 0%                                                                     <RMSO>
+<SMSO>a.txt 0B                                                                        <RMSO>
 <2;1>
 a🔥b<4;1>
 <SMSO>^D<RMSO>
 <2;1>
-<1;10>
-<SMSO>85%<RMSO>
-<2;5>
-<1;10>
-<SMSO>100%<RMSO>
-<3;1>
+<CLEAR>
+<SMSO>a.txt 0B                                                                        <RMSO>
+<2;1>
+a🔥b<4;1>
+<SMSO>^D<RMSO>
+<2;1>
+<1;7>
+<SMSO>1<RMSO>
+<2;2>
 <24;1>

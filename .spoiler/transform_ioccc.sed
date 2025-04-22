@@ -13,12 +13,14 @@
 
 /adjmarks/d
 /growgap/d
-/setlocale/d
+/setundo\(\)/d
+#/setlocale/d
 /#define MATCHES/d
 s/MATCHES/1/
 /^#define getsigch/d
 
+/^#define .*_CMDS/d
+s/MOTION_CMDS/14/g
 s/(^|[^[:alnum:]_])getsigch/getch/g
-s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1S\2/
 
 ### End IOCCC

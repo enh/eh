@@ -6,16 +6,16 @@
 
 #define EXT
 
-#include <ctype.h>
 #include <assert.h>
 #include <curses.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
 #include <regex.h>
-#ifdef EXT
 #include <locale.h>
+#ifdef EXT
+#include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
 #include <wctype.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -63,8 +63,8 @@ static regex_t ere;
 
 static int cur_row, cur_col, count, ere_dollar_only;
 static char *filename, *scrap;
-static char buf[BUF], *gap = buf, *egap, *ebuf, *ugap = buf, *uegap;
-static off_t here, page, epage, uhere, match_length, scrap_length, marker = -1;
+static char buf[BUF], *gap = buf, *egap, *ebuf;
+static off_t here, page, epage, match_length, scrap_length, marker = -1;
 static regex_t ere;
 #endif /* EXT */
 
@@ -140,7 +140,6 @@ ptr(off_t cur)
 	return buf+cur + (buf+cur < gap ? 0 : egap-gap);
 }
 
-#ifdef EXT
 /**
  * Alternative to mblen() that assumes ch is a the start byte of
  * UTF-8 multibyte character.  Returns the multibyte length; if
@@ -172,19 +171,7 @@ prevch(off_t cur)
 	assert(0 <= cur);
 	return cur;
 }
-#else /* EXT */
-#define nextch(cur)	((cur)+((cur)<pos(ebuf)))
-#define prevch(cur)	((cur)-(0<(cur)))
-#endif /* EXT */
 
-/* -60B undo() */
-void
-setundo(void)
-{
-	ugap = gap;
-	uegap = egap;
-	uhere = here;
-}
 
 #ifdef EXT
 void
@@ -198,9 +185,14 @@ adjmarks(void)
 		}
 	}
 }
-#else /* EXT */
-#define adjmarks()
-#endif /* EXT */
+
+void
+setundo(void)
+{
+	ugap = gap;
+	uegap = egap;
+	uhere = here;
+}
 
 void
 undo(void)
@@ -215,6 +207,9 @@ undo(void)
 	/* Force display() to reframe, ie. 1GdGu fails. */
 	epage = here+1;
 }
+#else /* EXT */
+#define adjmarks()
+#endif /* EXT */
 
 void
 movegap(off_t cur)
@@ -281,13 +276,9 @@ growgap(size_t min)
 int
 charwidth(const char *s, int col)
 {
-#ifdef EXT
 	wchar_t wc;
 	(void) mbtowc(&wc, s, 4);
 	return wc == '\t' ? TABSTOP(col) : (col = wcwidth(wc)) < 0 ? 1 : col;
-#else /* EXT */
-	return *s == '\t' ? TABSTOP(col) : 1;
-#endif /* EXT */
 }
 
 /*
@@ -315,11 +306,7 @@ col_or_eol(off_t cur, int col, int maxcol)
 	char *p;
 	while (col < maxcol && (p = ptr(cur)) < ebuf && *p != '\n') {
 		col += charwidth(p, col);
-#ifdef EXT
 		cur = nextch(cur);
-#else /* EXT */
-		cur++;
-#endif /* EXT */
 	}
 	assert(0 <= cur && cur <= pos(ebuf));
 	return cur;
@@ -335,11 +322,7 @@ row_start(off_t cur, off_t offset)
 	int col = 0;
 	off_t mark = cur;
 	assert(/* 0 <= cur && cur <= offset &&*/ offset <= pos(ebuf));
-#ifdef EXT
 	while (cur < offset && (p = ptr(cur = nextch(cur))) < ebuf) {
-#else /* EXT */
-	while (cur < offset && (p = ptr(++cur)) < ebuf) {
-#endif /* EXT */
 		col += charwidth(p, col);
 		if (COLS <= col) {
 			mark = cur;
@@ -372,12 +355,7 @@ prevline(off_t cur)
 off_t
 nextline(off_t cur)
 {
-#ifdef EXT
 	return nextch(col_or_eol(cur, cur_col, COLS-1));
-#else /* EXT */
-	cur = col_or_eol(cur, cur_col, COLS-1);
-	return cur + (cur < pos(ebuf));
-#endif /* EXT */
 }
 
 void
@@ -474,8 +452,9 @@ display(void)
 		if (from <= epage && epage < to) {
 			standout();
 		}
-		(void) mvaddch(i, j, *p);
-		epage++;
+		int mbl = mblength(*p);
+		(void) mvaddnstr(i, j, p, mbl);
+		epage += mbl;
 #endif /* EXT */
 		/* Handle tab expansion ourselves.  Historical
 		 * Curses addch() would advance to the next
@@ -505,7 +484,6 @@ redraw(void)
 	count = 0;
 }
 
-#ifdef EXT
 void
 left(void)
 {
@@ -516,19 +494,6 @@ right(void)
 {
 	here = nextch(here);
 }
-#else /* EXT */
-void
-left(void)
-{
-	here -= 0 < here;
-}
-
-void
-right(void)
-{
-	here += here < pos(ebuf);
-}
-#endif /* EXT */
 
 /*
  * Move up one logical line.
@@ -728,10 +693,9 @@ insert(void)
 				ch = getch();
 				(void) nl();	/* CR -> LF */
 			}
-			for (int n = mblength(ch); 0 < n--; 0 < n && (ch = getch())) {
 #else /* EXT */
-			{
 #endif /* EXT */
+			for (int n = mblength(ch); 0 < n--; 0 < n && (ch = getch())) {
 				growgap(COLS);
 				*gap++ = ch;
 				epage++;
@@ -1075,6 +1039,17 @@ quit(void)
 	mode = NULL;
 }
 
+void
+flipcase(void)
+{
+	char *p = ptr(here);
+	if (p < ebuf) {
+		/* Skip moving the gap and modify in place. */
+		*p = islower(*p) ? toupper(*p) : tolower(*p);
+		chg = CHANGED;
+		right();
+	}
+}
 #else /* EXT */
 void
 writefile(void)
@@ -1216,7 +1191,6 @@ search(void)
 	assert(COLS <= egap - gap);
 	/* NetBSD 9.3 erase ^H works fine, but not the kill ^U character. */
 	(void) mvgetnstr(0, 1, gap, egap-gap);
-	(void) noecho();
 #endif /* EXT */
 	regfree(&ere);
 	if (regcomp(&ere, gap, REG_EXTENDED|REG_NEWLINE) != 0) {
@@ -1228,21 +1202,6 @@ search(void)
 		next();
 	}
 	count = 0;
-}
-
-void
-flipcase(void)
-{
-	char *p = ptr(here);
-	if (p < ebuf) {
-		/* Skip moving the gap and modify in place. */
-		*p = islower(*p) ? toupper(*p) : tolower(*p);
-#ifdef EXT
-		chg = CHANGED;
-#else /* EXT */
-#endif /* EXT */
-		right();
-	}
 }
 
 void
@@ -1269,7 +1228,7 @@ static void (*func[])(void) = {
 	version, redraw
 };
 #else /* EXT */
-static char key[] = "hjklbwHJKL|G/n~ixydPu\\WQ\003";
+static char key[] = "hjklbwHJKL|G/nixydP\\WQ\003";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1278,8 +1237,8 @@ static void (*func[])(void) = {
 	column, lngoto,
 	search, next,
 	/* Modify */
-	flipcase, insert, delx,
-	yank, deld, paste, undo,
+	insert, delx,
+	yank, deld, paste,
 	/* Other */
 	anchor, writefile, quit, quit,
 	redraw
@@ -1332,9 +1291,9 @@ main(int argc, char **argv)
 		/* Try TERM=ansi-mini which works. */
 		return 1;
 	}
-	(void) noecho();
 	(void) raw();
 #ifdef EXT
+	(void) noecho();
 	(void) atexit(cleanup);
 	/* Switching between cbreak() and raw() impacts terminal output
 	 * which can alter the expected test output files.
@@ -1353,7 +1312,7 @@ main(int argc, char **argv)
 		getcmd(ALL_CMDS);
 	}
 #else /* EXT */
-	uegap = egap = ebuf = buf + BUF;
+	egap = ebuf = buf + BUF;
 	if (0 < (argc = open(filename = *++argv, 0))) {
 		gap += read(argc, buf, ebuf-buf);
 		(void) close(argc);
@@ -1365,6 +1324,7 @@ main(int argc, char **argv)
 	/* Force display() to frame the initial screen. */
 	epage = 1;
 	while (filename != NULL) {
+		(void) noecho();
 		display();
 		getcmd(ALL_CMDS);
 	}

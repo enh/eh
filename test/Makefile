@@ -66,7 +66,7 @@ test:
 	${MAKE} -f $T/Makefile PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/$T/terminfo.cdb tests
 
 TESTS:= $T/terminfo.cdb tests_have_term_data \
-	term0 empty0 empty1 empty3 redraw0 flip0 flip1 \
+	term0 empty0 empty1 empty3 redraw0 \
 	ins0 ins1 ins2 ins3 ins4 ins5 \
 	del0 del1 del2 del3 del4 del5 del6 \
 	scroll0 scroll1 scroll2 \
@@ -74,8 +74,7 @@ TESTS:= $T/terminfo.cdb tests_have_term_data \
 	pgdn0 pgdn1 pgdn2 pgdn3 pgdn4 pgup0 pgup1 pgup2 pgup3 \
 	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 ere10 ere11 \
 	del7 del8 del9 del10 del11 del13 \
-	undo0 undo1 undo2 undo3 \
-	paste0 paste1 paste2 paste3 \
+	paste0 paste1 paste2 \
 	select0 select1 select2 select3 select4 \
 	mb0 mb1 mb2 mb3
 
@@ -86,10 +85,13 @@ tests: ${TESTS} clean
 
 tests_skipped: \
 	arg0 empty2 write1 \
+	flip0 flip1 \
 	mark0 mark1 mark2 mark3 mark4 mark5 \
 	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7 \
 	replace0 replace1 replace2 write0 read0 read1 \
 	del12 \
+	undo0 undo1 undo2 undo3 \
+	paste3 \
 	select5
 
 # While the terminal definition will probably contain definitions for
@@ -936,7 +938,8 @@ mb0:
 	printf 'i🔥\n\eW\nQ' | ${PROG} a.txt >a.out
 	${A_CORE}
 	${A_TXT}
-	${A_OUT_OR_SKIP}
+	${A_OUT}
+	-${PASS}
 
 # Move over 2 column wide multibyte character to newline, next line.
 #
@@ -949,7 +952,8 @@ mb1:
 	cp ${DATA}/$@.txt a.txt
 	printf 'llQ' | ${PROG} a.txt >a.out
 	${A_CORE}
-	${A_OUT_OR_SKIP}
+	${A_OUT}
+	-${PASS}
 
 # Move goto end of line containing multibyte character, then next line.
 mb2:
@@ -957,7 +961,8 @@ mb2:
 	cp ${DATA}/$@.txt a.txt
 	printf '$$lQ' | ${PROG} a.txt >a.out
 	${A_CORE}
-	${A_OUT_OR_SKIP}
+	${A_OUT}
+	-${PASS}
 
 # Cursor back from eof.
 mb3:
@@ -965,4 +970,5 @@ mb3:
 	cp ${DATA}/$@.txt a.txt
 	printf '2jhhhhhhhhQ' | ${PROG} a.txt >a.out
 	${A_CORE}
-	${A_OUT_OR_SKIP}
+	${A_OUT}
+	-${PASS}

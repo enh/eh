@@ -52,6 +52,15 @@ COMMIT	!= git describe --tags
 CSILENT := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter \
 	   -Wno-strict-prototypes -Wno-unused-value
 
+# Some of the most commonly used includes like ctype.h, stdio.h,
+# stdlib.h, and string.h should be ignored or counted as 2, eg.
+#
+#   #include <stdlib.h>		// count as 2
+#
+# Including them here doesn't "feel right", bit of cheat.
+#
+CINCLUDE := -include ctype.h -include stdlib.h -include string.h
+
 CFLAGS	:= -std=gnu17 -Os -funsigned-char -Wall -Wextra -pedantic ${CSILENT} ${DBG}
 
 # Frack need extra #define to enable SUS standard strdup(), strndup().
@@ -126,7 +135,7 @@ test:
 	sed -e'/^[[:blank:]]*$$/d' >$@
 
 ../prog$E: ../prog.c
-	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o $@ ../prog.c ${LIBS}
+	${CC} ${CFLAGS} ${CINCLUDE} ${CPPFLAGS} ${LDFLAGS} -o $@ ../prog.c ${LIBS}
 
 ../prog.ext.c: eh.c transform.sed transform_ext.sed
 	sed -E -f transform_ext.sed eh.c | \

@@ -110,7 +110,6 @@ s/CHANGED/'*'/g
 s/MATCHES/10/g
 
 /^#define .*_CMDS/d
-s/MOTION_CMDS/18/g
 s/ALL_CMDS/99/g
 
 s/STDIN_FILENO/0/g
@@ -155,7 +154,7 @@ s/'\\0'/0/g
 #
 #  Functions & Types
 #	👾 💣 🛸 🔥 🎃
-#	U+0194=Ɣ U+03A1=Ρ U+03B3=γ U+03C6=φ U+0B67=୧ U+039a=Κ
+#	U+0194=Ɣ U+03A1=Ρ U+03B3=γ U+03C6=φ U+039a=Κ U+03BA=κ
 #
 
 s/(^|[^[:alnum:]_])adjmarks([^[:alnum:]_]|$)/\1j\2/g
@@ -219,6 +218,7 @@ s/mblength([^[:alnum:]_]|$)/S\1/g
 s/nextch([^[:alnum:]_]|$)/k\1/g
 s/prevch([^[:alnum:]_]|$)/Ρ\1/g
 s/(^|[^[:alnum:]_])func([^[:alnum:]_]|$)/\1Κ\2/g
+s/(^|[^[:alnum:]_])writefile([^[:alnum:]_]|$)/\1κ\2/
 
 #
 #  Variables

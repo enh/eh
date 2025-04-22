@@ -19,7 +19,7 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 * A regression test suite is available on demand.  The test suite requires `tic(1)` to build the specialised test terminal entry.
 
-* Original unobfuscated more fully featured source available (UTF-8, search/replace, pipe-filter selection, markers, insert file, edit buffer grows, literal character input).
+* Original unobfuscated more fully featured source available (search/replace, pipe-filter selection, markers, insert file, edit buffer grows, literal character input).
 
 
 #### Updates
@@ -43,6 +43,8 @@ Simply type `make` to build.  There are two macros that can be customised:
 * Fix word left to behave like `vi(1)`.
 
 * Add upper/lower case inverting.
+
+* Add basic UTF-8 support.
 
 
 ### Award Ideas
@@ -88,7 +90,7 @@ DESCRIPTION
 
 A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method outlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by many Emacs style editors.  (Yep I mixed `vi` and `emacs` in the same paragraph; I'm going to hell for that one.)
 
-Create or read a text file to edit.  Text files consists of lines of printable ASCII text, tabs, or newline characters.  A physical line can be of arbitrary length and is delimited by either a newline or the end of file.  Tab stops are every eight columns.  The behaviour of non-printable characters may vary depending on the implementation of the Curses library, `stty(1)` settings, or terminal emulator.
+Create or read a text file to edit.  Text files consists of lines of printable UTF-8 text, tabs, or newline characters.  A physical line can be of arbitrary length and is delimited by either a newline or the end of file.  Tab stops are every eight columns.  The behaviour of non-printable characters may vary depending on the implementation of the Curses library, `stty(1)` settings, or terminal emulator.
 
 
 COMMANDS
@@ -110,8 +112,6 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
                 the cursor.
     i           Insert text mode before the cursor, ESC or CTRL+C ends insert.
     x           Delete character after cursor, ie. `dl`.
-    u           Undo last modification, except invert case.
-    ~           Invert character case.
     W           Write buffer to file.
     Q           Quit.
     CTRL+C      Quit.
