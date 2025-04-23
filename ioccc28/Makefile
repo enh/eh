@@ -227,7 +227,7 @@ size: prog.c
 entry:
 	-mkdir -p .stage
 	-rm -rf .stage/*
-	mkiocccentry -m ${MAKE} -Y -i.answers -ILICENSE.md -Ieh.tws -Iprog.ext.c .stage `pwd`
+	mkiocccentry -m ${MAKE} -Y -i.answers -Itest -Iprog.ext.c .stage `pwd`
 
 test:
 	${MAKE} -f test/Makefile PROG=${PROG} $@
