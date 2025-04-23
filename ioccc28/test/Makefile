@@ -65,7 +65,7 @@ test:
 	@printf '###\n### YOU ARE HERE >>> %s <<<\n###\n' "$$(pwd)"
 	${MAKE} -f $T/Makefile PROG=${PROG} TERM=textterm LINES=24 COLUMNS=80 TERMINFO=$${PWD}/$T/terminfo.cdb tests
 
-TESTS:= $T/terminfo.cdb tests_have_term_data \
+TESTS:= tests_have_term_data \
 	term0 empty0 empty1 empty3 redraw0 \
 	ins0 ins1 ins2 ins3 ins4 ins5 \
 	del0 del1 del2 del3 del4 del5 del6 \
@@ -81,7 +81,7 @@ TESTS:= $T/terminfo.cdb tests_have_term_data \
 .PHONY : ${TESTS}
 .SILENT: ${TESTS}
 
-tests: ${TESTS} clean
+tests: $T/terminfo.cdb ${TESTS} clean
 
 tests_skipped: \
 	arg0 empty2 write1 \
