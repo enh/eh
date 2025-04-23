@@ -92,21 +92,21 @@ MANDIR  != if test "${MANDIR}" = '.'; then echo /usr/local/share/man; else echo 
 
 all: build
 
-build: eh$E ../prog$E
+build: eh$E ioccc28/prog$E
 
 clean:
 	-rm -f build.h *.core *.stackdump *.i a.out a.txt b.txt
 	-rm -rf test/terminfo.cdb
 
 distclean clobber: clean
-	-rm -f eh$E ../prog.c ../prog$E ../prog.ext$E typescript
+	-rm -f eh$E ioccc28/prog.c ioccc28/prog$E ioccc28/prog.ext$E typescript
 
 strip: build
-	strip eh$E ../prog$E
-	ls -l ..
+	strip eh$E ioccc28/prog$E
+	ls -l ioccc28
 	ls -l
 
-size: ../prog.c
+size: ioccc28/prog.c
 	-iocccsize -v1 $>
 
 install: README.md eh$E
@@ -128,26 +128,26 @@ test:
 # Generated files.
 #######################################################################
 
-../prog.c: eh.c transform.sed transform_ioccc.sed
+ioccc28/prog.c: eh.c transform.sed transform_ioccc.sed
 	sed -E -f transform_ioccc.sed eh.c | \
 	sed -E -f transform.sed | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
 	sed -e'/^[[:blank:]]*$$/d' >$@
 
-../prog$E: ../prog.c
-	${CC} ${CFLAGS} ${CINCLUDE} ${CPPFLAGS} ${LDFLAGS} -o $@ ../prog.c ${LIBS}
+ioccc28/prog$E: ioccc28/prog.c
+	${CC} ${CFLAGS} ${CINCLUDE} ${CPPFLAGS} ${LDFLAGS} -o $@ ioccc28/prog.c ${LIBS}
 
-../prog.ext.c: eh.c transform.sed transform_ext.sed
+ioccc28/prog.ext.c: eh.c transform.sed transform_ext.sed
 	sed -E -f transform_ext.sed eh.c | \
 	sed -E -f transform.sed | \
 	sed -e'/) {$$/{ N;N;s/ {\(.[[:blank:]]*[^;]*;.\)[[:blank:]]*}$$/\1/; }' | \
 	sed -e'/^[[:blank:]]*$$/d' >$@
 
-../prog.ext$E: ../prog.ext.c
+ioccc28/prog.ext$E: ioccc28/prog.ext.c
 
-../prog.alt$E: ../prog.alt.c
-	${CC} ${CFLAGS} ${CPPFLAGS} -I.. -o $@ ../prog.alt.c ${LIBS}
+ioccc28/prog.alt$E: ioccc28/prog.alt.c
+	${CC} ${CFLAGS} ${CPPFLAGS} -o $@ ioccc28/prog.alt.c ${LIBS}
 
-../prog.alt.i: ../prog.alt.c
-	${CC} ${CFLAGS} ${CPPFLAGS} -I.. -E ../prog.alt.c >$*.i
+ioccc28/prog.alt.i: ioccc28/prog.alt.c
+	${CC} ${CFLAGS} ${CPPFLAGS} -E ioccc28/prog.alt.c >$*.i
 
