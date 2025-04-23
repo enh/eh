@@ -46,19 +46,17 @@ TRUE	:= true
 # C compiler settings
 #####################
 
+
 # Common C compiler warnings to silence
-#
-# Example: CSILENCE= -Wno-some-thing -Wno-another-thing
-#
-# NOTE: If you add -Wno-stuff to CSILENCE, please update
-#	CUNKNOWN in the next comment block.
-#
-# NOTE: Please don't add -Wno-unknown-warning-option to CSILENCE.
 #
 # -Wno-char-subscripts			ctypes macros
 # -Wno-incompatible-pointer-types	atexit(endwin)
+# -Wno-unused-parameter			main(int argc, ...)
 #
-CSILENCE= -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter -Wno-unused-value
+# -Wno-strict-prototypes		clang functions no arguments
+#
+CSILENCE := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter \
+	    -Wno-strict-prototypes -Wno-unused-value
 
 # Attempt to silence unknown warnings
 #
@@ -115,7 +113,7 @@ CINCLUDE= -include ctype.h -include stdlib.h -include string.h
 #
 # Example: COTHER= -fno-math-errno
 #
-COTHER=
+COTHER=	-funsigned-char
 
 # Optimization
 #
