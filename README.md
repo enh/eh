@@ -93,16 +93,22 @@ See Also
 Notes
 -----
 
-* No UTF-8 support yet.
+* Has UTF-8 support.
+
+  - Loads UTF-8 files as-is and internally remains UTF-8 (not converteed to `wchar_t`).
+  - UTF-8 input will likely require an intl. keyboard or enabling [US Intl. dead-key keyboard](https://en.wikipedia.org/wiki/QWERTY#US-International) support.  See also [Unicode Input](https://en.wikipedia.org/wiki/Unicode_input).
 
 * The display of long physical lines that are larger than the terminal screen is untested, so considered undefined.
 
-* CRLF newlines (DOS, FreeBSD Windows) and other non-spacing control characters are not visible.  Consider converting newlines using SUS tools like `awk(1)` or `sed(1)`:
+* Control characters, other than TAB and LF, are displayed as highlighted alphabetic characters.
+
+* CRLF newlines (DOS, Windows) should be converted to LF newlines  Consider converting newlines using SUS tools like `awk(1)` or `sed(1)`:
 
         $ sed -e's/^V^M$//' dos.txt > unix.txt
         $ sed -e's/$/^V^M/' unix.txt > dos.txt
 
-  `^V` is the default `sty)` insert literal prefix key.
+  `^V` is the default `stty(1)` insert literal prefix key.
+
 
 References
 ----------

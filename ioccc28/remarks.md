@@ -1,3 +1,6 @@
+48c574c3-3916-46c6-a5e1-b7a6bb760ef8 Slut 6
+-------------------------------------------
+
 ### Building
 
 Simply type `make` to build.  There are two macros that can be customised:
@@ -11,15 +14,19 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 * This entry requires Curses.
 
+* `prog` can view its own source.
+
 * The source is UTF-8.  When are `é` `ë` `ê` `è` not same as `e`?
 
 * This is an update with bug fixes of a previous IOCCC winner, with permission of the author.
 
-* The `iocccsize(1)` tool only counts bytes, not characters, ie. UTF-8 multibyte characters such that some characters cost 2, 3, or 4 bytes, thus penalising UTF-8 entries.
-
 * A regression test suite is available on demand.  The test suite requires `tic(1)` to build the specialised test terminal entry.
 
 * Original unobfuscated more fully featured source available (search/replace, pipe-filter selection, markers, insert file, edit buffer grows, literal character input).
+
+* The `iocccsize(1)` tool only counts bytes, not characters, ie. UTF-8 multibyte characters such that some characters cost 2, 3, or 4 bytes, thus penalising UTF-8 entries.
+
+   > UTF-8 demands equal rights and respect as real characters!  The dominance of slim ASCII must end!  We are the UTF-8 People's Front for Freedom, Equality, and Brotherhood (oh that's been used already) - We are the UTF-8 Countless Tourist Defence Farce for One Voice, One World, One Character Set.
 
 
 #### Updates
@@ -144,11 +151,14 @@ SEE ALSO
 NOTES
 -----
 
-* No UTF-8 support yet.
+* Has UTF-8 support.
+
+  - Loads UTF-8 files as-is and internally remains UTF-8 (not converteed to `wchar_t`).
+  - UTF-8 input will likely require an intl. keyboard or enabling [US Intl. dead-key keyboard](https://en.wikipedia.org/wiki/QWERTY#US-International) support.  See also [Unicode Input](https://en.wikipedia.org/wiki/Unicode_input).
 
 * The display of long physical lines that are larger than the terminal screen is untested, so considered undefined.
 
-* CRLF newlines (DOS, FreeBSD Windows) and other non-spacing control characters are not visible.  Consider converting newlines using SUS tools like `awk(1)` or `sed(1)`:
+* CRLF newlines (DOS, Windows) and other non-spacing control characters are not visible.  Consider converting newlines using SUS tools like `awk(1)` or `sed(1)`:
 
         $ sed -e's/^V^M$//' dos.txt > unix.txt
         $ sed -e's/$/^V^M/' unix.txt > dos.txt
