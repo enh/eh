@@ -108,15 +108,14 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
     b w         Word left, word right.
     |           Goto column (count) of physical line.
     /ERE        Find first occurrence of ERE pattern after the cursor.
-    n           Find next occurrence of ERE (and replace); see `u`.
+    n           Find next occurrence of ERE.
     G           Goto line (count) number; 1G top of file, G bottom.
     \           Toggle text selection.
     d motion    Delete text selection or region given by motion.
     y motion    Yank (copy) text selection or region given by motion.
-    P           Paste last deleted or yanked text region before or after
-                the cursor.
+    P           Paste last deleted or yanked text region before the cursor.
     i           Insert text mode before the cursor, ESC or CTRL+C ends insert.
-    x           Delete character after cursor, ie. `dl`.
+    x           Delete character after the cursor, ie. `dl`.
     W           Write buffer to file.
     Q           Quit.
     CTRL+C      Quit.
