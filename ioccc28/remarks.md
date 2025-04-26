@@ -49,8 +49,6 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 * Fix word left to behave like `vi(1)`.
 
-* Add upper/lower case inverting.
-
 * Add basic UTF-8 support.
 
 
