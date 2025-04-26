@@ -305,6 +305,7 @@ void
 	free(s);
 	V(o);
 	s = strndup(h,t = i-o);
+	n = -1;
 }
 void
 X()
@@ -312,7 +313,6 @@ X()
 	Ô();
 	h += t;
 	o = P(h);
-	n = -1;
 }
 void
 Ó()

@@ -43,22 +43,12 @@ rude fart face<4;8>
 <1;1>
 <SMSO>a.txt<RMSO>
  <SMSO>90B<RMSO>
-<4;8>
-<SMSO>rude fart face<RMSO>
-<5;1>
-<SMSO>empty line<RMSO>
-<7;1>
-<SMSO>blank line<RMSO>
-<8;1>
-<SMSO>    <RMSO>
-<9;1>
-<SMSO>qwerty <RMSO>
+<9;8>
 <1;7>
 <SMSO>1<RMSO>
  <SMSO>5B<RMSO>
 <9;8>
-<SMSO>rude fart face<RMSO>
-<10;1>
+rude fart face<10;1>
 butt    <EL>
 <11;1>
         tab indent<12;1>
@@ -72,16 +62,10 @@ butt    <EL>
 <2;1>
 hello   world<3;1>
 this file might be a<4;1>
-little <SMSO>rude fart face<RMSO>
-<5;1>
-<SMSO>empty line<RMSO>
-<7;1>
-<SMSO>blank line<RMSO>
-<8;1>
-<SMSO>    <RMSO>
-<9;1>
-<SMSO>qwerty rude fart face<RMSO>
-<10;1>
+little rude fart face<5;1>
+empty line<7;1>
+blank line<9;1>
+qwerty rude fart face<10;1>
 butt<11;9>
 tab indent<12;1>
 -last line-<14;1>

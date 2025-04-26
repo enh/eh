@@ -743,6 +743,7 @@ yank(void)
 	free(scrap);
 	movegap(here);
 	scrap = strndup(egap, scrap_length = mark-here);
+	marker = -1;
 }
 
 void
@@ -755,7 +756,6 @@ deld(void)
 	chg = CHANGED;
 #else /* EXT */
 #endif /* EXT */
-	marker = -1;
 	adjmarks();
 }
 
