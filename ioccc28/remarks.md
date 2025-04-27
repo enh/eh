@@ -12,7 +12,7 @@ Simply type `make` to build.  There are two macros that can be customised:
 
 ### What's Interesting.
 
-* This entry requires Curses.
+* This entry requires Curses.  Some Linux might require NCurses built with wide character support, `-lncursesw`.
 
 * `prog` can view its own source.
 

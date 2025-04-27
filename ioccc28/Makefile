@@ -130,6 +130,9 @@ CFLAGS= ${CSTD} ${CWARN} ${ARCH} ${CDEFINE} ${CINCLUDE} ${COTHER} ${OPT} ${DBG}
 #
 LDFLAGS=-lcurses
 
+# Linux NCurses with wide character support.
+#LDFLAGS	:= -lncursesw
+
 # C compiler to use
 #
 CC= cc
