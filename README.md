@@ -52,7 +52,7 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
                 the previous character; CTRL+V treats the next character
                 as a literal character.
     X x         Delete character before or after cursor, ie. `dh` or `dl`.
-    u           Undo last modification, except invert case.
+    U u         Redo or undo one or more edits.
     ~           Invert character case.
     ! motion    Filter a text selection or region through command(s),
                 eg. `!fmt -w68`. Or read only the output of a command,
@@ -95,12 +95,14 @@ Notes
 
 * Has UTF-8 support.
 
-  - Loads UTF-8 files as-is and internally remains UTF-8 (not converteed to `wchar_t`).
+  - Loads UTF-8 files as-is and internally remains UTF-8 (not converteed to `wchar_t` or `char32_t`).
   - UTF-8 input will likely require an intl. keyboard or enabling [US Intl. dead-key keyboard](https://en.wikipedia.org/wiki/QWERTY#US-International) support.  See also [Unicode Input](https://en.wikipedia.org/wiki/Unicode_input).
 
 * The display of long physical lines that are larger than the terminal screen is untested, so considered undefined.
 
 * Control characters, other than TAB and LF, are displayed as highlighted alphabetic characters.
+
+* `u` and `U` do not behave as in historical `vi(1)`; they now provide multi undo and redo respectively.
 
 * CRLF newlines (DOS, Windows) should be converted to LF newlines  Consider converting newlines using SUS tools like `awk(1)` or `sed(1)`:
 

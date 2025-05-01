@@ -55,9 +55,8 @@ lo   world   <EL>
 <2;4>
 <1;8>
 <SMSO>24<RMSO>
-  <SMSO>6<RMSO>
 <2;4>
-WOOT!lo      world<2;9>
+WOOT!lo      world<2;4>
 <1;1>
 <SMSO>>    <RMSO>
  <SMSO>    <RMSO>
@@ -72,6 +71,6 @@ WOOT!lo      world<2;9>
 <SMSO>t<RMSO>
 <1;1>
 <SMSO>a.txt 124B<RMSO>
- <SMSO>6%<RMSO>
-<2;9>
+ <SMSO>2%<RMSO>
+<2;4>
 <24;1>

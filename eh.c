@@ -23,7 +23,7 @@
 #endif /* EXT */
 
 #ifndef BUF
-# define BUF		(128*1024)
+# define BUF		(64*1024)
 #endif
 #ifndef MODE
 # define MODE		0600
@@ -53,9 +53,9 @@
 static char chg = NOCHANGE;
 static int cur_row, cur_col, count, ere_dollar_only;
 static char *filename, *scrap, *replace;
-static char *buf, *gap, *egap, *ebuf, *ugap, *uegap;
+static char *buf, *gap, *egap, *ebuf;
 static const char ins[] = "INS", cmd[] = "   ", *mode = cmd;
-static off_t here, page, epage, uhere, match_length, scrap_length, marks[MARKS], marker = -1;
+static off_t here, page, epage, match_length, scrap_length, marks[MARKS], marker = -1;
 static regex_t ere;
 #else /* EXT */
 #define MATCHES		1
@@ -172,45 +172,6 @@ prevch(off_t cur)
 	return cur;
 }
 
-
-#ifdef EXT
-void
-adjmarks(void)
-{
-	off_t p = pos(egap);
-	off_t n = /* insert, paste */(gap-ugap) - /* delete */(egap-uegap);
-	for (int i = 0; i < MARKS; i++) {
-		if (p < marks[i]) {
-			marks[i] += n;
-		}
-	}
-}
-
-void
-setundo(void)
-{
-	ugap = gap;
-	uegap = egap;
-	uhere = here;
-}
-
-void
-undo(void)
-{
-	char *m = ugap, *n = uegap;
-	off_t p = uhere;
-	setundo();
-	here = p;
-	egap = n;
-	gap = m;
-	adjmarks();
-	/* Force display() to reframe, ie. 1GdGu fails. */
-	epage = here+1;
-}
-#else /* EXT */
-#define adjmarks()
-#endif /* EXT */
-
 void
 movegap(off_t cur)
 {
@@ -238,7 +199,6 @@ movegap(off_t cur)
 	}
 #endif /* FAST_MOVE */
 	assert(buf <= gap && gap <= egap && egap <= ebuf);
-	setundo();
 }
 
 #ifdef EXT
@@ -267,6 +227,110 @@ growgap(size_t min)
 		buf = xbuf;
 		/* Restore gap's previous location. */
 		movegap(xhere);
+	}
+}
+
+struct ubuf {
+	struct ubuf *next;
+	int op;
+	int paired;
+	off_t off;
+	size_t size;
+	char buf[];
+};
+
+struct ubuf *undo_list, *redo_list;
+
+void
+adjmarks(off_t n)
+{
+	off_t p = pos(egap);
+	for (int i = 0; i < MARKS; i++) {
+		if (p < marks[i]) {
+			marks[i] += n;
+		}
+	}
+}
+
+void
+undo_free(struct ubuf *obj)
+{
+	struct ubuf *next;
+	for ( ; obj != NULL; obj = next) {
+		next = obj->next;
+		free(obj);
+	}
+}
+
+void
+undo_save(int op, off_t off, char *loc, size_t size)
+{
+	struct ubuf *obj;
+	undo_free(redo_list);
+	redo_list = NULL;
+	/* Append new undo. */
+	if ((obj = realloc(NULL, sizeof (*obj) + size)) != NULL) {
+		obj->op = op & 1;
+		obj->paired = 1 < op;
+		obj->off = off;
+		obj->size = size;
+		(void) memcpy(obj->buf, loc, size);
+		obj->next = undo_list;
+		undo_list = obj;
+	}
+}
+
+void
+undo_redo(int op, struct ubuf *obj)
+{
+	movegap(obj->off);
+	if (op) {
+		/* Insert. */
+		growgap(obj->size);
+		egap -= obj->size;
+		(void) memcpy(egap, obj->buf, obj->size);
+		adjmarks(obj->size);
+	} else {
+		/* Delete. */
+		adjmarks(-obj->size);
+		egap += obj->size;
+	}
+	here = pos(egap);
+	epage = here+1;
+}
+
+void
+undo_move(struct ubuf **from, struct ubuf **to)
+{
+	struct ubuf *tmp = *from;
+	*from = (*from)->next;
+	tmp->next = *to;
+	*to = tmp;
+}
+
+void
+undo(void)
+{
+	if (undo_list != NULL) {
+		undo_redo(!undo_list->op, undo_list);
+		undo_move(&undo_list, &redo_list);
+		if (undo_list != NULL && undo_list->paired) {
+			undo_redo(!undo_list->op, undo_list);
+			undo_move(&undo_list, &redo_list);
+		}
+	}
+}
+
+void
+redo(void)
+{
+	if (redo_list != NULL) {
+		undo_redo(redo_list->op, redo_list);
+		undo_move(&redo_list, &undo_list);
+		if (redo_list != NULL && redo_list->paired) {
+			undo_redo(redo_list->op, redo_list);
+			undo_move(&redo_list, &undo_list);
+		}
 	}
 }
 #else /* EXT */
@@ -674,6 +738,7 @@ insert(void)
 #ifdef EXT
 	mode = ins;
 	display();
+	off_t eof = pos(ebuf);
 #else /* EXT */
 #endif /* EXT */
 	movegap(here);
@@ -710,7 +775,9 @@ insert(void)
 	}
 #ifdef EXT
 	mode = cmd;
-	adjmarks();
+	off_t len = pos(ebuf)-eof;
+	undo_save(1, here-len, gap-len, len);
+	adjmarks(len);
 #else /* EXT */
 #endif /* EXT */
 	/* Not repeatable yet. */
@@ -750,13 +817,14 @@ void
 deld(void)
 {
 	yank();
-	egap += scrap_length;
-	here = pos(egap);
 #ifdef EXT
 	chg = CHANGED;
+	undo_save(0, here, scrap, scrap_length);
 #else /* EXT */
 #endif /* EXT */
-	adjmarks();
+	egap += scrap_length;
+	here = pos(egap);
+	adjmarks(-scrap_length);
 }
 
 void
@@ -793,6 +861,12 @@ paste(void)
 	growgap(COLS+(count+(count == 0))*scrap_length);
 	if (scrap != NULL) {
 		movegap(here);
+#ifdef EXT
+		undo_save(1, here, scrap, scrap_length);
+		adjmarks(scrap_length);
+		chg = CHANGED;
+#else /* EXT */
+#endif /* EXT */
 		(void) memcpy(gap, scrap, scrap_length);
 		gap += scrap_length;
 		/* SUS 2018 vi(1) `P` paste-before unnamed buffer leaves
@@ -803,13 +877,8 @@ paste(void)
 		 * is the cursor.
 		 */
 		here = pos(egap);
-		adjmarks();
 		/* Force display() to reframe, ie. 1GdGP fails. */
 		epage = here+1;
-#ifdef EXT
-		chg = CHANGED;
-#else /* EXT */
-#endif /* EXT */
 	}
 }
 
@@ -932,12 +1001,17 @@ void
 readfile(void)
 {
 	prompt('<', "");
+	off_t eof = pos(ebuf);
 	if (fileread(gap)) {
 		/* ed(1) ? */
 		(void) beep();
 	} else {
+		off_t len = pos(ebuf)-eof;
+		undo_save(1, here, gap-len, len);
+		here = pos(egap);
 		epage = here+1;
-		adjmarks();
+		chg = CHANGED;
+		adjmarks(len);
 	}
 	count = 0;
 }
@@ -995,14 +1069,19 @@ bang(void)
 					ex = WIFEXITED(ex) ? WEXITSTATUS(ex) : 127;
 					/* Avoid blocking on read() and allow for long or no output. */
 					(void) fcntl(child_out[0], F_SETFL, O_NONBLOCK);
+					off_t eof = pos(ebuf);
 					while (0 < (n = read(child_out[0], gap, egap-gap))) {
 						gap += n;
 						chg = CHANGED;
 						growgap(BUF/2);
 					}
+					/* Convert delete to paired delete-insert. */
+					undo_list->paired = 1;
+					off_t len = pos(ebuf)-eof;
+					undo_save(3, here, gap-len, len);
+					adjmarks(len-undo_list->next->size);
 					here = pos(egap);
 					epage = here+1;
-					adjmarks();
 				}
 			}
 			(void) close(child_out[0]);
@@ -1044,8 +1123,10 @@ flipcase(void)
 {
 	char *p = ptr(here);
 	if (p < ebuf) {
+		undo_save(2, here, p, mblength(*p));
 		/* Skip moving the gap and modify in place. */
 		*p = islower(*p) ? toupper(*p) : tolower(*p);
+		undo_save(3, here, p, mblength(*p));
 		chg = CHANGED;
 		right();
 	}
@@ -1129,6 +1210,7 @@ next(void)
 #ifdef EXT
 	if (NULL != replace) {
 		movegap(here);
+		char *xgap = gap;
 		for (const char *s = replace; *s != '\0'; s++) {
 			growgap(COLS);
 			if (*s == '$' && isdigit(s[1])) {
@@ -1152,11 +1234,12 @@ next(void)
 			*gap++ = *s;
 		}
 		/* Delete the match. */
+		undo_save(2, here, egap, match_length);
 		egap += match_length;
-		adjmarks();
 		/* Replacement string length. */
-		match_length = gap-ugap;
-		assert(gap < uegap);
+		match_length = gap-xgap;
+		undo_save(3, here, xgap, match_length);
+		adjmarks(match_length-undo_list->next->size);
 	}
 #else /* EXT */
 #endif /* EXT */
@@ -1211,7 +1294,7 @@ anchor(void)
 }
 
 #ifdef EXT
-static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpu!\\mRWQ\003V";
+static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpuU!\\mRWQ\003V";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1222,7 +1305,7 @@ static void (*func[])(void) = {
 	pgdown, pgup,
 	/* Modify */
 	flipcase, insert, append, delx, delX,
-	yank, deld, paste, pastel, undo, bang,
+	yank, deld, paste, pastel, undo, redo, bang,
 	/* Other */
 	anchor, setmark, readfile, writefile, quit, quit,
 	version, redraw
@@ -1274,6 +1357,8 @@ cleanup(void)
 	 */
 	(void) delwin(stdscr);
 	(void) endwin();
+	undo_free(undo_list);
+	undo_free(redo_list);
 	free(filename);
 	regfree(&ere);
 	free(replace);
@@ -1304,7 +1389,6 @@ main(int argc, char **argv)
 		/* Good grief Charlie Brown! */
 		return 2;
 	}
-	uegap = egap;
 	/* Force display() to frame the initial screen. */
 	epage = 1;
 	while (mode != NULL) {

@@ -194,7 +194,7 @@ g<1;8>
 <SMSO>t<RMSO>
 <1;1>
 <SMSO>a.tx<RMSO>
- <SMSO> 164B 9%  <RMSO>
+ <SMSO> 164B 82% <RMSO>
 <1;80>
 <SMSO>*<RMSO>
 <2;17>
@@ -209,11 +209,11 @@ tab indent<11;1>
 -last line-<12;1>
 fox jumps over the lazy dog.<14;1>
 <SMSO>^D<RMSO>
-<2;17>
+<12;1>
 <1;1>
 <SMSO>>    <RMSO>
  <SMSO>    <RMSO>
- <SMSO>  <RMSO>
+ <SMSO>   <RMSO>
 <1;80>
 <SMSO> <RMSO>
 <1;2>
@@ -224,6 +224,6 @@ fox jumps over the lazy dog.<14;1>
 <SMSO>t<RMSO>
 <1;1>
 <SMSO>a.txt 164B<RMSO>
- <SMSO>9%<RMSO>
-<2;17>
+ <SMSO>82%<RMSO>
+<12;1>
 <24;1>

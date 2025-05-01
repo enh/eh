@@ -589,7 +589,7 @@ mark4:
 # marks above the `gap`, _not_ `here`.
 mark5:
 	-${TITLE}
-	printf '/butt\nma/rude\nifuzz\e`au`au`aQ' | ${PROG} test/short.txt >a.out
+	printf '/butt\nma/rude\nifuzz\e`au`aU`aQ' | ${PROG} test/short.txt >a.out
 	${A_CORE}
 	${A_OUT}
 	-${PASS}
@@ -666,7 +666,7 @@ del13:
 # Undo read file.
 undo0:
 	-${TITLE}
-	printf 'uuQ' | ${PROG} test/short.txt >a.out
+	printf 'uUQ' | ${PROG} test/short.txt >a.out
 	${A_CORE}
 	${A_OUT}
 	-${PASS}
@@ -675,7 +675,7 @@ undo0:
 undo1:
 	-${TITLE}
 	cp test/short.txt a.txt
-	printf '3liWOOT!\euuW\nQ' | ${PROG} a.txt >a.out
+	printf '3liWOOT!\euUW\nQ' | ${PROG} a.txt >a.out
 	${A_CORE}
 	${A_OUT}
 	${A_TXT}
@@ -685,7 +685,7 @@ undo1:
 undo2:
 	-${TITLE}
 	cp test/short.txt a.txt
-	printf '3wd3wuuW\nQ' | ${PROG} a.txt >a.out
+	printf '3wd3wuUW\nQ' | ${PROG} a.txt >a.out
 	${A_CORE}
 	${A_OUT}
 	${A_TXT}
