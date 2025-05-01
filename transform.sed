@@ -89,7 +89,8 @@ s,/\*[^*]+\*/,,g
 #
 
 /^#define TAB/d
-s/TABSTOP(([^)]*))/(8-(\1\&7))/g
+#s/TABSTOP(([^)]*))/(8-(\1\&7))/g
+s/TABSTOP(([^)]*))/(8-(\1 bitand 7))/g
 #s/TABWIDTH/8/g
 #s/TABSTOP/TS/g
 
@@ -290,25 +291,31 @@ s/(^|[^[:alnum:]_])is_ctrl([^[:alnum:]_]|$)/\1U\2/g
 s/([a-z ]*\*) *0/0/g
 
 #    if (0 == expr)	->  if (!expr)
+s/0 == /not /g
 s/0 == /!/g
 
 #    if (expr != 0)	->  if (expr)
+s/ not_eq 0//g
 s/ != 0//g
 
 #    if (0 != expr)	->  if (expr)
+s/0 not_eq //g
 s/0 != //g
 
 #    (v = func(expr)) == 0	->  !(v = func(expr))
 s/(\([a-zA-Z0-9][a-zA-Z0-9]* = [^)]*\)\)) == 0/!\1/g
 
 #    (expr) == 0	->  !(expr)
-s/(\([^(),]*\)) == 0/!\1/g
+#s/(\([^(),]*\)) == 0/!\1/g
+s/(\([^(),]*\)) == 0/not \1/g
 
 #    expr == 0	->  !expr
-s/([^(),]*) == 0/!\1/g
+#s/([^(),]*) == 0/!\1/g
+s/([^(),]*) == 0/not \1/g
 
 #    func(expr) == 0	->  !func(expr)
-s/([a-zA-Z0-9][a-zA-Z0-9]*\([^)]*\)) == 0/!\1/g
+#s/([a-zA-Z0-9][a-zA-Z0-9]*\([^)]*\)) == 0/!\1/g
+s/([a-zA-Z0-9][a-zA-Z0-9]*\([^)]*\)) == 0/not \1/g
 
 
 #    array[0].mem	->  array->

@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <regex.h>
 #include <locale.h>
+#include <iso646.h>
 #ifdef EXT
 #include <ctype.h>
 #include <stdlib.h>
@@ -39,7 +40,7 @@
 #define MARKS		27
 #define MAX_COLS	999
 #define TABWIDTH	8
-#define TABSTOP(col)	(TABWIDTH - ((col) & (TABWIDTH-1)))
+#define TABSTOP(col)	(TABWIDTH - ((col) bitand  (TABWIDTH-1)))
 
 #define TOP_LINE	1
 #define ROWS		(LINES-TOP_LINE)
@@ -48,7 +49,7 @@
 
 #ifdef EXT
 #define MATCHES		10
-#define MOTION_CMDS	18
+#define MOTION_CMDS	20
 
 static char chg = NOCHANGE;
 static int cur_row, cur_col, count, ere_dollar_only;
@@ -125,7 +126,7 @@ getcmd(int);
 off_t
 pos(const char *s)
 {
-	assert(buf <= s && s <= ebuf);
+	assert(buf <= s and s <= ebuf);
 	return s-buf - (s < egap ? 0 : egap-gap);
 }
 
@@ -136,7 +137,7 @@ pos(const char *s)
 char *
 ptr(off_t cur)
 {
-	assert(0 <= cur && cur <= pos(ebuf));
+	assert(0 <= cur and cur <= pos(ebuf));
 	return buf+cur + (buf+cur < gap ? 0 : egap-gap);
 }
 
@@ -150,7 +151,7 @@ ptr(off_t cur)
 int
 mblength(int ch)
 {
-//	return (1+(ch > 193)+(ch > 223)+(ch > 239)) * (ch < 128 || (193 < ch && ch < 245));
+//	return (1+(ch > 193)+(ch > 223)+(ch > 239)) * (ch < 128 or (193 < ch and ch < 245));
 	return 1+(ch > 193)+(ch > 223)+(ch > 239);
 }
 
@@ -158,14 +159,14 @@ off_t
 nextch(off_t cur)
 {
 	/* Advance to next UTF-8 start byte.  Do not read past eof. */
-	return cur + (cur < pos(ebuf) ?  mblength(*ptr(cur)) : 0);
+	return cur + (cur < pos(ebuf) ? mblength(*ptr(cur)) : 0);
 }
 
 off_t
 prevch(off_t cur)
 {
 	/* Find UTF-8 start byte skipping continuation bytes. */
-	while (0 < cur && (192 & *ptr(--cur)) == 128) {
+	while (0 < cur and (192 bitand *ptr(--cur)) == 128) {
 		;
 	}
 	assert(0 <= cur);
@@ -175,7 +176,7 @@ prevch(off_t cur)
 void
 movegap(off_t cur)
 {
-	assert(0 <= cur && cur <= pos(ebuf));
+	assert(0 <= cur and cur <= pos(ebuf));
 #ifdef FAST_MOVE
 	ssize_t len = gap - buf - cur;
 	if (len < 0) {
@@ -198,7 +199,7 @@ movegap(off_t cur)
 		*gap++ = *egap++;
 	}
 #endif /* FAST_MOVE */
-	assert(buf <= gap && gap <= egap && egap <= ebuf);
+	assert(buf <= gap and gap <= egap and egap <= ebuf);
 }
 
 #ifdef EXT
@@ -206,7 +207,7 @@ void
 growgap(size_t min)
 {
 	char *xbuf;
-	assert(buf <= gap && gap <= egap && egap <= ebuf);
+	assert(buf <= gap and gap <= egap and egap <= ebuf);
 	/* The gap is used for field input and should be at least as
 	 * large as the screen width.
 	 */
@@ -256,7 +257,7 @@ void
 undo_free(struct ubuf *obj)
 {
 	struct ubuf *next;
-	for ( ; obj != NULL; obj = next) {
+	for ( ; obj not_eq NULL; obj = next) {
 		next = obj->next;
 		free(obj);
 	}
@@ -269,8 +270,8 @@ undo_save(int op, off_t off, char *loc, size_t size)
 	undo_free(redo_list);
 	redo_list = NULL;
 	/* Append new undo. */
-	if ((obj = realloc(NULL, sizeof (*obj) + size)) != NULL) {
-		obj->op = op & 1;
+	if ((obj = realloc(NULL, sizeof (*obj) + size)) not_eq NULL) {
+		obj->op = op bitand  1;
 		obj->paired = 1 < op;
 		obj->off = off;
 		obj->size = size;
@@ -311,11 +312,11 @@ undo_move(struct ubuf **from, struct ubuf **to)
 void
 undo(void)
 {
-	if (undo_list != NULL) {
-		undo_redo(!undo_list->op, undo_list);
+	if (undo_list not_eq NULL) {
+		undo_redo(not undo_list->op, undo_list);
 		undo_move(&undo_list, &redo_list);
-		if (undo_list != NULL && undo_list->paired) {
-			undo_redo(!undo_list->op, undo_list);
+		if (undo_list not_eq NULL and undo_list->paired) {
+			undo_redo(not undo_list->op, undo_list);
 			undo_move(&undo_list, &redo_list);
 		}
 	}
@@ -324,10 +325,10 @@ undo(void)
 void
 redo(void)
 {
-	if (redo_list != NULL) {
+	if (redo_list not_eq NULL) {
 		undo_redo(redo_list->op, redo_list);
 		undo_move(&redo_list, &undo_list);
-		if (redo_list != NULL && redo_list->paired) {
+		if (redo_list not_eq NULL and redo_list->paired) {
 			undo_redo(redo_list->op, redo_list);
 			undo_move(&redo_list, &undo_list);
 		}
@@ -351,7 +352,7 @@ charwidth(const char *s, int col)
 off_t
 bol(off_t cur)
 {
-	while (0 < cur && *ptr(--cur) != '\n') {
+	while (0 < cur and *ptr(--cur) not_eq '\n') {
 		;
 	}
 	assert(-1 <= cur);
@@ -368,11 +369,11 @@ off_t
 col_or_eol(off_t cur, int col, int maxcol)
 {
 	char *p;
-	while (col < maxcol && (p = ptr(cur)) < ebuf && *p != '\n') {
+	while (col < maxcol and (p = ptr(cur)) < ebuf and *p not_eq '\n') {
 		col += charwidth(p, col);
 		cur = nextch(cur);
 	}
-	assert(0 <= cur && cur <= pos(ebuf));
+	assert(0 <= cur and cur <= pos(ebuf));
 	return cur;
 }
 
@@ -385,15 +386,15 @@ row_start(off_t cur, off_t offset)
 	char *p;
 	int col = 0;
 	off_t mark = cur;
-	assert(/* 0 <= cur && cur <= offset &&*/ offset <= pos(ebuf));
-	while (cur < offset && (p = ptr(cur = nextch(cur))) < ebuf) {
+	assert(/* 0 <= cur and cur <= offset and*/ offset <= pos(ebuf));
+	while (cur < offset and (p = ptr(cur = nextch(cur))) < ebuf) {
 		col += charwidth(p, col);
 		if (COLS <= col) {
 			mark = cur;
 			col = 0;
 		}
 	}
-	assert(0 <= mark && mark <= cur);
+	assert(0 <= mark and mark <= cur);
 	return mark;
 }
 
@@ -437,7 +438,7 @@ display(void)
 	if (here < page) {
 		/* Scroll up one logical line or goto physical line. */
 		page = row_start(bol(here), here);
-	} else if (epage <= here && here < nextline(epage)) {
+	} else if (epage <= here and here < nextline(epage)) {
 		/* Scroll down one logical line. */
 		page = nextline(page);
 	} else if (epage <= here) {
@@ -447,7 +448,7 @@ display(void)
 		 * started.
 		 */
 		epage = page;
-		for (page = here, i = ROWS - (here == eof); 0 < --i && epage < page; ) {
+		for (page = here, i = ROWS - (here == eof); 0 < --i and epage < page; ) {
 			page = prevline(page);
 		}
 		/* When find the top line of the page over shoots the
@@ -489,8 +490,8 @@ display(void)
 			break;
 		}
 #ifdef EXT
-		int is_ctrl = iscntrl(*p) && *p != '\t' && *p != '\n';
-		if ((from <= epage && epage < to) || is_ctrl) {
+		int is_ctrl = iscntrl(*p) and *p not_eq '\t' and *p not_eq '\n';
+		if ((from <= epage and epage < to) or is_ctrl) {
 			standout();
 		}
 		/* A multibyte character never stradles the gap,
@@ -513,7 +514,7 @@ display(void)
 		}
 		epage += mbl;
 #else /* EXT */
-		if (from <= epage && epage < to) {
+		if (from <= epage and epage < to) {
 			standout();
 		}
 		int mbl = mblength(*p);
@@ -526,12 +527,12 @@ display(void)
 		 * See SUS Curses Issue 7 section 3.4.3.
 		 */
 		j += charwidth(p, j);
-		if (*p == '\n' || COLS <= j) {
+		if (*p == '\n' or COLS <= j) {
 			j = 0;
 			i++;
 		}
 	}
-	assert(page <= here && here <= epage);
+	assert(page <= here and here <= epage);
 	if (i++ < LINES) {
 		(void) standout();
 		(void) mvaddstr(i, 0, "^D");
@@ -612,11 +613,11 @@ void
 wleft(void)
 {
 	/* Move backwards to end of previous word. */
-	while (0 < here && isspace(*ptr(here-1))) {
+	while (0 < here and isspace(*ptr(here-1))) {
 		--here;
 	}
 	/* Move backwards to start of previous word. */
-	while (0 < here && !isspace(*ptr(here-1))) {
+	while (0 < here and not isspace(*ptr(here-1))) {
 		--here;
 	}
 }
@@ -688,11 +689,11 @@ wright(void)
 {
 	off_t eof = pos(ebuf);
 	/* Move forwards to end of current word. */
-	while (here < eof && !isspace(*ptr(here))) {
+	while (here < eof and not isspace(*ptr(here))) {
 		++here;
 	}
 	/* Move forwards to start of next word. */
-	while (here < eof && isspace(*ptr(here))) {
+	while (here < eof and isspace(*ptr(here))) {
 		++here;
 	}
 }
@@ -706,7 +707,7 @@ lngoto(void)
 #endif /* EXT */
 	/* Count physcical lines, just as ed, grep, or wc would. */
 	off_t eof = pos(ebuf);
-	for (here = eof * (count == 0); here < eof && 1 < count; count--) {
+	for (here = eof * (count == 0); here < eof and 1 < count; count--) {
 		/* Next physical line. */
 		here = col_or_eol(here, 0, MAX_COLS);
 		here += here < eof;
@@ -742,7 +743,7 @@ insert(void)
 #else /* EXT */
 #endif /* EXT */
 	movegap(here);
-	while ((ch = getsigch()) != CTRL_C && ch != ESC) {
+	while ((ch = getsigch()) not_eq CTRL_C and ch not_eq ESC) {
 		if (ch == '\b') {
 			gap -= buf < gap;
 		} else if (gap < egap) {
@@ -760,7 +761,7 @@ insert(void)
 			}
 #else /* EXT */
 #endif /* EXT */
-			for (int n = mblength(ch); 0 < n--; 0 < n && (ch = getch())) {
+			for (int n = mblength(ch); 0 < n--; 0 < n and (ch = getch())) {
 				growgap(COLS);
 				*gap++ = ch;
 				epage++;
@@ -793,9 +794,9 @@ yank(void)
 		getcmd(MOTION_CMDS);
 	}
 	if (mark < here) {
-		mark ^= here;
-		here ^= mark;
-		mark ^= here;
+		mark xor_eq here;
+		here xor_eq mark;
+		mark xor_eq here;
 	}
 	/* SUS 2018 vi(1) `y` yank sets the cursor on the last column
 	 * of the first character of the yanked region; results in yank
@@ -859,7 +860,7 @@ void
 paste(void)
 {
 	growgap(COLS+(count+(count == 0))*scrap_length);
-	if (scrap != NULL) {
+	if (scrap not_eq NULL) {
 		movegap(here);
 #ifdef EXT
 		undo_save(1, here, scrap, scrap_length);
@@ -902,7 +903,7 @@ setmark(void)
 {
 	/* ASCII characters ` a..z are the allowed marks. */
 	int i = getsigch() - '`';
-	if (0 <= i && i < MARKS) {
+	if (0 <= i and i < MARKS) {
 		marks[i] = here;
 	}
 }
@@ -912,7 +913,7 @@ gomark(void)
 {
 	/* ASCII characters ` a..z are the allowed marks. */
 	int i = getsigch() - '`';
-	if (0 <= i && i < MARKS) {
+	if (0 <= i and i < MARKS) {
 		off_t j = marks[0];
 		marks[0] = here;
 		here = 0 < i ? marks[i] : j;
@@ -942,8 +943,8 @@ prompt(int ch, const char *str)
 	clr_to_eol();
 	/* Prime the input with initial input. */
 	ssize_t n = strlen(str);
-	assert(n < COLS && COLS <= egap-gap);
-	while (0 < n && 0 == ungetch(str[--n])) {
+	assert(n < COLS and COLS <= egap-gap);
+	while (0 < n and 0 == ungetch(str[--n])) {
 		;
 	}
 	/* NetBSD 9.3 erase ^H works fine, but not the kill ^U character. */
@@ -962,17 +963,17 @@ filewrite(const char *fn)
 		n = write(fd, egap, ebuf-egap);
 		(void) close(fd);
 	}
-	return fd < 0 || n < 0;
+	return fd < 0 or n < 0;
 }
 
 void
 writefile(void)
 {
 	prompt('>', filename);
-	if (*gap != '\0') {
+	if (*gap not_eq '\0') {
 		free(filename);
 		filename = strdup(gap);
-		if (!filewrite(filename)) {
+		if (not filewrite(filename)) {
 			chg = NOCHANGE;
 		}
 	} else {
@@ -1041,8 +1042,8 @@ bang(void)
 				if (child == 0) {
 					/* Redirect standard I/O for the child. */
 					if (STDIN_FILENO == dup2(child_in[0], STDIN_FILENO)
-					&& STDOUT_FILENO == dup2(child_out[1], STDOUT_FILENO)
-					&& STDERR_FILENO == dup2(child_out[1], STDERR_FILENO)) {
+					and STDOUT_FILENO == dup2(child_out[1], STDOUT_FILENO)
+					and STDERR_FILENO == dup2(child_out[1], STDERR_FILENO)) {
 						const char *sh, *shell = getenv("SHELL");
 						if (NULL == (sh = strrchr(shell, '/'))) {
 							sh = shell;
@@ -1061,7 +1062,7 @@ bang(void)
 					_exit(127);
 				}
 				/* Finally write text region to filter and read result. */
-				if (scrap != NULL && (scrap_length == 0 || (n = write(child_in[1], scrap, scrap_length)) == scrap_length)) {
+				if (scrap not_eq NULL and (scrap_length == 0 or (n = write(child_in[1], scrap, scrap_length)) == scrap_length)) {
 					/* Signal EOF write to child. */
 					(void) close(child_in[1]);
 					/* Wait for the child _before_ reading input. */
@@ -1090,7 +1091,7 @@ bang(void)
 		(void) close(child_in[0]);
 		(void) close(child_in[1]);
 	}
-	if (ex != 0) {
+	if (ex not_eq 0) {
 		(void) beep();
 	}
 }
@@ -1098,7 +1099,7 @@ bang(void)
 int
 cescape(int ch)
 {
-	for (const char *s = "a\ab\bf\fn\nr\rt\tv\ve\033?\177"; *s != '\0'; s += 2) {
+	for (const char *s = "a\ab\bf\fn\nr\rt\tv\ve\033?\177"; *s not_eq '\0'; s += 2) {
 		if (ch == *s) {
 			return s[1];
 		}
@@ -1194,7 +1195,7 @@ next(void)
 #endif /* EXT */
 	*gap = '\0';
 	/* REG_NOTBOL allows /^/ to advance to start of next line. */
-	if (here+match_length < pos(ebuf) && 0 == regexec(&ere, ptr(here+match_length), MATCHES, matches, REG_NOTBOL)) {
+	if (here+match_length < pos(ebuf) and 0 == regexec(&ere, ptr(here+match_length), MATCHES, matches, REG_NOTBOL)) {
 		here += match_length + matches[0].rm_so;
 	}
 	/* Wrap-around search. */
@@ -1208,12 +1209,12 @@ next(void)
 	}
 	match_length = matches[0].rm_eo - matches[0].rm_so + ere_dollar_only;
 #ifdef EXT
-	if (NULL != replace) {
+	if (NULL not_eq replace) {
 		movegap(here);
 		char *xgap = gap;
-		for (const char *s = replace; *s != '\0'; s++) {
+		for (const char *s = replace; *s not_eq '\0'; s++) {
 			growgap(COLS);
-			if (*s == '$' && isdigit(s[1])) {
+			if (*s == '$' and isdigit(s[1])) {
 				/* Subexpression $0..$9 */
 				int i = *++s-'0';
 				off_t n = matches[i].rm_eo - matches[i].rm_so;
@@ -1253,7 +1254,7 @@ search(void)
 	prompt('/', "");
 	free(replace);
 	/* Find end of pattern. */
-	for (t = gap; *t != '\0'; t++) {
+	for (t = gap; *t not_eq '\0'; t++) {
 		if (*t == '\\') {
 			/* Escape next character. */
 			t++;
@@ -1276,12 +1277,12 @@ search(void)
 	(void) mvgetnstr(0, 1, gap, egap-gap);
 #endif /* EXT */
 	regfree(&ere);
-	if (regcomp(&ere, gap, REG_EXTENDED|REG_NEWLINE) != 0) {
+	if (regcomp(&ere, gap, REG_EXTENDED bitor REG_NEWLINE) not_eq 0) {
 		/* Something about the pattern is fubar. */
 		(void) beep();
 	} else {
 		/* Kludge to handle repeated /$/ matching. */
-		ere_dollar_only = gap[0] == '$' && '\0' == gap[1];
+		ere_dollar_only = gap[0] == '$' and '\0' == gap[1];
 		next();
 	}
 	count = 0;
@@ -1294,6 +1295,7 @@ anchor(void)
 }
 
 #ifdef EXT
+/*                  |--------MOTION_CMDS------|----edit----|---misc---| */
 static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpuU!\\mRWQ\003V";
 
 static void (*func[])(void) = {
@@ -1311,6 +1313,7 @@ static void (*func[])(void) = {
 	version, redraw
 };
 #else /* EXT */
+/*                  |-MOTION_CMDS-|-edit|--misc-| */
 static char key[] = "hjklbwHJKL|G/nixydP\\WQ\003";
 
 static void (*func[])(void) = {
@@ -1336,8 +1339,8 @@ getcmd(int m)
 		count = count * 10 + ch - '0';
 	}
 	/* 2dw = d2w and 2d3w = d6w */
-	count = j != 0 && count != 0 ? j*count : count != 0 ? count : j;
-	for (j = 0; key[j] != '\0' && ch != key[j]; j++) {
+	count = j not_eq 0 and count not_eq 0 ? j*count : count not_eq 0 ? count : j;
+	for (j = 0; key[j] not_eq '\0' and ch not_eq key[j]; j++) {
 		;
 	}
 	if (j < m) {
@@ -1391,7 +1394,7 @@ main(int argc, char **argv)
 	}
 	/* Force display() to frame the initial screen. */
 	epage = 1;
-	while (mode != NULL) {
+	while (mode not_eq NULL) {
 		display();
 		getcmd(ALL_CMDS);
 	}
@@ -1400,14 +1403,14 @@ main(int argc, char **argv)
 	if (0 < (argc = open(filename = *++argv, 0))) {
 		gap += read(argc, buf, ebuf-buf);
 		(void) close(argc);
-		if (gap < buf || ebuf <= gap) {
+		if (gap < buf or ebuf <= gap) {
 			/* Good grief Charlie Brown! */
 			return 2;
 		}
 	}
 	/* Force display() to frame the initial screen. */
 	epage = 1;
-	while (filename != NULL) {
+	while (filename not_eq NULL) {
 		(void) noecho();
 		display();
 		getcmd(ALL_CMDS);
