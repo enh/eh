@@ -2,6 +2,9 @@
  * Edit Here
  *
  * Copyright 2024, 2025 by Anthony C Howe.  All rights reserved.
+ *
+ * For TextPad suggest...
+ * https://www.unifoundry.com/pub/unifont/unifont-16.0.03/font-builds/unifont-16.0.03.otf
  */
 
 #define EXT
@@ -763,7 +766,7 @@ insert(void)
 #endif /* EXT */
 			for (int n = mblength(ch); 0 < n--; 0 < n and (ch = getch())) {
 				growgap(COLS);
-				*gap++ = ch;
+				*gap++ = (char) ch;
 				epage++;
 			}
 		}
@@ -859,10 +862,10 @@ append(void)
 void
 paste(void)
 {
-	growgap(COLS+(count+(count == 0))*scrap_length);
 	if (scrap not_eq NULL) {
 		movegap(here);
 #ifdef EXT
+		growgap(COLS+(count+(count == 0))*scrap_length);
 		undo_save(1, here, scrap, scrap_length);
 		adjmarks(scrap_length);
 		chg = CHANGED;
@@ -1181,7 +1184,7 @@ quit(void)
  *	         ^               ^
  */
 void
-next(void)
+search_next(void)
 {
 	regmatch_t matches[MATCHES];
 	/* Move the gap out of the way in case it sits in the middle
@@ -1283,7 +1286,7 @@ search(void)
 	} else {
 		/* Kludge to handle repeated /$/ matching. */
 		ere_dollar_only = gap[0] == '$' and '\0' == gap[1];
-		next();
+		search_next();
 	}
 	count = 0;
 }
@@ -1303,7 +1306,7 @@ static void (*func[])(void) = {
 	left, down, up, right, wleft, wright,
 	pgtop, pgdown, pgup, pgbottom,
 	lnbegin, lnend, column, lngoto,
-	search, next, gomark, lnmark,
+	search, search_next, gomark, lnmark,
 	pgdown, pgup,
 	/* Modify */
 	flipcase, insert, append, delx, delX,
@@ -1321,7 +1324,7 @@ static void (*func[])(void) = {
 	left, down, up, right, wleft, wright,
 	pgtop, pgdown, pgup, pgbottom,
 	column, lngoto,
-	search, next,
+	search, search_next,
 	/* Modify */
 	insert, delx,
 	yank, deld, paste,

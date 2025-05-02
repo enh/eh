@@ -53,7 +53,9 @@ TRUE	:= true
 # -Wno-incompatible-pointer-types	atexit(endwin)
 # -Wno-unused-parameter			main(int argc, ...)
 #
-# -Wno-strict-prototypes		clang functions no arguments
+# -Wno-strict-prototypes		functions no arguments
+# -Wno-missing-prototypes		clang functiosn without static
+# -Wno-missing-variable-declarations	clang globals without static
 #
 CSILENCE := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter \
 	    -Wno-strict-prototypes -Wno-unused-value
@@ -141,8 +143,12 @@ CC= cc
 #
 ifeq "$(findstring $(CLANG),${CC})" "$(CLANG)"
 #
-CSILENCE+= -Wno-strict-prototypes
-#
+CSILENCE+= -Wno-missing-prototypes \
+	-Wno-missing-variable-declarations -Wno-extra-semi-stmt \
+	-Wno-c99-compat -Wno-incompatible-function-pointer-types-strict \
+	-Wno-unsafe-buffer-usage
+
+# Behaves worse than Gcc -Wpedantic; "What if your mother-in-law was a programmer" annoying.
 CWARN+= -Weverything
 #
 endif

@@ -47,10 +47,19 @@ COMMIT	!= git describe --tags
 # -Wno-incompatible-pointer-types	atexit(endwin)
 # -Wno-unused-parameter			main(int argc, ...)
 #
-# -Wno-strict-prototypes		clang functions no arguments
+# -Wno-strict-prototypes		functions no arguments
+# -Wno-missing-prototypes		clang functiosn without static
+# -Wno-missing-variable-declarations	clang globals without static
 #
 CSILENT := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter \
 	   -Wno-strict-prototypes -Wno-unused-value
+
+# Clang with -Weverything complains worse than Gcc -Wpedantic.
+#
+# CSILENCE+= -Wno-missing-prototypes \
+# 	-Wno-missing-variable-declarations -Wno-extra-semi-stmt \
+# 	-Wno-c99-compat -Wno-incompatible-function-pointer-types-strict \
+# 	-Wno-unsafe-buffer-usage
 
 # Some of the most commonly used includes like ctype.h, stdio.h,
 # stdlib.h, and string.h should be ignored or counted as 2, eg.
