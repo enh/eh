@@ -3,22 +3,23 @@
 #include <unistd.h>
 #include <regex.h>
 #include <locale.h>
+#include <iso646.h>
 int y,x,z,w;
-char *f,*s;
+char *f,*q;
 char b[BUF],*g = b,*h,*c;
-long o,u,v,l,t,n = -1;
+long o,u,v,l,Q,d = -1;
 regex_t e;
 void
 T(int);
 long 
 P(char *s)
 {
-	return s-b -(s < h ? 0 : h-g);
+	return s-b - (s < h ? 0 : h-g);
 }
 char *
 Z(long m)
 {
-	return b+m +(b+m < g ? 0 : h-g);
+	return b+m + (b+m < g ? 0 : h-g);
 }
 int
 S(int a)
@@ -26,51 +27,47 @@ S(int a)
 	return 1+(a > 193)+(a > 223)+(a > 239);
 }
 long 
-k(long m)
+E(long m)
 {
-	return m +(m < P(c) ?  S(*Z(m)) : 0);
+	return m + (m < P(c) ? S(*Z(m)) : 0);
 }
 long 
-Ρ(long m)
+D(long m)
 {
-	while(0 < m &&(192 & *Z(--m)) == 128){
+	while (0 < m and (192 bitand *Z(--m)) == 128)
 		;
-	}
 	return m;
 }
 void
 V(long m)
 {
 	char *p = Z(m);
-	while(p < g){
+	while (p < g)
 		*--h = *--g;
-	}
-	while(h < p){
+	while (h < p)
 		*g++ = *h++;
-	}
 }
 int
 G(char *s,int a)
 {
 	wchar_t t;
 	mbtowc(&t,s,4);
-	return t == '\t' ? (8-((a&7))) :(a = wcwidth(t)) < 0 ? 1 : a;
+	return t == '\t' ? (8-((a bitand 7))) : (a = wcwidth(t)) < 0 ? 1 : a;
 }
 long 
 O(long m)
 {
-	while(0 < m && *Z(--m) != '\n'){
+	while (0 < m and *Z(--m) not_eq '\n')
 		;
-	}
-	return(m+1) *(0 < m);
+	return (m+1) * (0 < m);
 }
 long 
 A(long m,int a,int n)
 {
 	char *p;
-	while(a < n &&(p = Z(m)) < c && *p != '\n'){
+	while (a < n and (p = Z(m)) < c and *p not_eq '\n') {
 		a += G(p,a);
-		m = k(m);
+		m = E(m);
 	}
 	return m;
 }
@@ -80,9 +77,9 @@ _(long m,long n)
 	char *p;
 	int a = 0;
 	long i = m;
-	while(m < n &&(p = Z(m = k(m))) < c){
+	while (m < n and (p = Z(m = E(m))) < c) {
 		a += G(p,a);
-		if(COLS <= a){
+		if (COLS <= a) {
 			i = m;
 			a = 0;
 		}
@@ -94,15 +91,14 @@ M(long m)
 {
 	long s = O(m);
 	long t = _(s,m);
-	if(s < t){
+	if (s < t)
 		return _(s,t-1);
-	}
 	return _(O(s-1),s-1);
 }
 long 
 N(long m)
 {
-	return k(A(m,x,COLS-1));
+	return E(A(m,x,COLS-1));
 }
 void
 C()
@@ -114,58 +110,52 @@ Y()
 {
 	char *p;
 	int i,j;
-	long s,t,a = P(c);
-	if(o < u){
+	long s,t,n = P(c);
+	if (o < u)
 		u = _(O(o),o);
-	}
-	else if(v <= o && o < N(v)){
+	else if (v <= o and o < N(v))
 		u = N(u);
-	}
-	else if(v <= o){
+	else if (v <= o) {
 		v = u;
-		for(u = o,i = LINES-1 -(o == a); 0 < --i && v < u; ){
+		for (u = o,i = LINES-1 - (o == n); 0 < --i and v < u; ) {
 			u = M(u);
 		}
-		if(u <= v){
+		if (u <= v)
 			u = v;
-		}
 	}
 	erase();
 	standout();
 	printw("%s %ldB",f,o);
 	C();
-	if(n < 0){
-		s = t = n;
-	}
-	else if(o < n){
+	if (d < 0)
+		s = t = d;
+	else if (o < d) {
 		s = o;
-		t = n;
+		t = d;
 	}
 	else {
-		s = n;
+		s = d;
 		t = o;
 	}
-	for(i = 1,j = 0,v = u;standend(),i < LINES; ){
-		if(o == v){
+	for (i = 1,j = 0,v = u; standend(),i < LINES; ) {
+		if (o == v) {
 			y = i;
 			x = j;
 		}
-		if(c <=(p = Z(v))){
+		if (c <= (p = Z(v)))
 			break;
-		}
-		if(s <= v && v < t){
+		if (s <= v and v < t)
 			standout();
-		}
-		int V = S(*p);
-		mvaddnstr(i,j,p,V);
-		v += V;
+		int n = S(*p);
+		mvaddnstr(i,j,p,n);
+		v += n;
 		j += G(p,j);
-		if(*p == '\n' || COLS <= j){
+		if (*p == '\n' or COLS <= j) {
 			j = 0;
 			i++;
 		}
 	}
-	if(i++ < LINES){
+	if (i++ < LINES) {
 		standout();
 		mvaddstr(i,0,"^D");
 	}
@@ -181,12 +171,12 @@ void
 void
 H()
 {
-	o = Ρ(o);
+	o = D(o);
 }
 void
 L()
 {
-	o = k(o);
+	o = E(o);
 }
 void
 K()
@@ -207,12 +197,10 @@ a()
 void
 B()
 {
-	while(0 < o && isspace(*Z(o-1))){
+	while (0 < o and isspace(*Z(o-1)))
 		--o;
-	}
-	while(0 < o && !isspace(*Z(o-1))){
+	while (0 < o and not isspace(*Z(o-1)))
 		--o;
-	}
 }
 void
 Ê()
@@ -228,59 +216,53 @@ void
 É()
 {
 	int i;
-	for(o = v,i = 1; i < y; i++){
+	for (o = v,i = 1; i < y; i++)
 		o = N(o);
-	}
 	o = A(o,0,x);
 	u = o < P(c) ? v : u;
-	for(v = o; i < LINES; i++){
+	for (v = o; i < LINES; i++)
 		v = N(v);
-	}
 }
 void
 È()
 {
-	for(int i = LINES-1; 0 < i--; ){
+	for (int i = LINES-1; 0 < i--; )
 		o = M(o);
-	}
-	for(u = o; 1 < y--; ){
+	for (u = o; 1 < y--; )
 		u = M(u);
-	}
 	o = A(o,0,x);
 }
 void
 W()
 {
-	long a = P(c);
-	while(o < a && !isspace(*Z(o))){
+	long n = P(c);
+	while (o < n and not isspace(*Z(o)))
 		++o;
-	}
-	while(o < a && isspace(*Z(o))){
+	while (o < n and isspace(*Z(o)))
 		++o;
-	}
 }
 void
 ө()
 {
-	long a = P(c);
-	for(o = a *(!z); o < a && 1 < z; z--){
+	long n = P(c);
+	for (o = n * (not z); o < n and 1 < z; z--) {
 		o = A(o,0,999);
-		o += o < a;
+		o += o < n;
 	}
-	u = a;
+	u = n;
 }
 void
 I()
 {
 	int a;
 	V(o);
-	while((a =getch()) != 3 && a != 27){
-		if(a == 8){
+	while ((a =getch()) not_eq 3 and a not_eq 27) {
+		if (a == 8) {
 			g -= b < g;
 		}
-		else if(g < h){
-			for(int n = S(a); 0 < n--; 0 < n &&(a = getch())){
-				*g++ = a;
+		else if (g < h) {
+			for (int n = S(a); 0 < n--; 0 < n and (a = getch())) {
+				*g++ = (char) a;
 				v++;
 			}
 		}
@@ -292,43 +274,42 @@ I()
 void
 Ô()
 {
-	long i = n;
-	if(n < 0){
+	long i = d;
+	if (d < 0) {
 		i = o;
 		T(14);
 	}
-	if(i < o){
-		i ^= o;
-		o ^= i;
-		i ^= o;
+	if (i < o) {
+		i xor_eq o;
+		o xor_eq i;
+		i xor_eq o;
 	}
-	free(s);
+	free(q);
 	V(o);
-	s = strndup(h,t = i-o);
-	n = -1;
+	q = strndup(h,Q = i-o);
+	d = -1;
 }
 void
 X()
 {
 	Ô();
-	h += t;
+	h += Q;
 	o = P(h);
 }
 void
 Ó()
 {
-	if(n < 0){
+	if (d < 0)
 		ungetch('l');
-	}
 	X();
 }
 void
 Í()
 {
-	if(s){
+	if (q) {
 		V(o);
-		memcpy(g,s,t);
-		g += t;
+		memcpy(g,q,Q);
+		g += Q;
 		o = P(h);
 		v = o+1;
 	}
@@ -352,12 +333,10 @@ F()
 	regmatch_t p[1];
 	V(P(c));
 	*g = 0;
-	if(o+l < P(c) && !regexec(&e,Z(o+l),1,p,REG_NOTBOL)){
+	if (o+l < P(c) and not regexec(&e,Z(o+l),1,p,REG_NOTBOL))
 		o += l + p->rm_so;
-	}
-	else if(!regexec(&e,b,1,p,0)){
+	else if (not regexec(&e,b,1,p,0))
 		o = p->rm_so;
-	}
 	else {
 		l = 0;
 		return;
@@ -373,11 +352,10 @@ void
 	C();
 	mvgetnstr(0,1,g,h-g);
 	regfree(&e);
-	if(regcomp(&e,g,REG_EXTENDED|REG_NEWLINE)){
+	if (regcomp(&e,g,REG_EXTENDED bitor REG_NEWLINE))
 		beep();
-	}
 	else {
-		w = g[0] == '$' && !g[1];
+		w = g[0] == '$' and not g[1];
 		F();
 	}
 	z = 0;
@@ -385,10 +363,10 @@ void
 void
 Â()
 {
-	n = n < 0 ? o : -1;
+	d = d < 0 ? o : -1;
 }
 char Ќ[] = "hjklbwHJKL|G/nixydP\\WQ\003";
-void(*Κ[])(void) = {
+void (*Κ[])(void) = {
 	H,J,K,L,B,W,
 	Ê,É,È,Ë,
 	a,ө,
@@ -402,36 +380,32 @@ void
 T(int m)
 {
 	int j = z,a;
-	for(z = 0; isdigit(a =getch()); ){
+	for (z = 0; isdigit(a =getch()); )
 		z = z * 10 + a - '0';
-	}
-	z = j && z ? j*z : z ? z : j;
-	for(j = 0; Ќ[j] && a != Ќ[j]; j++){
+	z = j and z ? j*z : z ? z : j;
+	for (j = 0; Ќ[j] and a not_eq Ќ[j]; j++)
 		;
-	}
-	if(j < m){
-		do(*Κ[j])(); while(1 < z--);
+	if (j < m) {
+		do (*Κ[j])(); while (1 < z--);
 	}
 	z = 0;
 }
 int
-main(int x,char **y)
+main(int i,char **j)
 {
 	setlocale(LC_ALL,"");
-	if(!initscr()){
+	if (not initscr())
 		return 1;
-	}
 	raw();
 	h = c = b + BUF;
-	if(0 <(x = open(f = *++y,0))){
-		g += read(x,b,c-b);
-		close(x);
-		if(g < b || c <= g){
+	if (0 < (i = open(f = *++j,0))) {
+		g += read(i,b,c-b);
+		close(i);
+		if (g < b or c <= g)
 			return 2;
-		}
 	}
 	v = 1;
-	while(f){
+	while (f) {
 		noecho();
 		Y();
 		T(99);
