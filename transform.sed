@@ -279,7 +279,7 @@ s/(^|[^[:alnum:]_])xhere([^[:alnum:]_]|$)/\1j\2/g
 s/(^|[^[:alnum:]_])buflen([^[:alnum:]_]|$)/\1m\2/g
 s/(^|[^[:alnum:]_])gap_off([^[:alnum:]_]|$)/\1n\2/g
 s/(^|[^[:alnum:]_])str([^[:alnum:]_]|$)/\1s\2/g
-s/(^|[^[:alnum:]_])mbl([^[:alnum:]_]|$)/\1n\2/g
+s/(^|[^[:alnum:]_])mbl([^[:alnum:]_]|$)/\1t\2/g
 s/(^|[^[:alnum:]_])is_ctrl([^[:alnum:]_]|$)/\1U\2/g
 
 

@@ -146,9 +146,9 @@ Y()
 			break;
 		if (s <= v and v < t)
 			standout();
-		int n = S(*p);
-		mvaddnstr(i,j,p,n);
-		v += n;
+		int t = S(*p);
+		mvaddnstr(i,j,p,t);
+		v += t;
 		j += G(p,j);
 		if (*p == '\n' or COLS <= j) {
 			j = 0;
@@ -254,17 +254,21 @@ void
 void
 I()
 {
-	int a;
+	int a,t;
+	long n = P(c);
 	V(o);
 	while ((a =getch()) not_eq 3 and a not_eq 27) {
 		if (a == 8) {
-			g -= b < g;
+			while (n < P(c) and (192 bitand *--g) == 128) {
+				;
+			}
 		}
 		else if (g < h) {
-			for (int n = S(a); 0 < n--; 0 < n and (a = getch())) {
+			t = S(a);
+			do {
 				*g++ = (char) a;
 				v++;
-			}
+			} while (0 < --t and (a = getch()));
 		}
 		o = P(h);
 		Y();

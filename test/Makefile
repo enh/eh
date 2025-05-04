@@ -80,7 +80,7 @@ TESTS:= tests_have_term_data \
 	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7 \
 	replace0 replace1 replace2 write0 read0 read1 \
 	select0 select1 select2 select3 select4 select5 \
-	mb0 mb1 mb2 mb3
+	mb0 mb1 mb2 mb3 mb4
 
 .PHONY : ${TESTS}
 .SILENT: ${TESTS}
@@ -962,4 +962,12 @@ mb3:
 	cp ${DATA}/$@.txt a.txt
 	printf '2jhhhhhhhhQ' | ${PROG} a.txt >a.out
 	${A_CORE}
+	${A_OUT_OR_SKIP}
+
+# Insert and erase multibyte character.
+mb4:
+	-${TITLE}
+	printf 'i🔥\b\n\eW\nQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	${A_TXT}
 	${A_OUT_OR_SKIP}

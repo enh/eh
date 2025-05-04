@@ -76,7 +76,7 @@ TESTS:= tests_have_term_data \
 	del7 del8 del9 del10 del11 del13 \
 	paste0 paste1 paste2 \
 	select0 select1 select2 select3 select4 \
-	mb0 mb1 mb2 mb3
+	mb0 mb1 mb2 mb3 mb4
 
 .PHONY : ${TESTS}
 .SILENT: ${TESTS}
@@ -972,3 +972,11 @@ mb3:
 	${A_CORE}
 	${A_OUT}
 	-${PASS}
+
+# Insert and erase multibyte character.
+mb4:
+	-${TITLE}
+	printf 'i🔥\b\n\eW\nQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	${A_TXT}
+	${A_OUT_OR_SKIP}

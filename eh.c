@@ -249,7 +249,7 @@ void
 adjmarks(off_t n)
 {
 	off_t p = pos(egap);
-	for (int i = 0; i < MARKS; i++) {
+	for (int i = 0; 0 != n and i < MARKS; i++) {
 		if (p < marks[i]) {
 			marks[i] += n;
 		}
@@ -272,7 +272,9 @@ undo_save(int op, off_t off, char *loc, size_t size)
 	struct ubuf *obj;
 	undo_free(redo_list);
 	redo_list = NULL;
-	/* Append new undo. */
+	/* Append new undo.  We cannot skip saving a zero length
+	 * string, because of paired undo objects we need both.
+	 */
 	if ((obj = realloc(NULL, sizeof (*obj) + size)) not_eq NULL) {
 		obj->op = op bitand  1;
 		obj->paired = 1 < op;
@@ -738,17 +740,20 @@ getsigch(void)
 void
 insert(void)
 {
-	int ch;
+	int ch, mbl;
+	off_t eof = pos(ebuf);
 #ifdef EXT
 	mode = ins;
 	display();
-	off_t eof = pos(ebuf);
 #else /* EXT */
 #endif /* EXT */
 	movegap(here);
 	while ((ch = getsigch()) not_eq CTRL_C and ch not_eq ESC) {
 		if (ch == '\b') {
-			gap -= buf < gap;
+			/* Move to previous (multibyte) character. */
+			while (eof < pos(ebuf) and (192 bitand *--gap) == 128) {
+				;
+			}
 		} else if (gap < egap) {
 #ifdef EXT
 			/* Using cbreak() then ^V is handled
@@ -764,11 +769,15 @@ insert(void)
 			}
 #else /* EXT */
 #endif /* EXT */
-			for (int n = mblength(ch); 0 < n--; 0 < n and (ch = getch())) {
-				growgap(COLS);
+			/* Read the remainder of a multibyte
+			 * character BEFORE updating the display.
+			 */
+			mbl = mblength(ch);
+			growgap(1);
+			do {
 				*gap++ = (char) ch;
 				epage++;
-			}
+			} while (0 < --mbl and (ch = getch()));
 		}
 		here = pos(egap);
 #ifdef EXT
@@ -1128,7 +1137,9 @@ flipcase(void)
 	char *p = ptr(here);
 	if (p < ebuf) {
 		undo_save(2, here, p, mblength(*p));
-		/* Skip moving the gap and modify in place. */
+		/* Skip moving the gap and modify in place.
+		 * Does NOT support (yet) non-ASCII alphabetics.
+		 */
 		*p = islower(*p) ? toupper(*p) : tolower(*p);
 		undo_save(3, here, p, mblength(*p));
 		chg = CHANGED;
