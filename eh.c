@@ -460,7 +460,7 @@ display(void)
 		 * previous frame, restore the previous frame.  This
 		 * avoid an undesired scroll back of one line.
 		 */
-		if (page <= epage) {
+		if (page < epage) {
 			page = epage;
 		}
 	} /* Else still within page bounds, update cursor. */
@@ -749,12 +749,13 @@ insert(void)
 #endif /* EXT */
 	movegap(here);
 	while ((ch = getsigch()) not_eq CTRL_C and ch not_eq ESC) {
+		mbl = mblength(ch);
 		if (ch == '\b') {
 			/* Move to previous (multibyte) character. */
 			while (eof < pos(ebuf) and (192 bitand *--gap) == 128) {
 				;
 			}
-		} else if (gap < egap) {
+		} else if (gap+mbl < egap) {
 #ifdef EXT
 			/* Using cbreak() then ^V is handled
 			 * so ESC ^[ is inserted with ^V^V^[.
@@ -772,8 +773,7 @@ insert(void)
 			/* Read the remainder of a multibyte
 			 * character BEFORE updating the display.
 			 */
-			mbl = mblength(ch);
-			growgap(1);
+			growgap(mbl);
 			do {
 				*gap++ = (char) ch;
 				epage++;
@@ -1108,6 +1108,37 @@ bang(void)
 	}
 }
 
+void
+altx(void)
+{
+	char *t;
+	wchar_t wc;
+	if (marker < 0) {
+		return;
+	}
+	if (here < marker) {
+		marker xor_eq here;
+		here xor_eq marker;
+		marker xor_eq here;
+	}
+	movegap(marker);
+	wc = (wchar_t) strtoul(egap, &t, 16);
+	if (egap == t) {
+		/* Erase UTF-8 character, insert code point. */
+		int i = mbtowc(&wc, egap, 4);
+		if (0 < i) {
+			gap += snprintf(gap, 9, "%04X", wc);
+			egap += 1;
+		}
+	} else {
+		/* Erase code point, insert UTF-8 character. */
+		gap += wctomb(gap, wc);
+		egap += t-egap;
+	}
+	here = pos(egap);
+	epage = here+1;
+}
+
 int
 cescape(int ch)
 {
@@ -1310,7 +1341,7 @@ anchor(void)
 
 #ifdef EXT
 /*                  |--------MOTION_CMDS------|----edit----|---misc---| */
-static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpuU!\\mRWQ\003V";
+static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpuU!\030\\mRWQ\003V";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1321,7 +1352,7 @@ static void (*func[])(void) = {
 	pgdown, pgup,
 	/* Modify */
 	flipcase, insert, append, delx, delX,
-	yank, deld, paste, pastel, undo, redo, bang,
+	yank, deld, paste, pastel, undo, redo, bang, altx,
 	/* Other */
 	anchor, setmark, readfile, writefile, quit, quit,
 	version, redraw

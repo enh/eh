@@ -30,6 +30,7 @@ Simply type `make` to build.  There are two macros that can be customised:
 
    > UTF-8 demands equal rights and respect as real characters!  The dominance of slim ASCII must end!  We are the UTF-8 People's Front for Freedom, Equality, and Brotherhood (oh that's been used already) - We are the UTF-8 Countless Tourist Defence Farce for One Voice, One World, One Character Set.
 
+
 ### Issues
 
 * NetBSD Curses `mvgetnstr()` does not display UTF-8 characters correctly with echo on, but the input is valid; see Search.  The workaround would be to implement our own `mvgetnstr()` to collect input and display via `addch()/refresh()` if there were enough Rule 2b allowance.

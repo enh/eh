@@ -120,7 +120,7 @@ Y()
 		for (u = o,i = LINES-1 - (o == n); 0 < --i and v < u; ) {
 			u = M(u);
 		}
-		if (u <= v)
+		if (u < v)
 			u = v;
 	}
 	erase();
@@ -258,13 +258,12 @@ I()
 	long n = P(c);
 	V(o);
 	while ((a =getch()) not_eq 3 and a not_eq 27) {
+		t = S(a);
 		if (a == 8) {
-			while (n < P(c) and (192 bitand *--g) == 128) {
+			while (n < P(c) and (192 bitand *--g) == 128)
 				;
-			}
 		}
-		else if (g < h) {
-			t = S(a);
+		else if (g+t < h) {
 			do {
 				*g++ = (char) a;
 				v++;

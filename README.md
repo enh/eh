@@ -57,6 +57,7 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
     ! motion    Filter a text selection or region through command(s),
                 eg. `!fmt -w68`. Or read only the output of a command,
                 eg. `!!ls -l`.
+    CTRL+X      Toggle text selection of hex digits or a Unicode character.
     R           Read a file into buffer after cursor.
     W           Write buffer to file.
     V           Show build and version.
