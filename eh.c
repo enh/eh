@@ -1111,29 +1111,29 @@ bang(void)
 void
 altx(void)
 {
-	char *t;
+	int i;
+	char *p;
 	wchar_t wc;
-	if (marker < 0) {
-		return;
+	movegap(here);
+	/* Scan backwards at most 5 hex digits. */
+	for (i = 0, *gap = '\0'; i < 6 and buf < gap and isxdigit(gap[-1]); gap--, i++) {
+		;
 	}
-	if (here < marker) {
-		marker xor_eq here;
-		here xor_eq marker;
-		marker xor_eq here;
-	}
-	movegap(marker);
-	wc = (wchar_t) strtoul(egap, &t, 16);
-	if (egap == t) {
+	wc = (wchar_t) strtoul(gap, &p, 16);
+	if (gap == p) {
 		/* Erase UTF-8 character, insert code point. */
-		int i = mbtowc(&wc, egap, 4);
+		gap -= here-prevch(here);
+		i = mbtowc(&wc, gap, 4);
 		if (0 < i) {
-			gap += snprintf(gap, 9, "%04X", wc);
-			egap += 1;
+			gap += snprintf(gap, 9, "%06X", wc);
 		}
-	} else {
-		/* Erase code point, insert UTF-8 character. */
+	} else if (wc <= 0x10FFFF && 0 < wcwidth(wc)) {
+		/* Erase code point, insert printable UTF-8 character. */
 		gap += wctomb(gap, wc);
-		egap += t-egap;
+	} else {
+		/* Restore state, nothing converted. */
+		gap += i;
+		beep();
 	}
 	here = pos(egap);
 	epage = here+1;
@@ -1340,7 +1340,7 @@ anchor(void)
 }
 
 #ifdef EXT
-/*                  |--------MOTION_CMDS------|----edit----|---misc---| */
+/*                  |--------MOTION_CMDS------|------edit------|---misc---| */
 static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpuU!\030\\mRWQ\003V";
 
 static void (*func[])(void) = {
