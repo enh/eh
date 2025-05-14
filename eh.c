@@ -348,7 +348,7 @@ charwidth(const char *s, int col)
 {
 	wchar_t wc;
 	(void) mbtowc(&wc, s, 4);
-	return wc == '\t' ? TABSTOP(col) : (col = wcwidth(wc)) < 0 ? 1 : col;
+	return wc == '\t' ? TABSTOP(col) : (col = wcwidth(wc)) < 1 ? 1 : col;
 }
 
 /*
@@ -511,11 +511,26 @@ display(void)
 			 */
 			(void) mvaddch(i, j, *p+'@');
 		} else {
+#ifdef PLACEHOLDER
+			wchar_t wc;
+			(void) mbtowc(&wc, p, mbl);
+			if (0 < wcwidth(wc) or iswspace(wc)) {
+				/* Use addnstr() family that already handles UTF8
+				 * instead of add_wch() to avoid all the complexity
+				 * of using cchar_t.
+				 */
+				(void) mvaddnstr(i, j, p, mbl);
+			} else {
+				/* Place holder for non-printable. */
+				(void) mvaddch(i, j, A_REVERSE|'~');
+			}
+#else
 			/* Use addnstr() family that already handles UTF8
 			 * instead of add_wch() to avoid all the complexity
 			 * of using cchar_t.
 			 */
 			(void) mvaddnstr(i, j, p, mbl);
+#endif
 		}
 		epage += mbl;
 #else /* EXT */
@@ -1127,7 +1142,7 @@ altx(void)
 		if (0 < i) {
 			gap += snprintf(gap, 9, "%06X", wc);
 		}
-	} else if (wc <= 0x10FFFF && 0 < wcwidth(wc)) {
+	} else if (wc <= 0x10FFFF) {
 		/* Erase code point, insert printable UTF-8 character. */
 		gap += wctomb(gap, wc);
 	} else {

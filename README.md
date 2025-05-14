@@ -59,7 +59,7 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
                 eg. `!!ls -l`.
     CTRL+X      Toggle hex digits in the range 0..10FFFF or a Unicode
                 character left of the cursor.  The Unicode code point
-                must be valid and printable.
+                must be valid.
     R           Read a file into buffer after cursor.
     W           Write buffer to file.
     V           Show build and version.

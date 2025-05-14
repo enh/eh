@@ -52,7 +52,7 @@ G(char *s,int a)
 {
 	wchar_t t;
 	mbtowc(&t,s,4);
-	return t == '\t' ? (8-((a bitand 7))) : (a = wcwidth(t)) < 0 ? 1 : a;
+	return t == '\t' ? (8-((a bitand 7))) : (a = wcwidth(t)) < 1 ? 1 : a;
 }
 long 
 O(long m)
