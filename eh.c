@@ -875,9 +875,45 @@ delX(void)
 }
 
 void
+delD(void)
+{
+	if (marker < 0) {
+		(void) ungetch('$');
+	}
+	deld();
+}
+
+void
+chgc(void)
+{
+	deld();
+	/* Convert delete to paired delete-insert. */
+	undo_list->paired = 1;
+	insert();
+	/* Convert insert to paired delete-insert. */
+	undo_list->paired = 3;
+}
+
+void
+chgC(void)
+{
+	if (marker < 0) {
+		(void) ungetch('$');
+	}
+	chgc();
+}
+
+void
 append(void)
 {
 	right();
+	insert();
+}
+
+void
+appendA(void)
+{
+	lnend();
 	insert();
 }
 #else /* EXT */
@@ -1355,8 +1391,14 @@ anchor(void)
 }
 
 #ifdef EXT
-/*                  |--------MOTION_CMDS------|------edit------|---misc---| */
-static char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaxXydPpuU!\030\\mRWQ\003V";
+/* NOTE A, C, and D are questionable as "good parts", more like muscle
+ * memory concessions, since they are composites. X and x are supported
+ * since they are so frequently used, while dh and dl are functional,
+ * they're less common.
+ */
+
+/*                         |--------MOTION_CMDS------|-------edit--------|---misc---| */
+static const char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaAxXydDcCPpuU!\030\\mRWQ\003V";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1366,15 +1408,16 @@ static void (*func[])(void) = {
 	search, search_next, gomark, lnmark,
 	pgdown, pgup,
 	/* Modify */
-	flipcase, insert, append, delx, delX,
-	yank, deld, paste, pastel, undo, redo, bang, altx,
+	flipcase, insert, append, appendA, delx, delX,
+	yank, deld, delD, chgc, chgC,
+	paste, pastel, undo, redo, bang, altx,
 	/* Other */
 	anchor, setmark, readfile, writefile, quit, quit,
 	version, redraw
 };
 #else /* EXT */
-/*                  |-MOTION_CMDS-|-edit|--misc-| */
-static char key[] = "hjklbwHJKL|G/nixydP\\WQ\003";
+/*                        |-MOTION_CMDS-|-edit|--misc-| */
+static const char key[] = "hjklbwHJKL|G/nixydP\\WQ\003";
 
 static void (*func[])(void) = {
 	/* Motion */

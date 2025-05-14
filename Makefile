@@ -108,7 +108,7 @@ clean:
 	-rm -rf test/terminfo.cdb
 
 distclean clobber: clean
-	-rm -f eh$E ioccc28/prog.c ioccc28/prog$E ioccc28/prog.ext$E typescript
+	-rm -f eh$E ioccc28/prog.c ioccc28/prog$E prog.ext$E prog.ext.c typescript
 
 strip: build
 	strip eh$E ioccc28/prog$E

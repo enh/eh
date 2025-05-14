@@ -43,6 +43,7 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
     ' char      Goto start of line with mark 'a .. 'z or '' (previous).
     G           Goto line (count) number; 1G top of file, G bottom.
     \           Toggle text selection.
+    c motion    Change text selection or region given by motion.
     d motion    Delete text selection or region given by motion.
     y motion    Yank (copy) text selection or region given by motion.
     P p         Paste last deleted or yanked text region before or after
