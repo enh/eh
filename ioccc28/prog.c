@@ -1,4 +1,4 @@
-#include <curses.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <regex.h>

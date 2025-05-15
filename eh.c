@@ -10,15 +10,15 @@
 #define EXT
 
 #include <assert.h>
-#include <curses.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <regex.h>
 #include <locale.h>
 #include <iso646.h>
 #ifdef EXT
+#include <curses.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <string.h>
 #include <wctype.h>
 #include <signal.h>

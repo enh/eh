@@ -109,7 +109,7 @@ CDEFINE= -DBUF=${BUF} -DMODE=${MODE} -D_XOPEN_SOURCE=700
 #
 # Including them here doesn't "feel right", bit of cheat.
 #
-CINCLUDE= -include ctype.h -include stdlib.h -include string.h
+CINCLUDE= -include ctype.h -include curses.h -include string.h
 
 # Other flags to pass to the C compiler
 #
