@@ -812,6 +812,9 @@ insert(void)
 	count = 0;
 }
 
+/**
+ * Yank current selection or by motion.
+ */
 void
 yank(void)
 {
@@ -841,6 +844,9 @@ yank(void)
 	marker = -1;
 }
 
+/**
+ * Delete current selection or by motion.
+ */
 void
 deld(void)
 {
@@ -855,6 +861,9 @@ deld(void)
 	adjmarks(-scrap_length);
 }
 
+/**
+ * Delete character right (under) the cursor; same as `dl`.
+ */
 void
 delx(void)
 {
@@ -865,6 +874,9 @@ delx(void)
 }
 
 #ifdef EXT
+/**
+ * Delete character left the cursor; same as `dh`.
+ */
 void
 delX(void)
 {
@@ -874,6 +886,9 @@ delX(void)
 	deld();
 }
 
+/**
+ * Delete from cursor to end of line, same as `d$`.
+ */
 void
 delD(void)
 {
@@ -883,6 +898,9 @@ delD(void)
 	deld();
 }
 
+/**
+ * Change current selection or by motion.
+ */
 void
 chgc(void)
 {
@@ -894,6 +912,9 @@ chgc(void)
 	undo_list->paired = 3;
 }
 
+/**
+ * Change current selection or from cursor to end of line, same as `c$`.
+ */
 void
 chgC(void)
 {
@@ -903,6 +924,9 @@ chgC(void)
 	chgc();
 }
 
+/**
+ * Insert right of the cursor.
+ */
 void
 append(void)
 {
@@ -910,11 +934,34 @@ append(void)
 	insert();
 }
 
+/**
+ * Insert at the end of the line, same as `$i`.
+ */
 void
 appendA(void)
 {
 	lnend();
 	insert();
+}
+
+/**
+ * Open a new empty line below the current cursor line.
+ */
+void
+openo(void)
+{
+	(void) ungetch('\n');
+	appendA();
+}
+
+/**
+ * Open a new empty line above the current cursor line.
+ */
+void
+openO(void)
+{
+	up();
+	openo();
 }
 #else /* EXT */
 #endif /* EXT */
@@ -1398,7 +1445,7 @@ anchor(void)
  */
 
 /*                         |--------MOTION_CMDS------|-------edit--------|---misc---| */
-static const char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaAxXydDcCPpuU!\030\\mRWQ\003V";
+static const char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaAxXydDcCoOPpuU!\030\\mRWQ\003V";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1409,7 +1456,7 @@ static void (*func[])(void) = {
 	pgdown, pgup,
 	/* Modify */
 	flipcase, insert, append, appendA, delx, delX,
-	yank, deld, delD, chgc, chgC,
+	yank, deld, delD, chgc, chgC, openo, openO,
 	paste, pastel, undo, redo, bang, altx,
 	/* Other */
 	anchor, setmark, readfile, writefile, quit, quit,
