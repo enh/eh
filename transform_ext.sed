@@ -1,5 +1,4 @@
-/#define EXT/d
-/^#ifdef.*EXT/d
-/^#else.*EXT/,/^#endif.*EXT/d
+/^#ifndef.*IOCCC/d
+/^#else.*IOCCC/,/^#endif.*IOCCC/d
 /^#define .*_CMDS/d
 s/MOTION_CMDS/18/g

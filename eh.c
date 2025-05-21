@@ -7,8 +7,6 @@
  * https://www.unifoundry.com/pub/unifont/unifont-16.0.03/font-builds/unifont-16.0.03.otf
  */
 
-#define EXT
-
 #include <assert.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -16,15 +14,15 @@
 #include <regex.h>
 #include <locale.h>
 #include <iso646.h>
-#ifdef EXT
+#ifndef IOCCC
 #include <curses.h>
 #include <ctype.h>
 #include <string.h>
 #include <wctype.h>
 #include <signal.h>
 #include <sys/wait.h>
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 
 #ifndef BUF
 # define BUF		(64*1024)
@@ -50,7 +48,7 @@
 
 #define ALL_CMDS	99
 
-#ifdef EXT
+#ifndef IOCCC
 #define MATCHES		10
 #define MOTION_CMDS	20
 
@@ -61,7 +59,7 @@ static char *buf, *gap, *egap, *ebuf;
 static const char ins[] = "INS", cmd[] = "   ", *mode = cmd;
 static off_t here, page, epage, match_length, scrap_length, marks[MARKS], marker = -1;
 static regex_t ere;
-#else /* EXT */
+#else /* IOCCC */
 #define MATCHES		1
 #define MOTION_CMDS	14
 
@@ -70,7 +68,7 @@ static char *filename, *scrap;
 static char buf[BUF], *gap = buf, *egap, *ebuf;
 static off_t here, page, epage, match_length, scrap_length, marker = -1;
 static regex_t ere;
-#endif /* EXT */
+#endif /* IOCCC */
 
 void
 getcmd(int);
@@ -205,7 +203,7 @@ movegap(off_t cur)
 	assert(buf <= gap and gap <= egap and egap <= ebuf);
 }
 
-#ifdef EXT
+#ifndef IOCCC
 void
 growgap(size_t min)
 {
@@ -339,9 +337,9 @@ redo(void)
 		}
 	}
 }
-#else /* EXT */
+#else /* IOCCC */
 #define growgap(n)
-#endif /* EXT */
+#endif /* IOCCC */
 
 int
 charwidth(const char *s, int col)
@@ -466,17 +464,17 @@ display(void)
 	} /* Else still within page bounds, update cursor. */
 	(void) erase();
 	(void) standout();
-#ifdef EXT
+#ifndef IOCCC
 	(void) printw(
 		"%s %ldB %ld%%", filename, eof,
 		here * 100 / (eof+(eof <= 0))
 	);
 	clr_to_eol();
 	(void) mvprintw(0, COLS-strlen(mode)-1,"%s%c",mode, chg);
-#else /* EXT */
+#else /* IOCCC */
 	(void) printw("%s %ldB", filename, here);
 	clr_to_eol();
-#endif /* EXT */
+#endif /* IOCCC */
 	if (marker < 0) {
 		from = to = marker;
 	} else if (here < marker) {
@@ -494,7 +492,7 @@ display(void)
 		if (ebuf <= (p = ptr(epage))) {
 			break;
 		}
-#ifdef EXT
+#ifndef IOCCC
 		int is_ctrl = iscntrl(*p) and *p not_eq '\t' and *p not_eq '\n';
 		if ((from <= epage and epage < to) or is_ctrl) {
 			standout();
@@ -533,14 +531,14 @@ display(void)
 #endif
 		}
 		epage += mbl;
-#else /* EXT */
+#else /* IOCCC */
 		if (from <= epage and epage < to) {
 			standout();
 		}
 		int mbl = mblength(*p);
 		(void) mvaddnstr(i, j, p, mbl);
 		epage += mbl;
-#endif /* EXT */
+#endif /* IOCCC */
 		/* Handle tab expansion ourselves.  Historical
 		 * Curses addch() would advance to the next
 		 * tabstop (a multiple of 8, eg. 0, 8, 16, ...).
@@ -598,7 +596,7 @@ down(void)
 	here = col_or_eol(nextline(here), 0, cur_col);
 }
 
-#ifdef EXT
+#ifndef IOCCC
 /*
  * Beginning of physical line.
  */
@@ -616,8 +614,8 @@ lnend(void)
 {
 	here = col_or_eol(here, 0, MAX_COLS);
 }
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 
 /*
  * Goto column of physical line.
@@ -645,20 +643,20 @@ wleft(void)
 void
 pgtop(void)
 {
-#ifdef EXT
+#ifndef IOCCC
 	marks[0] = here;
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 	here = page;
 }
 
 void
 pgbottom(void)
 {
-#ifdef EXT
+#ifndef IOCCC
 	marks[0] = here;
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 	here = row_start(bol(epage-1), epage-1);
 }
 
@@ -721,10 +719,10 @@ wright(void)
 void
 lngoto(void)
 {
-#ifdef EXT
+#ifndef IOCCC
 	marks[0] = here;
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 	/* Count physcical lines, just as ed, grep, or wc would. */
 	off_t eof = pos(ebuf);
 	for (here = eof * (count == 0); here < eof and 1 < count; count--) {
@@ -738,7 +736,7 @@ lngoto(void)
 	page = eof;
 }
 
-#ifdef EXT
+#ifndef IOCCC
 int
 getsigch(void)
 {
@@ -748,20 +746,20 @@ getsigch(void)
 	}
 	return ch;
 }
-#else /* EXT */
+#else /* IOCCC */
 #define getsigch	getch
-#endif /* EXT */
+#endif /* IOCCC */
 
 void
 insert(void)
 {
 	int ch, mbl;
 	off_t eof = pos(ebuf);
-#ifdef EXT
+#ifndef IOCCC
 	mode = ins;
 	display();
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 	movegap(here);
 	while ((ch = getsigch()) not_eq CTRL_C and ch not_eq ESC) {
 		mbl = mblength(ch);
@@ -771,7 +769,7 @@ insert(void)
 				;
 			}
 		} else if (gap+mbl < egap) {
-#ifdef EXT
+#ifndef IOCCC
 			/* Using cbreak() then ^V is handled
 			 * so ESC ^[ is inserted with ^V^V^[.
 			 * With raw() we handle ^V so ESC ^[
@@ -783,8 +781,8 @@ insert(void)
 				ch = getch();
 				(void) nl();	/* CR -> LF */
 			}
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 			/* Read the remainder of a multibyte
 			 * character BEFORE updating the display.
 			 */
@@ -795,19 +793,19 @@ insert(void)
 			} while (0 < --mbl and (ch = getch()));
 		}
 		here = pos(egap);
-#ifdef EXT
+#ifndef IOCCC
 		chg = CHANGED;
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 		display();
 	}
-#ifdef EXT
+#ifndef IOCCC
 	mode = cmd;
 	off_t len = pos(ebuf)-eof;
 	undo_save(1, here-len, gap-len, len);
 	adjmarks(len);
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 	/* Not repeatable yet. */
 	count = 0;
 }
@@ -851,11 +849,11 @@ void
 deld(void)
 {
 	yank();
-#ifdef EXT
+#ifndef IOCCC
 	chg = CHANGED;
 	undo_save(0, here, scrap, scrap_length);
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 	egap += scrap_length;
 	here = pos(egap);
 	adjmarks(-scrap_length);
@@ -873,7 +871,7 @@ delx(void)
 	deld();
 }
 
-#ifdef EXT
+#ifndef IOCCC
 /**
  * Delete character left the cursor; same as `dh`.
  */
@@ -963,21 +961,21 @@ openO(void)
 	up();
 	openo();
 }
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 
 void
 paste(void)
 {
 	if (scrap not_eq NULL) {
 		movegap(here);
-#ifdef EXT
+#ifndef IOCCC
 		growgap(COLS+(count+(count == 0))*scrap_length);
 		undo_save(1, here, scrap, scrap_length);
 		adjmarks(scrap_length);
 		chg = CHANGED;
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 		(void) memcpy(gap, scrap, scrap_length);
 		gap += scrap_length;
 		/* SUS 2018 vi(1) `P` paste-before unnamed buffer leaves
@@ -993,7 +991,7 @@ paste(void)
 	}
 }
 
-#ifdef EXT
+#ifndef IOCCC
 void
 pastel(void)
 {
@@ -1275,7 +1273,7 @@ flipcase(void)
 		right();
 	}
 }
-#else /* EXT */
+#else /* IOCCC */
 void
 writefile(void)
 {
@@ -1290,7 +1288,7 @@ quit(void)
 {
 	filename = NULL;
 }
-#endif /* EXT */
+#endif /* IOCCC */
 
 /* In case we're sitting on a previous match, we need to search starting
  * from the end of that match.  Note some special cases:
@@ -1332,10 +1330,10 @@ search_next(void)
 	 */
 	assert(gap < egap);
 	movegap(pos(ebuf));
-#ifdef EXT
+#ifndef IOCCC
 	marks[0] = here;
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 	*gap = '\0';
 	/* REG_NOTBOL allows /^/ to advance to start of next line. */
 	if (here+match_length < pos(ebuf) and 0 == regexec(&ere, ptr(here+match_length), MATCHES, matches, REG_NOTBOL)) {
@@ -1351,7 +1349,7 @@ search_next(void)
 		return;
 	}
 	match_length = matches[0].rm_eo - matches[0].rm_so + ere_dollar_only;
-#ifdef EXT
+#ifndef IOCCC
 	if (NULL not_eq replace) {
 		movegap(here);
 		char *xgap = gap;
@@ -1385,14 +1383,14 @@ search_next(void)
 		undo_save(3, here, xgap, match_length);
 		adjmarks(match_length-undo_list->next->size);
 	}
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 }
 
 void
 search(void)
 {
-#ifdef EXT
+#ifndef IOCCC
 	char *t;
 	prompt('/', "");
 	free(replace);
@@ -1410,7 +1408,7 @@ search(void)
 		*t++ = '\0';
 		replace = strdup(t);
 	}
-#else /* EXT */
+#else /* IOCCC */
 	(void) echo();
 	(void) standout();
 	(void) mvaddch(0, 0, '/');
@@ -1418,7 +1416,7 @@ search(void)
 	assert(COLS <= egap - gap);
 	/* NetBSD 9.3 erase ^H works fine, but not the kill ^U character. */
 	(void) mvgetnstr(0, 1, gap, egap-gap);
-#endif /* EXT */
+#endif /* IOCCC */
 	regfree(&ere);
 	if (regcomp(&ere, gap, REG_EXTENDED bitor REG_NEWLINE) not_eq 0) {
 		/* Something about the pattern is fubar. */
@@ -1437,7 +1435,7 @@ anchor(void)
 	marker = marker < 0 ? here : -1;
 }
 
-#ifdef EXT
+#ifndef IOCCC
 /* NOTE A, C, and D are questionable as "good parts", more like muscle
  * memory concessions, since they are composites. X and x are supported
  * since they are so frequently used, while dh and dl are functional,
@@ -1462,7 +1460,7 @@ static void (*func[])(void) = {
 	anchor, setmark, readfile, writefile, quit, quit,
 	version, redraw
 };
-#else /* EXT */
+#else /* IOCCC */
 /*                        |-MOTION_CMDS-|-edit|--misc-| */
 static const char key[] = "hjklbwHJKL|G/nixydP\\WQ\003";
 
@@ -1479,7 +1477,7 @@ static void (*func[])(void) = {
 	anchor, writefile, quit, quit,
 	redraw
 };
-#endif /* EXT */
+#endif /* IOCCC */
 
 void
 getcmd(int m)
@@ -1500,7 +1498,7 @@ getcmd(int m)
 	count = 0;
 }
 
-#ifdef EXT
+#ifndef IOCCC
 void
 cleanup(void)
 {
@@ -1518,8 +1516,8 @@ cleanup(void)
 	free(scrap);
 	free(buf);
 }
-#else /* EXT */
-#endif /* EXT */
+#else /* IOCCC */
+#endif /* IOCCC */
 
 int
 main(int argc, char **argv)
@@ -1530,7 +1528,7 @@ main(int argc, char **argv)
 		return 1;
 	}
 	(void) raw();
-#ifdef EXT
+#ifndef IOCCC
 	(void) noecho();
 	(void) atexit(cleanup);
 	/* Switching between cbreak() and raw() impacts terminal output
@@ -1548,7 +1546,7 @@ main(int argc, char **argv)
 		display();
 		getcmd(ALL_CMDS);
 	}
-#else /* EXT */
+#else /* IOCCC */
 	egap = ebuf = buf + BUF;
 	if (0 < (argc = open(filename = *++argv, 0))) {
 		gap += read(argc, buf, ebuf-buf);
@@ -1566,6 +1564,6 @@ main(int argc, char **argv)
 		getcmd(ALL_CMDS);
 	}
 	(void) endwin();
-#endif /* EXT */
+#endif /* IOCCC */
 	return 0;
 }

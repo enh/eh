@@ -1,7 +1,6 @@
 ### IOCCC
-/#define EXT/d
-/^#ifdef.*EXT/,/^#else.*EXT/d
-/^#endif.*EXT/d
+/^#ifndef.*IOCCC/,/^#else.*IOCCC/d
+/^#endif.*IOCCC/d
 
 /#define WIDE/d
 /^#ifdef.*WIDE/,/^#else.*WIDE/d
