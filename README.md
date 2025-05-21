@@ -115,6 +115,8 @@ Notes
 
   `^V` is the default `stty(1)` insert literal prefix key.
 
+* Cygwin builds may be bugged with respect to `wcwidth()`, since `wchar_t` reflects UTF-16 to match Windows and there is no equivalent `c32width()` nor means to determine cell width of surrogate pairs, such as emoji.
+
 
 References
 ----------

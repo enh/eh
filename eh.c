@@ -21,6 +21,7 @@
 #include <wctype.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <uchar.h>
 #else /* IOCCC */
 #endif /* IOCCC */
 
@@ -510,8 +511,8 @@ display(void)
 			(void) mvaddch(i, j, *p+'@');
 		} else {
 #ifdef PLACEHOLDER
-			wchar_t wc;
-			(void) mbtowc(&wc, p, mbl);
+			char32_t wc;
+			(void) mbrtoc32(&wc, p, mbl, NULL);
 			if (0 < wcwidth(wc) or iswspace(wc)) {
 				/* Use addnstr() family that already handles UTF8
 				 * instead of add_wch() to avoid all the complexity
@@ -1209,23 +1210,23 @@ altx(void)
 {
 	int i;
 	char *p;
-	wchar_t wc;
+	char32_t wc;
 	movegap(here);
 	/* Scan backwards at most 5 hex digits. */
 	for (i = 0, *gap = '\0'; i < 6 and buf < gap and isxdigit(gap[-1]); gap--, i++) {
 		;
 	}
-	wc = (wchar_t) strtoul(gap, &p, 16);
+	wc = (char32_t) strtoul(gap, &p, 16);
 	if (gap == p) {
 		/* Erase UTF-8 character, insert code point. */
 		gap -= here-prevch(here);
-		i = mbtowc(&wc, gap, 4);
+		i = mbrtoc32(&wc, gap, 4, NULL);
 		if (0 < i) {
 			gap += snprintf(gap, 9, "%06X", wc);
 		}
 	} else if (wc <= 0x10FFFF) {
 		/* Erase code point, insert printable UTF-8 character. */
-		gap += wctomb(gap, wc);
+		gap += c32rtomb(gap, wc, NULL);
 	} else {
 		/* Restore state, nothing converted. */
 		gap += i;
