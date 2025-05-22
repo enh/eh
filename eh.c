@@ -320,11 +320,11 @@ undo(void)
 {
 	if (undo_list not_eq NULL) {
 		undo_redo(not undo_list->op, undo_list);
-		undo_move(&undo_list, &redo_list);
-		if (undo_list not_eq NULL and undo_list->paired) {
-			undo_redo(not undo_list->op, undo_list);
+		if (undo_list->next not_eq NULL and undo_list->paired) {
 			undo_move(&undo_list, &redo_list);
+			undo_redo(not undo_list->op, undo_list);
 		}
+		undo_move(&undo_list, &redo_list);
 	}
 }
 
@@ -333,11 +333,11 @@ redo(void)
 {
 	if (redo_list not_eq NULL) {
 		undo_redo(redo_list->op, redo_list);
-		undo_move(&redo_list, &undo_list);
-		if (redo_list not_eq NULL and redo_list->paired) {
-			undo_redo(redo_list->op, redo_list);
+		if (redo_list->next not_eq NULL and redo_list->paired) {
 			undo_move(&redo_list, &undo_list);
+			undo_redo(redo_list->op, redo_list);
 		}
+		undo_move(&redo_list, &undo_list);
 	}
 }
 #else /* IOCCC */

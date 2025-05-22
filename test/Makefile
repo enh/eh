@@ -75,7 +75,7 @@ TESTS:= tests_have_term_data \
 	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 ere10 ere11 \
 	mark0 mark1 mark2 mark3 mark4 mark5 \
 	del7 del8 del9 del10 del11 del12 del13 \
-	undo0 undo1 undo2 undo3 \
+	undo0 undo1 undo2 undo3 undo4 \
 	paste0 paste1 paste2 paste3 \
 	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7 \
 	replace0 replace1 replace2 write0 read0 read1 \
@@ -695,6 +695,14 @@ undo2:
 undo3:
 	-${TITLE}
 	printf 'dGuQ' | ${PROG} test/short.txt >a.out
+	${A_CORE}
+	${A_OUT}
+	-${PASS}
+
+# Fix bug with paired undo operations.
+undo4:
+	-${TITLE}
+	printf 'itest undo redo\ebbcwfoo \euuUUQ' | ${PROG} >a.out
 	${A_CORE}
 	${A_OUT}
 	-${PASS}
