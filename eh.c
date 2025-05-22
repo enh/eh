@@ -233,10 +233,12 @@ growgap(size_t min)
 	}
 }
 
+typedef enum { UNDO_DEL, UNDO_INS, UNDO_DEL_A, UNDO_INS_B } UndoOp;
+
 struct ubuf {
 	struct ubuf *next;
-	int op;
-	int paired;
+	UndoOp op;
+	bool paired;
 	off_t off;
 	size_t size;
 	char buf[];
@@ -266,7 +268,7 @@ undo_free(struct ubuf *obj)
 }
 
 void
-undo_save(int op, off_t off, char *loc, size_t size)
+undo_save(UndoOp op, off_t off, char *loc, size_t size)
 {
 	struct ubuf *obj;
 	undo_free(redo_list);
@@ -275,8 +277,8 @@ undo_save(int op, off_t off, char *loc, size_t size)
 	 * string, because of paired undo objects we need both.
 	 */
 	if ((obj = realloc(NULL, sizeof (*obj) + size)) not_eq NULL) {
-		obj->op = op bitand  1;
-		obj->paired = 1 < op;
+		obj->op = op bitand 1;
+		obj->paired = UNDO_INS < op;
 		obj->off = off;
 		obj->size = size;
 		(void) memcpy(obj->buf, loc, size);
@@ -286,7 +288,7 @@ undo_save(int op, off_t off, char *loc, size_t size)
 }
 
 void
-undo_redo(int op, struct ubuf *obj)
+undo_redo(UndoOp op, struct ubuf *obj)
 {
 	movegap(obj->off);
 	if (op) {
@@ -803,7 +805,7 @@ insert(void)
 #ifndef IOCCC
 	mode = cmd;
 	off_t len = pos(ebuf)-eof;
-	undo_save(1, here-len, gap-len, len);
+	undo_save(UNDO_INS, here-len, gap-len, len);
 	adjmarks(len);
 #else /* IOCCC */
 #endif /* IOCCC */
@@ -852,7 +854,7 @@ deld(void)
 	yank();
 #ifndef IOCCC
 	chg = CHANGED;
-	undo_save(0, here, scrap, scrap_length);
+	undo_save(UNDO_DEL, here, scrap, scrap_length);
 #else /* IOCCC */
 #endif /* IOCCC */
 	egap += scrap_length;
@@ -905,10 +907,10 @@ chgc(void)
 {
 	deld();
 	/* Convert delete to paired delete-insert. */
-	undo_list->paired = 1;
+	undo_list->paired = true;
 	insert();
 	/* Convert insert to paired delete-insert. */
-	undo_list->paired = 3;
+	undo_list->paired = true;
 }
 
 /**
@@ -972,7 +974,7 @@ paste(void)
 		movegap(here);
 #ifndef IOCCC
 		growgap(COLS+(count+(count == 0))*scrap_length);
-		undo_save(1, here, scrap, scrap_length);
+		undo_save(UNDO_INS, here, scrap, scrap_length);
 		adjmarks(scrap_length);
 		chg = CHANGED;
 #else /* IOCCC */
@@ -1117,7 +1119,7 @@ readfile(void)
 		(void) beep();
 	} else {
 		off_t len = pos(ebuf)-eof;
-		undo_save(1, here, gap-len, len);
+		undo_save(UNDO_INS, here, gap-len, len);
 		here = pos(egap);
 		epage = here+1;
 		chg = CHANGED;
@@ -1186,9 +1188,9 @@ bang(void)
 						growgap(BUF/2);
 					}
 					/* Convert delete to paired delete-insert. */
-					undo_list->paired = 1;
+					undo_list->paired = true;
 					off_t len = pos(ebuf)-eof;
-					undo_save(3, here, gap-len, len);
+					undo_save(UNDO_INS_B, here, gap-len, len);
 					adjmarks(len-undo_list->next->size);
 					here = pos(egap);
 					epage = here+1;
@@ -1264,12 +1266,12 @@ flipcase(void)
 {
 	char *p = ptr(here);
 	if (p < ebuf) {
-		undo_save(2, here, p, mblength(*p));
+		undo_save(UNDO_DEL_A, here, p, mblength(*p));
 		/* Skip moving the gap and modify in place.
 		 * Does NOT support (yet) non-ASCII alphabetics.
 		 */
 		*p = islower(*p) ? toupper(*p) : tolower(*p);
-		undo_save(3, here, p, mblength(*p));
+		undo_save(UNDO_INS_B, here, p, mblength(*p));
 		chg = CHANGED;
 		right();
 	}
@@ -1377,11 +1379,11 @@ search_next(void)
 			*gap++ = *s;
 		}
 		/* Delete the match. */
-		undo_save(2, here, egap, match_length);
+		undo_save(UNDO_DEL_A, here, egap, match_length);
 		egap += match_length;
 		/* Replacement string length. */
 		match_length = gap-xgap;
-		undo_save(3, here, xgap, match_length);
+		undo_save(UNDO_INS_B, here, xgap, match_length);
 		adjmarks(match_length-undo_list->next->size);
 	}
 #else /* IOCCC */
