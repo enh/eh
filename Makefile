@@ -159,4 +159,3 @@ ioccc28/prog.alt$E: ioccc28/prog.alt.c
 
 ioccc28/prog.alt.i: ioccc28/prog.alt.c
 	${CC} ${CFLAGS} ${CPPFLAGS} -E ioccc28/prog.alt.c >$*.i
-

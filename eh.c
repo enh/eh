@@ -51,7 +51,7 @@
 
 #ifndef IOCCC
 #define MATCHES		10
-#define MOTION_CMDS	20
+#define MOTION_CMDS	21
 
 static char chg = NOCHANGE;
 static int cur_row, cur_col, count, ere_dollar_only;
@@ -496,7 +496,7 @@ display(void)
 			break;
 		}
 #ifndef IOCCC
-		int is_ctrl = iscntrl(*p) and *p not_eq '\t' and *p not_eq '\n';
+		bool is_ctrl = iscntrl(*p) and *p not_eq '\t' and *p not_eq '\n';
 		if ((from <= epage and epage < to) or is_ctrl) {
 			standout();
 		}
@@ -963,6 +963,24 @@ openO(void)
 {
 	up();
 	openo();
+}
+
+/**
+ * Find end of word.
+ */
+void
+wend(void)
+{
+	off_t eof = pos(ebuf);
+	/* Move forwards to start of next word. */
+	while (here < eof and isspace(*ptr(++here))) {
+		;
+	}
+	/* Move forwards to end of current word. */
+	while (here < eof and not isspace(*ptr(here))) {
+		here++;
+	}
+	here--;
 }
 #else /* IOCCC */
 #endif /* IOCCC */
@@ -1445,12 +1463,12 @@ anchor(void)
  * they're less common.
  */
 
-/*                         |--------MOTION_CMDS------|-------edit--------|---misc---| */
-static const char key[] = "hjklbwHJKL^$|G/n`'\006\002~iaAxXydDcCoOPpuU!\030\\mRWQ\003V";
+/*                         |--------MOTION_CMDS-------|-------edit--------|---misc---| */
+static const char key[] = "hjklbewHJKL^$|G/n`'\006\002~iaAxXydDcCoOPpuU!\030\\mRWQ\003V";
 
 static void (*func[])(void) = {
 	/* Motion */
-	left, down, up, right, wleft, wright,
+	left, down, up, right, wleft, wend, wright,
 	pgtop, pgdown, pgup, pgbottom,
 	lnbegin, lnend, column, lngoto,
 	search, search_next, gomark, lnmark,
