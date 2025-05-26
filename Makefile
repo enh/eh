@@ -51,7 +51,7 @@ COMMIT	!= git describe --tags
 # -Wno-missing-prototypes		clang functiosn without static
 # -Wno-missing-variable-declarations	clang globals without static
 #
-CSILENT := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter \
+CSILENCE := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-parameter \
 	   -Wno-strict-prototypes -Wno-unused-value
 
 # Clang with -Weverything complains worse than Gcc -Wpedantic.
@@ -70,15 +70,15 @@ CSILENT := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-para
 #
 CINCLUDE := -include ctype.h -include curses.h -include string.h
 
-CFLAGS	:= -std=gnu17 -Os -funsigned-char -Wall -Wextra -pedantic ${CSILENT} ${DBG}
+CFLAGS	:= -std=gnu17 -Os -funsigned-char -Wall -Wextra -pedantic ${CSILENCE} ${DBG}
 
 # Frack need extra #define to enable SUS standard strdup(), strndup().
 CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} -DBUILT="\"${BUILT}\"" -DCOMMIT="\"${COMMIT}\"" -D_XOPEN_SOURCE=700
 
-LIBS	:= -lcurses
+LDFLAGS	:=
 
-# Linux NCurses with wide character support.
-#LIBS	:= -lncursesw
+# Linux & Cygwin NCurses with wide character support.
+LIBS	!= if expr "${MAKE_OS}" : '^.*BSD' >/dev/null; then echo '-lcurses'; else echo '-lncursesw'; fi
 
 MANDIR	!= dirname "$$(find /usr/local -maxdepth 3 -type d -name man1)"
 MANDIR  != if test "${MANDIR}" = '.'; then echo /usr/local/share/man; else echo ${MANDIR}; fi
@@ -97,7 +97,7 @@ MANDIR  != if test "${MANDIR}" = '.'; then echo /usr/local/share/man; else echo 
 #
 #######################################################################
 
-.PHONY: all clean clobber distclean install strip size test tests
+.PHONY: all clean clobber distclean nuke install strip size test tests
 
 all: build
 
@@ -108,7 +108,10 @@ clean:
 	-rm -rf test/terminfo.cdb
 
 distclean clobber: clean
-	-rm -f eh$E ioccc28/prog.c ioccc28/prog$E prog.ext$E prog.ext.c typescript
+	-rm -f eh$E ioccc28/prog$E prog.ext$E prog.ext.c typescript
+
+nuke: distclean
+	-rm ioccc28/prog.c
 
 strip: build
 	strip eh$E ioccc28/prog$E
@@ -132,6 +135,9 @@ debug: clean
 
 test:
 	${MAKE} -f test/Makefile PROG=${PROG} $@
+
+predefines:
+	gcc ${CPPFLAGS} -dM -E -xc /dev/null
 
 #######################################################################
 # Generated files.
