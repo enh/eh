@@ -26,52 +26,41 @@ Commands
 
 The commands are similar, but not the same as `vi(1)`.  Most commands can be prefixed by a repeat count, eg. `5w`, `123G`, `2dw` (`d2w`), or `2d3w` (`d6w`).  Motion commands, optionally prefixed by a count, are those that move the cursor without modifying the buffer.  Some edit commands can be followed by a motion.
 
-    h j k l     Left, down, up, right cursor movement.
-    H J K L     Page top, page down, page up, page bottom.
-    ^F ^B       Page down (forward), page up (back).
-    b w         Word left, word right.
-    ^ $         Start and end of line, ie. `0|` or `999|`.
-    |           Goto column (count) of physical line.
-    /ERE
-    /ERE/       Find first occurrence of ERE pattern after the cursor.
-    /ERE/REPL
-    /ERE/REPL/  Find ERE and replace.  In the `REPL`, a `$n` where `n` is
-                a digit `0..9` is replaced by the nth subexpression of the
-                matched text; `$0` is the whole matched text. `\x` is an
-                escape sequence, ie. \a \b \e \f \n \r \t \? or `x`.
-    /ERE/REPL/a Find and replace all occurences.
-    m char      Set a positional mark letter a..z.
-    n           Find next occurrence of ERE (and replace); `u` undoes only
-                the most recent replacement (currently no `&`).
-    ` char      Goto position of mark `a .. `z or `` (previous).
-    ' char      Goto start of line with mark 'a .. 'z or '' (previous).
-    G           Goto line (count) number; 1G top of file, G bottom.
-    \           Toggle text selection.
-    c motion    Change text selection or region given by motion.
-    d motion    Delete text selection or region given by motion.
-    y motion    Yank (copy) text selection or region given by motion.
-    P p         Paste last deleted or yanked text region before or after
-                the cursor.
-    i a         Insert text mode before or after the cursor, ESC or CTRL+C
-                ends insert.  While inserting text, backspace will erase
-                the previous character; CTRL+V treats the next character
-                as a literal character.
-    X x         Delete character before or after cursor, ie. `dh` or `dl`.
-    U u         Redo or undo one or more edits.
-    ~           Invert character case.
-    ! motion    Filter a text selection or region through command(s),
-                eg. `!fmt -w68`. Or read only the output of a command,
-                eg. `!!ls -l`.
-    CTRL+X      Toggle hex digits in the range 0..10FFFF or a Unicode
-                character left of the cursor.  The Unicode code point
-                must be valid.
-    R           Read a file into buffer after cursor.
-    W           Write buffer to file.
-    V           Show build and version.
-    Q           Quit.
-    CTRL+C      Quit.
-
-    Any other key will redraw the screen.
+* `h j k l    ` Left, down, up, right cursor movement.
+* `H J K L    ` Page top, page down, page up, page bottom.
+* `^F ^B      ` Page down (forward), page up (back).
+* `b e w      ` Word left, word end, word right.
+* `^ $        ` Start and end of line, ie. `0|` or `999|`.
+* `|          ` Goto column (count) of physical line.
+* `/ERE       ` `/ERE/      ` Find first occurrence of `ERE` pattern after the cursor.
+* `/ERE/REPL  ` `/ERE/REPL/ ` Find `ERE` and replace.  In the `REPL`, a `$n` where `n` is a digit `0..9` is replaced by the Nth subexpression of the matched text; `$0` is the whole matched text. `\x` is an escape sequence, ie. `\a` `\b` `\e` `\f` `\n` `\r` `\t` `\?` or `x`.
+* `/ERE/REPL/a` Find and replace all occurences.
+* `m char     ` Set a positional mark letter `a..z`.
+* `n          ` Find next occurrence of ERE (and replace); `u` undoes only the most recent replacement.
+* `` ` char      `` Goto position of mark `a .. `z or ``` `` ``` (previous).
+* `' char     ` Goto start of line with mark `'a .. 'z` or `''` (previous).
+* `G          ` Goto line (count) number; `1G` top of file, `G` bottom, `123G` line 123.
+* `\          ` Toggle highlighted text selection.
+* `c motion   ` Change text selection or region given by motion.
+* `C          ` * Change to end of line, ie. `c$`.
+* `d motion   ` Delete text selection or region given by motion.
+* `D          ` * Delete to end of line, ie. `d$`.
+* `O o        ` * Open new line above or below the current line, ie. `kA\n` or `A\n`.
+* `y motion   ` Yank (copy) text selection or region given by motion.
+* `Y          ` * Yank the current line, ie. `^yj`.
+* `P p        ` Paste last deleted or yanked text region before or after the cursor.
+* `i a        ` Insert text mode before or after the cursor, ESC or CTRL+C ends insert.  While inserting text, backspace will erase the previous character; CTRL+V treats the next character as a literal character.
+* `I A        ` * Insert at start of line or append at end of line, ie. `^i` or `$i`.
+* `X x        ` Delete character before or after cursor, ie. `dh` or `dl`.
+* `U u        ` Redo or undo one or more edits.
+* `~          ` Invert character case.
+* `! motion   ` Filter a text selection or region through shell command line, eg. `!Gfmt -w68`.  Or read only the output of a shell command line, eg. `!!ls -l`.
+* `CTRL+X     ` Toggle hex digits in the range 0..10FFFF or a Unicode character left of the cursor.
+* `R          ` Read a file into buffer after cursor.
+* `W          ` Write buffer to file.
+* `V          ` Show build and version.
+* `Q CTRL+C   ` Quit.
+* Any other key will redraw the screen.
 
 
 Environment
