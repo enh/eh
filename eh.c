@@ -1367,6 +1367,11 @@ search_next(void)
 	/* No match after wrap-around. */
 	else {
 		match_length = 0;
+#ifndef IOCCC
+		free(replace);
+		replace = NULL;
+#else /* IOCCC */
+#endif /* IOCCC */
 		return;
 	}
 	match_length = matches[0].rm_eo - matches[0].rm_so + ere_dollar_only;
@@ -1389,7 +1394,7 @@ search_next(void)
 			} else if (*s == '/') {
 				/* End replacement string. */
 				if (*++s == 'a') {
-					/* a = all */
+					/* a = replace all (do it again) */
 					(void) ungetch('n');
 				}
 				break;
@@ -1408,26 +1413,41 @@ search_next(void)
 #endif /* IOCCC */
 }
 
+/**
+ * Search and replace.
+ *
+ *	/regex			find only
+ *	/regex/			find only
+ *	/regex//		replace with empty string
+ *	/regex/pattern		replace with pattern
+ *	/regex/pattern/		replace with pattern
+ *	/regex/pattern/flags 	replace with pattern subject to flags
+ *
+ * Current flags:
+ *
+ *	a			replace all, no prompt
+ */
 void
 search(void)
 {
 #ifndef IOCCC
-	char *t;
 	prompt('/', "");
 	free(replace);
+	replace = NULL;
 	/* Find end of pattern. */
-	for (t = gap; *t not_eq '\0'; t++) {
+	for (char *t = gap; *t not_eq '\0'; t++) {
 		if (*t == '\\') {
 			/* Escape next character. */
 			t++;
 		} else if (*t == '/') {
 			/* End of pattern, start of replacement. */
+			*t++ = '\0';
+			/* Is there a pattern or empty string to follow? */
+			if (*t not_eq '\0') {
+				replace = strdup(t);
+			}
 			break;
 		}
-	}
-	if (*t == '/') {
-		*t++ = '\0';
-		replace = strdup(t);
 	}
 #else /* IOCCC */
 	(void) echo();
