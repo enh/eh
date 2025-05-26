@@ -185,7 +185,7 @@ s/(^|[^[:alnum:]_])lnbegin([^[:alnum:]_]|$)/\1ə\2/g
 s/(^|[^[:alnum:]_])lnend([^[:alnum:]_]|$)/\1Ə\2/g
 s/(^|[^[:alnum:]_])lngoto([^[:alnum:]_]|$)/\1ө\2/g
 s/(^|[^[:alnum:]_])insert([^[:alnum:]_]|$)/\1I\2/g
-s/(^|[^[:alnum:]_])yank([^[:alnum:]_]|$)/\1Ô\2/g
+s/(^|[^[:alnum:]_])yanky([^[:alnum:]_]|$)/\1Ô\2/g
 s/(^|[^[:alnum:]_])deld([^[:alnum:]_]|$)/\1X\2/g
 s/(^|[^[:alnum:]_])delx([^[:alnum:]_]|$)/\1Ó\2/g
 s/(^|[^[:alnum:]_])delX([^[:alnum:]_]|$)/\1Ò\2/g

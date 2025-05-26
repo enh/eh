@@ -817,7 +817,7 @@ insert(void)
  * Yank current selection or by motion.
  */
 void
-yank(void)
+yanky(void)
 {
 	off_t mark = marker;
 	if (marker < 0) {
@@ -851,7 +851,7 @@ yank(void)
 void
 deld(void)
 {
-	yank();
+	yanky();
 #ifndef IOCCC
 	chg = CHANGED;
 	undo_save(UNDO_DEL, here, scrap, scrap_length);
@@ -875,6 +875,18 @@ delx(void)
 }
 
 #ifndef IOCCC
+/**
+ * Yank current line.
+ */
+void
+yankY(void)
+{
+	marker = -1;
+	lnbegin();
+	(void) ungetch('$');
+	yanky();
+}
+
 /**
  * Delete character left the cursor; same as `dh`.
  */
@@ -923,6 +935,13 @@ chgC(void)
 		(void) ungetch('$');
 	}
 	chgc();
+}
+
+void
+insertI(void)
+{
+	lnbegin();
+	insert();
 }
 
 /**
@@ -1311,7 +1330,8 @@ quit(void)
 }
 #endif /* IOCCC */
 
-/* In case we're sitting on a previous match, we need to search starting
+/**
+ * In case we're sitting on a previous match, we need to search starting
  * from the end of that match.  Note some special cases:
  *
  * Pattern /^/
@@ -1484,7 +1504,7 @@ anchor(void)
  */
 
 /*                         |--------MOTION_CMDS-------|-------edit--------|---misc---| */
-static const char key[] = "hjklbewHJKL^$|G/n`'\006\002~iaAxXydDcCoOPpuU!\030\\mRWQ\003V";
+static const char key[] = "hjklbewHJKL^$|G/n`'\006\002~iIaAxXyYdDcCoOPpuU!\030\\mRWQ\003V";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1494,8 +1514,8 @@ static void (*func[])(void) = {
 	search, search_next, gomark, lnmark,
 	pgdown, pgup,
 	/* Modify */
-	flipcase, insert, append, appendA, delx, delX,
-	yank, deld, delD, chgc, chgC, openo, openO,
+	flipcase, insert, insertI, append, appendA, delx, delX,
+	yanky, yankY, deld, delD, chgc, chgC, openo, openO,
 	paste, pastel, undo, redo, bang, altx,
 	/* Other */
 	anchor, setmark, readfile, writefile, quit, quit,
@@ -1513,7 +1533,7 @@ static void (*func[])(void) = {
 	search, search_next,
 	/* Modify */
 	insert, delx,
-	yank, deld, paste,
+	yanky, deld, paste,
 	/* Other */
 	anchor, writefile, quit, quit,
 	redraw
