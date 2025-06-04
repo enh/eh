@@ -74,6 +74,7 @@ TESTS:= tests_have_term_data \
 	pgdn0 pgdn1 pgdn2 pgdn3 pgdn4 pgup0 pgup1 pgup2 pgup3 \
 	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 ere10 ere11 \
 	del7 del8 del9 del10 del11 del13 \
+	undo0 undo1 undo2 undo3 \
 	paste0 paste1 paste2 \
 	select0 select1 select2 select3 select4 \
 	mb0 mb1 mb2 mb3 mb4
@@ -90,7 +91,6 @@ tests_skipped: \
 	bang0 bang1 bang2 bang3 bang4 bang5 bang6 bang7 \
 	replace0 replace1 replace2 write0 read0 read1 \
 	del12 \
-	undo0 undo1 undo2 undo3 \
 	paste3 \
 	select5
 

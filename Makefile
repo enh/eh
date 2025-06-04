@@ -68,7 +68,11 @@ CSILENCE := -Wno-char-subscripts -Wno-incompatible-pointer-types -Wno-unused-par
 #
 # Including them here doesn't "feel right", bit of cheat.
 #
-CINCLUDE := -include ctype.h -include curses.h -include string.h
+# https://discord.com/channels/1327029557718417438/1332198374249594920/1379483193358684170
+#
+CINCLUDE := -include curses.h -include ctype.h -include string.h \
+	-include stdlib.h -include iso646.h -include regex.h \
+	-include fcntl.h -include locale.h -include unistd.h
 
 CFLAGS	:= -std=gnu17 -Os -funsigned-char -Wall -Wextra -pedantic ${CSILENCE} ${DBG}
 

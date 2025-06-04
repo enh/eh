@@ -7,6 +7,7 @@
  * https://www.unifoundry.com/pub/unifont/unifont-16.0.03/font-builds/unifont-16.0.03.otf
  */
 
+#ifndef IOCCC
 #include <assert.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -14,7 +15,6 @@
 #include <regex.h>
 #include <locale.h>
 #include <iso646.h>
-#ifndef IOCCC
 #include <curses.h>
 #include <ctype.h>
 #include <string.h>
@@ -66,8 +66,8 @@ static regex_t ere;
 
 static int cur_row, cur_col, count, ere_dollar_only;
 static char *filename, *scrap;
-static char buf[BUF], *gap = buf, *egap, *ebuf;
-static off_t here, page, epage, match_length, scrap_length, marker = -1;
+static char buf[BUF], *gap = buf, *egap, *ebuf, *ugap, *uegap;
+static off_t here, uhere, page, epage, match_length, scrap_length, marker = -1;
 static regex_t ere;
 #endif /* IOCCC */
 
@@ -175,6 +175,26 @@ prevch(off_t cur)
 	return cur;
 }
 
+#ifndef IOCCC
+#else /* IOCCC */
+void
+undo(void)
+{
+	char *p = ugap;
+	ugap = gap;
+	gap = p;
+	p = uegap;
+	uegap = egap;
+	egap = p;
+	/* epage gets assigned below, so we can use temporarily. */
+	epage = uhere;
+	uhere = here;
+	here = epage;
+	/* Force display() to reframe, ie. 1GdGu fails. */
+	epage = here+1;
+}
+#endif /* IOCCC */
+
 void
 movegap(off_t cur)
 {
@@ -202,6 +222,12 @@ movegap(off_t cur)
 	}
 #endif /* FAST_MOVE */
 	assert(buf <= gap and gap <= egap and egap <= ebuf);
+#ifndef IOCCC
+#else /* IOCCC */
+	ugap = gap;
+	uegap = egap;
+	uhere = here;
+#endif /* IOCCC */
 }
 
 #ifndef IOCCC
@@ -347,7 +373,7 @@ redo(void)
 int
 charwidth(const char *s, int col)
 {
-	wchar_t wc;
+	wint_t wc;
 	(void) mbtowc(&wc, s, 4);
 	return wc == '\t' ? TABSTOP(col) : (col = wcwidth(wc)) < 1 ? 1 : col;
 }
@@ -791,7 +817,7 @@ insert(void)
 			 */
 			growgap(mbl);
 			do {
-				*gap++ = (char) ch;
+				*gap++ = ch;
 				epage++;
 			} while (0 < --mbl and (ch = getch()));
 		}
@@ -862,18 +888,6 @@ deld(void)
 	adjmarks(-scrap_length);
 }
 
-/**
- * Delete character right (under) the cursor; same as `dl`.
- */
-void
-delx(void)
-{
-	if (marker < 0) {
-		(void) ungetch('l');
-	}
-	deld();
-}
-
 #ifndef IOCCC
 /**
  * Yank current line.
@@ -885,6 +899,18 @@ yankY(void)
 	lnbegin();
 	(void) ungetch('$');
 	yanky();
+}
+
+/**
+ * Delete character right (under) the cursor; same as `dl`.
+ */
+void
+delx(void)
+{
+	if (marker < 0) {
+		(void) ungetch('l');
+	}
+	deld();
 }
 
 /**
@@ -1002,6 +1028,17 @@ wend(void)
 	here--;
 }
 #else /* IOCCC */
+/**
+ * Delete character right (under) the cursor; same as `dl`.
+ */
+void
+delx(void)
+{
+	/* Do not delete selection, use `d` instead. */
+	(void) ungetch('l');
+	deld();
+}
+
 #endif /* IOCCC */
 
 void
@@ -1522,8 +1559,8 @@ static void (*func[])(void) = {
 	version, redraw
 };
 #else /* IOCCC */
-/*                        |-MOTION_CMDS-|-edit|--misc-| */
-static const char key[] = "hjklbwHJKL|G/nixydP\\WQ\003";
+/*                        |-MOTION_CMDS-|-edit-|--misc-| */
+static const char key[] = "hjklbwHJKL|G/nixydPu\\WQ\003";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1533,7 +1570,7 @@ static void (*func[])(void) = {
 	search, search_next,
 	/* Modify */
 	insert, delx,
-	yanky, deld, paste,
+	yanky, deld, paste, undo,
 	/* Other */
 	anchor, writefile, quit, quit,
 	redraw

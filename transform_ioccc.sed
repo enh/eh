@@ -12,7 +12,6 @@
 
 /adjmarks/d
 /growgap/d
-/setundo\(\)/d
 #/setlocale/d
 /#define MATCHES/d
 s/MATCHES/1/

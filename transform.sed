@@ -202,7 +202,7 @@ s/(^|[^[:alnum:]_])clr_to_eol([^[:alnum:]_]|$)/\1C\2/
 s/(^|[^[:alnum:]_])gomark([^[:alnum:]_]|$)/\1ǵ\2/
 s/(^|[^[:alnum:]_])lnmark([^[:alnum:]_]|$)/\1Ǵ\2/
 s/(^|[^[:alnum:]_])setmark([^[:alnum:]_]|$)/\1Ș\2/
-#s/(^|[^[:alnum:]_])setundo([^[:alnum:]_]|$)/\1U\2/
+s/(^|[^[:alnum:]_])setundo([^[:alnum:]_]|$)/\1U\2/
 s/(^|[^[:alnum:]_])undo([^[:alnum:]_]|$)/\1Û\2/
 s/(^|[^[:alnum:]_])bang([^[:alnum:]_]|$)/\1Ƃ\2/
 s/(^|[^[:alnum:]_])cescape([^[:alnum:]_]|$)/\1Ɔ\2/
@@ -280,7 +280,7 @@ s/(^|[^[:alnum:]_])buflen([^[:alnum:]_]|$)/\1m\2/g
 s/(^|[^[:alnum:]_])gap_off([^[:alnum:]_]|$)/\1n\2/g
 s/(^|[^[:alnum:]_])str([^[:alnum:]_]|$)/\1s\2/g
 s/(^|[^[:alnum:]_])mbl([^[:alnum:]_]|$)/\1t\2/g
-s/(^|[^[:alnum:]_])is_ctrl([^[:alnum:]_]|$)/\1U\2/g
+#s/(^|[^[:alnum:]_])is_ctrl([^[:alnum:]_]|$)/\1U\2/g
 
 
 #

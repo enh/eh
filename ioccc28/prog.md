@@ -38,6 +38,7 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
     y motion    Yank (copy) text selection or region given by motion.
     P           Paste last deleted or yanked text region before the cursor.
     i           Insert text mode before the cursor, ESC or CTRL+C ends insert.
+    u           Toggle undo of last edit.
     x           Delete character after the cursor, ie. `dl`.
     W           Write buffer to file.
     Q           Quit.

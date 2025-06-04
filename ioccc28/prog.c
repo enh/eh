@@ -1,13 +1,7 @@
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <regex.h>
-#include <locale.h>
-#include <iso646.h>
 int y,x,z,w;
 char *f,*q;
-char b[BUF],*g = b,*h,*c;
-long o,u,v,l,Q,d = -1;
+char b[BUF],*g = b,*h,*c,*ó,*ò;
+long o,ö,u,v,l,Q,d = -1;
 regex_t e;
 void
 T(int);
@@ -39,6 +33,20 @@ D(long m)
 	return m;
 }
 void
+Û()
+{
+	char *p = ó;
+	ó = g;
+	g = p;
+	p = ò;
+	ò = h;
+	h = p;
+	v = ö;
+	ö = o;
+	o = v;
+	v = o+1;
+}
+void
 V(long m)
 {
 	char *p = Z(m);
@@ -46,11 +54,14 @@ V(long m)
 		*--h = *--g;
 	while (h < p)
 		*g++ = *h++;
+	ó = g;
+	ò = h;
+	ö = o;
 }
 int
 G(char *s,int a)
 {
-	wchar_t t;
+	wint_t t;
 	mbtowc(&t,s,4);
 	return t == '\t' ? (8-((a bitand 7))) : (a = wcwidth(t)) < 1 ? 1 : a;
 }
@@ -265,7 +276,7 @@ I()
 		}
 		else if (g+t < h) {
 			do {
-				*g++ = (char) a;
+				*g++ = a;
 				v++;
 			} while (0 < --t and (a = getch()));
 		}
@@ -302,8 +313,7 @@ X()
 void
 Ó()
 {
-	if (d < 0)
-		ungetch('l');
+	ungetch('l');
 	X();
 }
 void
@@ -368,14 +378,14 @@ void
 {
 	d = d < 0 ? o : -1;
 }
-char Ќ[] = "hjklbwHJKL|G/nixydP\\WQ\003";
+char Ќ[] = "hjklbwHJKL|G/nixydPu\\WQ\003";
 void (*Κ[])(void) = {
 	H,J,K,L,B,W,
 	Ê,É,È,Ë,
 	a,ө,
 	Ñ,F,
 	I,Ó,
-	Ô,X,Í,
+	Ô,X,Í,Û,
 	Â,κ,Ф,Ф,
 	🔥
 };
