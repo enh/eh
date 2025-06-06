@@ -351,6 +351,9 @@ undo(void)
 			undo_redo(not undo_list->op, undo_list);
 		}
 		undo_move(&undo_list, &redo_list);
+		if (undo_list == NULL) {
+			chg = NOCHANGE;
+		}
 	}
 }
 
@@ -364,6 +367,9 @@ redo(void)
 			undo_redo(redo_list->op, redo_list);
 		}
 		undo_move(&redo_list, &undo_list);
+		if (redo_list == NULL) {
+			chg = CHANGED;
+		}
 	}
 }
 #else /* IOCCC */
