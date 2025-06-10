@@ -1510,14 +1510,15 @@ void
 search(void)
 {
 #ifndef IOCCC
+	char *s, *t;
 	prompt('/', "");
 	free(replace);
 	replace = NULL;
 	/* Find end of pattern. */
-	for (char *t = gap; *t not_eq '\0'; t++) {
+	for (s = t = gap; *t not_eq '\0'; s++, t++) {
 		if (*t == '\\') {
 			/* Escape next character. */
-			t++;
+			*s = cescape(*++t);
 		} else if (*t == '/') {
 			/* End of pattern, start of replacement. */
 			*t++ = '\0';
@@ -1526,8 +1527,11 @@ search(void)
 				replace = strdup(t);
 			}
 			break;
+		} else {
+			*s = *t;
 		}
 	}
+	*s = '\0';
 #else /* IOCCC */
 	(void) echo();
 	(void) standout();
