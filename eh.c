@@ -903,7 +903,7 @@ yankY(void)
 {
 	marker = -1;
 	lnbegin();
-	(void) ungetch('$');
+	(void) ungetch('j');
 	yanky();
 }
 
