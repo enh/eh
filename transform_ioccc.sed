@@ -12,6 +12,7 @@
 
 /adjmarks/d
 /growgap/d
+/scrollup/d
 #/setlocale/d
 /#define MATCHES/d
 s/MATCHES/1/

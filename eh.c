@@ -1356,6 +1356,14 @@ flipcase(void)
 		right();
 	}
 }
+
+void
+scrollup(off_t here, size_t n)
+{
+	for (page = here; 0 < n--; ) {
+		page = prevline(page);
+	}
+}
 #else /* IOCCC */
 void
 writefile(void)
@@ -1422,10 +1430,18 @@ search_next(void)
 	/* REG_NOTBOL allows /^/ to advance to start of next line. */
 	if (here+match_length < pos(ebuf) and 0 == regexec(&ere, ptr(here+match_length), MATCHES, matches, REG_NOTBOL)) {
 		here += match_length + matches[0].rm_so;
+//		/* Postion match top of screen. */
+//		page = here+1;
+		/* Position match in the centre of the screen.*/
+		scrollup(here, LINES/2-TOP_LINE);
 	}
 	/* Wrap-around search. */
 	else if (0 == regexec(&ere, buf, MATCHES, matches, 0)) {
 		here = matches[0].rm_so;
+//		/* Postion match top of screen. */
+//		page = here+1;
+		/* Position match in the centre of the screen.*/
+		scrollup(here, LINES/2-TOP_LINE);
 	}
 	/* No match after wrap-around. */
 	else {
