@@ -1516,18 +1516,22 @@ search(void)
 	replace = NULL;
 	/* Find end of pattern. */
 	for (s = t = gap; *t not_eq '\0'; s++, t++) {
-		if (*t == '\\') {
+		/* Check for C escape, but ignore ERE meta. */
+		if (*t == '\\' and isalpha(t[1])) {
 			/* Escape next character. */
 			*s = cescape(*++t);
-		} else if (*t == '/') {
-			/* End of pattern, start of replacement. */
+		}
+		/* Is end of pattern, start of replacement. */
+		else if (*t == '/') {
 			*t++ = '\0';
 			/* Is there a pattern or empty string to follow? */
 			if (*t not_eq '\0') {
 				replace = strdup(t);
 			}
 			break;
-		} else {
+		}
+		/* Copy/shift string. */
+		else {
 			*s = *t;
 		}
 	}
