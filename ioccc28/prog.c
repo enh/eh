@@ -319,7 +319,7 @@ void
 void
 Í()
 {
-	if (q) {
+	if (0 < Q) {
 		V(o);
 		memcpy(g,q,Q);
 		g += Q;

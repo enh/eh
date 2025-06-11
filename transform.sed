@@ -154,7 +154,7 @@ s/'\\0'/0/g
 
 #
 #  Functions & Types
-#	👾 💣 🛸 🔥 🎃
+#	U+1f47e=👾 💣 🛸 🔥 🎃
 #	U+0194=Ɣ U+03A1=Ρ U+03B3=γ U+03C6=φ U+0B67=୧ U+039a=Κ U+03BA=κ
 #
 
@@ -189,8 +189,8 @@ s/(^|[^[:alnum:]_])yanky([^[:alnum:]_]|$)/\1Ô\2/g
 s/(^|[^[:alnum:]_])deld([^[:alnum:]_]|$)/\1X\2/g
 s/(^|[^[:alnum:]_])delx([^[:alnum:]_]|$)/\1Ó\2/g
 s/(^|[^[:alnum:]_])delX([^[:alnum:]_]|$)/\1Ò\2/g
-s/(^|[^[:alnum:]_])pastel([^[:alnum:]_]|$)/\1Ì\2/g
-s/(^|[^[:alnum:]_])paste([^[:alnum:]_]|$)/\1Í\2/g
+s/(^|[^[:alnum:]_])pastep([^[:alnum:]_]|$)/\1Ì\2/g
+s/(^|[^[:alnum:]_])pasteP([^[:alnum:]_]|$)/\1Í\2/g
 s/(^|[^[:alnum:]_])flipcase([^[:alnum:]_]|$)/\1Ç\2/g
 s/(^|[^[:alnum:]_])readfile([^[:alnum:]_]|$)/\1Ȓ\2/
 s/(^|[^[:alnum:]_])redraw([^[:alnum:]_]|$)/\1🔥\2/g

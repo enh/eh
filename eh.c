@@ -639,6 +639,7 @@ void
 lnbegin(void)
 {
 	here = bol(here);
+	cur_col = 0;
 }
 
 /*
@@ -1091,9 +1092,15 @@ delx(void)
 #endif /* IOCCC */
 
 void
-paste(void)
+pasteP(void)
 {
-	if (scrap not_eq NULL) {
+	if (0 < scrap_length) {
+#ifndef IOCCC
+		if (scrap[scrap_length-1] == '\n') {
+			lnbegin();
+		}
+#else /* IOCCC */
+#endif /* IOCCC */
 		movegap(here);
 #ifndef IOCCC
 		growgap(COLS+(count+(count == 0))*scrap_length);
@@ -1119,10 +1126,10 @@ paste(void)
 
 #ifndef IOCCC
 void
-pastel(void)
+pastep(void)
 {
 	right();
-	paste();
+	pasteP();
 	/* SUS 2018 vi(1) `p` paste-after unnamed buffer leaves the
 	 * cursor on the last column of the last character.  Allows
 	 * for common transpose combo `xp`, eg. te_h => th_e.  Also
@@ -1626,7 +1633,7 @@ static void (*func[])(void) = {
 	/* Modify */
 	flipcase, insert, insertI, append, appendA, delx, delX,
 	yanky, yankY, deld, delD, chgc, chgC, openo, openO,
-	paste, pastel, undo, redo, bang, altx,
+	pasteP, pastep, undo, redo, bang, altx,
 	/* Other */
 	anchor, setmark, readfile, writefile, quit, quit,
 	version, redraw
@@ -1643,7 +1650,7 @@ static void (*func[])(void) = {
 	search, search_next,
 	/* Modify */
 	insert, delx,
-	yanky, deld, paste, undo,
+	yanky, deld, pasteP, undo,
 	/* Other */
 	anchor, writefile, quit, quit,
 	redraw
