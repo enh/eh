@@ -51,7 +51,7 @@
 
 #ifndef IOCCC
 #define MATCHES		10
-#define MOTION_CMDS	21
+#define MOTION_CMDS	22
 
 static char chg = NOCHANGE;
 static int cur_row, cur_col, count, ere_dollar_only;
@@ -648,6 +648,49 @@ void
 lnend(void)
 {
 	here = col_or_eol(here, 0, MAX_COLS);
+}
+
+static const char brackets[] = "()[]{}<>";
+
+void
+pairs(void)
+{
+	int ch, level = 0;
+	off_t mark = here;
+	ptrdiff_t b = strchr(brackets, *ptr(mark))-brackets;
+	if (b < 0) {
+		return;
+	}
+	if (b bitand 1 == 1) {
+		/* Find previous. */
+		for (mark--; 0 < mark; mark--) {
+			ch = *ptr(mark);
+			if (ch == brackets[b]) {
+				level++;
+			} else if (ch == brackets[b-1]) {
+				if (level == 0) {
+					here = mark;
+					break;
+				}
+				level--;
+			}
+		}
+	} else {
+		/* Find next. */
+		off_t eof = pos(ebuf);
+		for (mark++; mark < eof; mark++) {
+			ch = *ptr(mark);
+			if (ch == brackets[b]) {
+				level++;
+			} else if (ch == brackets[b+1]) {
+				if (level == 0) {
+					here = mark;
+					break;
+				}
+				level--;
+			}
+		}
+	}
 }
 #else /* IOCCC */
 #endif /* IOCCC */
@@ -1571,7 +1614,7 @@ anchor(void)
  */
 
 /*                         |--------MOTION_CMDS-------|-------edit--------|---misc---| */
-static const char key[] = "hjklbewHJKL^$|G/n`'\006\002~iIaAxXyYdDcCoOPpuU!\030\\mRWQ\003V";
+static const char key[] = "hjklbewHJKL^$|G/n`'%\006\002~iIaAxXyYdDcCoOPpuU!\030\\mRWQ\003V";
 
 static void (*func[])(void) = {
 	/* Motion */
@@ -1579,7 +1622,7 @@ static void (*func[])(void) = {
 	pgtop, pgdown, pgup, pgbottom,
 	lnbegin, lnend, column, lngoto,
 	search, search_next, gomark, lnmark,
-	pgdown, pgup,
+	pairs, pgdown, pgup,
 	/* Modify */
 	flipcase, insert, insertI, append, appendA, delx, delX,
 	yanky, yankY, deld, delD, chgc, chgC, openo, openO,

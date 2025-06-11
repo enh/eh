@@ -32,6 +32,7 @@ The commands are similar, but not the same as `vi(1)`.  Most commands can be pre
 * `b e w      ` Word left, word end, word right.
 * `^ $        ` Start and end of line, ie. `0|` or `999|`.
 * `|          ` Goto column (count) of physical line.
+* `%          ` Find matching brace, bracket, square bracket, or angle bracket.
 * `/ERE       ` `/ERE/      ` Find first occurrence of `ERE` pattern after the cursor.
 * `/ERE/REPL  ` `/ERE/REPL/ ` Find `ERE` and replace.  In the `REPL`, a `$n` where `n` is a digit `0..9` is replaced by the Nth subexpression of the matched text; `$0` is the whole matched text. `\x` is an escape sequence, ie. `\a` `\b` `\e` `\f` `\n` `\r` `\t` `\?` or `x`.
 * `/ERE/REPL/a` Find and replace all occurences.
