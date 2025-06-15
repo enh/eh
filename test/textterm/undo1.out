@@ -50,11 +50,15 @@ Tlo<2;8>
 <1;8>
 <SMSO>19<RMSO>
   <SMSO>2<RMSO>
+<1;80>
+<SMSO> <RMSO>
 <2;4>
 lo   world   <EL>
 <2;4>
 <1;8>
 <SMSO>24<RMSO>
+<1;80>
+<SMSO>*<RMSO>
 <2;4>
 WOOT!lo      world<2;4>
 <1;1>

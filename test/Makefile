@@ -72,7 +72,8 @@ TESTS:= tests_have_term_data \
 	scroll0 scroll1 scroll2 \
 	goto0 goto1 goto2 goto3 \
 	pgdn0 pgdn1 pgdn2 pgdn3 pgdn4 pgup0 pgup1 pgup2 pgup3 \
-	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 ere10 ere11 \
+	ere0 ere1 ere2 ere3 ere4 ere5 ere6 ere7 ere8 ere9 \
+	ere10 ere11 ere12 ere13 \
 	mark0 mark1 mark2 mark3 mark4 mark5 \
 	del7 del8 del9 del10 del11 del12 del13 \
 	undo0 undo1 undo2 undo3 undo4 \
@@ -531,6 +532,23 @@ ere10:
 ere11:
 	-${TITLE}
 	printf "5w/WOOT\nQ" | ${PROG} test/short.txt >a.out
+	${A_CORE}
+	${A_OUT}
+	-${PASS}
+
+# Match \t.
+ere12:
+	-${TITLE}
+	printf '/\\t\nnQ' | ${PROG} test/short.txt >a.out
+	${A_CORE}
+	${A_OUT}
+	-${PASS}
+
+# Match \( and \{ different from meta ( and {.
+ere13:
+	-${TITLE}
+	printf "Hello(int arg) {\n\tworld();\n\txyzzy(arg);\n\tcave(lost());\n}\n" >a.txt
+	printf '/\\)\nnnnnn/\\}\nQ' | ${PROG} a.txt >a.out
 	${A_CORE}
 	${A_OUT}
 	-${PASS}

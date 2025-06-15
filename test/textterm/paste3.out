@@ -24,6 +24,8 @@ might be a <EL>
 <3;6>
 <1;9>
 <SMSO>9<RMSO>
+<1;80>
+<SMSO> <RMSO>
 <3;6>
 file might be a<3;6>
 <1;13>
@@ -50,6 +52,8 @@ file might be a<3;6>
 <2;1>
 <1;8>
 <SMSO>24<RMSO>
+<1;80>
+<SMSO>*<RMSO>
 <2;1>
 file <1;12>
 <SMSO>9<RMSO>
