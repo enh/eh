@@ -51,10 +51,11 @@ TITLE		= printf "%s      %s: " ${PROG} $@ ; ${RESET}
 PASS		= printf "\r%s -OK-\r\n" ${PROG}
 SKIP		= printf "\r%s SKIP\r\n" ${PROG}
 PROMPT		= ( ${ASK} && echo -n "Replace y/N$$PS2" && read yn && test "$$yn" = 'y' )
-SAVE		= ( ${REBUILD} || ${PROMPT} ) && cp a.out ${TESTTERM}/$@.out
+SAVE_OUT	= ( ${REBUILD} || ${PROMPT} ) && cp a.out ${TESTTERM}/$@.out
+SAVE_TXT	= ${PROMPT} && cp a.txt ${DATA}/$@.txt
 A_CORE		= test ! -f *.core
-A_OUT		= ( diff -u ${TESTTERM}/$@.out a.out || ${SAVE} )
-A_TXT		= diff -u ${DATA}/$@.txt a.txt
+A_OUT		= ( diff -u ${TESTTERM}/$@.out a.out || ${SAVE_OUT} )
+A_TXT		= ( diff -u ${DATA}/$@.txt a.txt || ${SAVE_TXT} )
 A_OUT_OR_SKIP	= ( ${A_OUT} >/dev/null && ${PASS} ) || ${SKIP}
 A_TXT_OR_SKIP	= ( diff -u ${DATA}/$@.txt a.txt ) || ${SKIP}
 
