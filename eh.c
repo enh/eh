@@ -1563,7 +1563,7 @@ search(void)
 	/* Find end of pattern. */
 	for (s = t = gap; *t not_eq '\0'; s++, t++) {
 		/* Check for C escape, but ignore ERE meta. */
-		if (*t == '\\' and isalpha(t[1])) {
+		if (*t == '\\' and (isalpha(t[1]) or t[1] == '/')) {
 			/* Escape next character. */
 			*s = cescape(*++t);
 		}
