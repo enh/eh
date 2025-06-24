@@ -1182,6 +1182,10 @@ prompt(int ch, const char *str)
 	(void) standout();
 	(void) mvaddch(0, 0, ch);
 	clr_to_eol();
+	/* Limit the input to a phrase no wider than COLS, not lines. */
+	if (str == NULL or strchr(str, '\n') != NULL) {
+		str = "";
+	}
 	/* Prime the input with initial input. */
 	ssize_t n = strlen(str);
 	assert(n < COLS and COLS <= egap-gap);
@@ -1344,6 +1348,7 @@ altx(void)
 	char *p;
 	char32_t wc;
 	movegap(here);
+	assert(gap < egap);
 	/* Scan backwards at most 5 hex digits. */
 	for (i = 0, *gap = '\0'; i < 6 and buf < gap and isxdigit(gap[-1]); gap--, i++) {
 		;
