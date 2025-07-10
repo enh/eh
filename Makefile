@@ -25,6 +25,8 @@ MODE	:= 0600
 USER	:= 0
 GROUP	:= 0
 
+INSTALL_FLAGS != if test ${MAKE_OS} != 'Cygwin'; then echo "-o ${USER} -g ${GROUP}"; fi
+
 # Override from the command-line, eg. make DBG='-O0 -g'
 DBG	:= -DNDEBUG
 LDDBG	:=
@@ -126,9 +128,9 @@ size: ioccc28/prog.c
 	-iocccsize -v1 $>
 
 install: README.md eh$E
-	install -o ${USER} -g ${GROUP} -m 555 eh$E /usr/local/bin
-	install -o ${USER} -g ${GROUP} -d ${MANDIR}/cat1
-	install -o ${USER} -g ${GROUP} -p -m 444 README.md ${MANDIR}/cat1/eh.0
+	install ${INSTALL_FLAGS} -m 555 eh$E /usr/local/bin
+	install ${INSTALL_FLAGS} -d ${MANDIR}/cat1
+	install ${INSTALL_FLAGS} -p -m 444 README.md ${MANDIR}/cat1/eh.0
 
 eh$E : eh.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -o  $@ eh.c ${LIBS}
