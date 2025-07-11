@@ -8,3 +8,8 @@
 *.TTF binary
 *.wsa binary
 *.cdb binary
+
+*.md linguist-documentation
+makefile linguist-documentation
+Makefile linguist-documentation
+reference/** linguist-documentation
