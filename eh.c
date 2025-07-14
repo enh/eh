@@ -1096,18 +1096,13 @@ pasteP(void)
 {
 	if (0 < scrap_length) {
 #ifndef IOCCC
-		if (scrap[scrap_length-1] == '\n') {
-			lnbegin();
-		}
-#else /* IOCCC */
-#endif /* IOCCC */
 		movegap(here);
-#ifndef IOCCC
 		growgap(COLS+(count+(count == 0))*scrap_length);
 		undo_save(UNDO_INS, here, scrap, scrap_length);
 		adjmarks(scrap_length);
 		chg = CHANGED;
 #else /* IOCCC */
+		movegap(here);
 #endif /* IOCCC */
 		(void) memcpy(gap, scrap, scrap_length);
 		gap += scrap_length;
