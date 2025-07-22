@@ -501,15 +501,13 @@ display(void)
 	(void) standout();
 #ifndef IOCCC
 	(void) printw(
-		"%s %ldB %ld%%", filename, eof,
-		here * 100 / (eof+(eof <= 0))
+		"%s %ldB %ld%% %c %s", filename, eof,
+		here * 100 / (eof+(eof <= 0)), chg, mode
 	);
-	clr_to_eol();
-	(void) mvprintw(0, COLS-strlen(mode)-1,"%s%c",mode, chg);
 #else /* IOCCC */
 	(void) printw("%s %ldB", filename, here);
-	clr_to_eol();
 #endif /* IOCCC */
+	clr_to_eol();
 	if (marker < 0) {
 		from = to = marker;
 	} else if (here < marker) {
