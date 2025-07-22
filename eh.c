@@ -1174,7 +1174,8 @@ prompt(int ch, const char *str)
 {
 	(void) echo();
 	(void) noraw();
-	(void) standout();
+	(void) standend();
+	(void) attron(A_UNDERLINE);
 	(void) mvaddch(0, 0, ch);
 	clr_to_eol();
 	/* Limit the input to a phrase no wider than COLS, not lines. */
@@ -1189,6 +1190,8 @@ prompt(int ch, const char *str)
 	}
 	/* NetBSD 9.3 erase ^H works fine, but not the kill ^U character. */
 	(void) mvgetnstr(0, 1, gap, COLS);
+	(void) attroff(A_UNDERLINE);
+	(void) standout();
 	(void) noecho();
 	(void) raw();
 }
