@@ -43,16 +43,19 @@ ASK	?= false
 # Set REBUILD=true to update all the failed tests.
 REBUILD	?= false
 
+# Curses implementation.
+CURSES_IMP != if grep "NCURSES_VERSION" /usr/include/curses.h >/dev/null; then echo "NCurses"; else echo "Curses"; fi
+
 T		= test
-TESTTERM	= $T/${TERM}
-DATA		= $T/data
+TESTTERM	= $T/${CURSES_IMP}/${TERM}
+DATA		= $T/${CURSES_IMP}/data
 RESET		= rm -f a.txt a.out *.core
 TITLE		= printf "%s      %s: " ${PROG} $@ ; ${RESET}
 PASS		= printf "\r%s -OK-\r\n" ${PROG}
 SKIP		= printf "\r%s SKIP\r\n" ${PROG}
 PROMPT		= ( ${ASK} && echo -n "Replace y/N$$PS2" && read yn && test "$$yn" = 'y' )
 SAVE_OUT	= ( ${REBUILD} || ${PROMPT} ) && cp a.out ${TESTTERM}/$@.out
-SAVE_TXT	= ${PROMPT} && cp a.txt ${DATA}/$@.txt
+SAVE_TXT	= ( ${REBUILD} || ${PROMPT} ) && cp a.txt ${DATA}/$@.txt
 A_CORE		= test ! -f *.core
 A_OUT		= ( diff -u ${TESTTERM}/$@.out a.out || ${SAVE_OUT} )
 A_TXT		= ( diff -u ${DATA}/$@.txt a.txt || ${SAVE_TXT} )
