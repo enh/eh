@@ -1045,7 +1045,9 @@ appendA(void)
 void
 openo(void)
 {
-	(void) ungetch('\n');
+	if (0 < pos(ebuf)) {
+		(void) ungetch('\n');
+	}
 	appendA();
 }
 
