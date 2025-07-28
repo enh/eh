@@ -27,8 +27,7 @@ world!<3;1>
 <1;8>
 <SMSO>3<RMSO>
    <SMSO>6<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+  <SMSO>*<RMSO>
 <2;1>
 world!  <EL>
 <CR><1;11>
@@ -53,19 +52,8 @@ world!<3;1>
 <EL>
 <2;6>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 12B<RMSO>
- <SMSO>41%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 12B 41%                                                                   <RMSO>
 <2;6>
 <24;1>

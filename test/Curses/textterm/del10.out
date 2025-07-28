@@ -16,20 +16,9 @@ tab indent<11;1>
 <SMSO>5<RMSO>
 <2;9>
 <1;1>
-<SMSO>/    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>  <RMSO>
-<1;2>
-<SMSO>l<RMSO>
-<SMSO>i<RMSO>
-<SMSO>n<RMSO>
-<SMSO>e<RMSO>
-<1;1>
-<SMSO>a.txt<RMSO>
- <SMSO>64B<RMSO>
- <SMSO>9%<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+/<EL>
+line<1;1>
+<SMSO>a.txt 64B 9% *                                                                  <RMSO>
 <2;9>
 line<EL>
 <3;1>
@@ -53,7 +42,7 @@ qwerty butt<7;1>
 <2;9>
 <1;7>
 <SMSO>52<RMSO>
-  <SMSO>11%<RMSO>
+  <SMSO>11% *<RMSO>
 <4;1>
 qwerty butt<5;9>
 tab indent<6;1>
@@ -66,19 +55,8 @@ tab indent<6;1>
 <EL>
 <2;9>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 52B<RMSO>
- <SMSO>11%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 52B 11%                                                                   <RMSO>
 <2;9>
 <24;1>

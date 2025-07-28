@@ -13,23 +13,9 @@ tab indent<11;1>
 <SMSO>^D<RMSO>
 <2;1>
 <1;1>
-<SMSO>/    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>  <RMSO>
-<1;2>
-<SMSO>l<RMSO>
-<SMSO>i<RMSO>
-<SMSO>n<RMSO>
-<SMSO>e<RMSO>
-<SMSO>/<RMSO>
-<SMSO>p<RMSO>
-<SMSO>l<RMSO>
-<SMSO>u<RMSO>
-<SMSO>g<RMSO>
-<SMSO>h<RMSO>
-<SMSO>!<RMSO>
-<1;1>
-<SMSO>a.txt 121B 50%<RMSO>
+/<EL>
+line/plugh!<1;1>
+<SMSO>a.txt 121B 50%                                                                  <RMSO>
 <5;7>
 plugh!<5;7>
 <1;9>
@@ -43,17 +29,8 @@ plugh!<7;7>
 <11;7>
 plugh!-<11;7>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 125B<RMSO>
- <SMSO>93%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 125B 93%                                                                  <RMSO>
 <11;7>
 <24;1>

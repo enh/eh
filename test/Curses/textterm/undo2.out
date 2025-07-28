@@ -18,40 +18,26 @@ tab indent<11;1>
 <1;8>
 <SMSO>05<RMSO>
    <SMSO>6<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+  <SMSO>*<RMSO>
 <3;6>
 a<EL>
 <3;6>
 <1;8>
 <SMSO>19<RMSO>
    <SMSO>4<RMSO>
-<1;80>
-<SMSO> <RMSO>
+  <SMSO> <RMSO>
 <3;6>
 file might be a<3;6>
 <1;8>
 <SMSO>05<RMSO>
    <SMSO>6<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+  <SMSO>*<RMSO>
 <3;6>
 a<EL>
 <3;6>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 105B<RMSO>
- <SMSO>16%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 105B 16%                                                                  <RMSO>
 <3;6>
 <24;1>

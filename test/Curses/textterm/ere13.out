@@ -10,16 +10,9 @@ cave(lost());<6;1>
 <SMSO>^D<RMSO>
 <2;1>
 <1;1>
-<SMSO>/    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>  <RMSO>
-<1;2>
-<SMSO>\<RMSO>
-<SMSO>)<RMSO>
-<1;1>
-<SMSO>a.txt<RMSO>
- <SMSO>57B<RMSO>
- <SMSO>22%<RMSO>
+/<EL>
+\)<1;1>
+<SMSO>a.txt 57B 22%                                                                   <RMSO>
 <2;14>
 <1;11>
 <SMSO>4<RMSO>
@@ -37,15 +30,8 @@ cave(lost());<6;1>
 <SMSO>22<RMSO>
 <2;14>
 <1;1>
-<SMSO>/    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>   <RMSO>
-<1;2>
-<SMSO>\<RMSO>
-<SMSO>}<RMSO>
-<1;1>
-<SMSO>a.txt<RMSO>
- <SMSO>57B<RMSO>
- <SMSO>96%<RMSO>
+/<EL>
+\}<1;1>
+<SMSO>a.txt 57B 96%                                                                   <RMSO>
 <6;1>
 <24;1>

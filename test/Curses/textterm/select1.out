@@ -13,18 +13,9 @@ tab indent<11;1>
 <SMSO>^D<RMSO>
 <2;1>
 <1;1>
-<SMSO>/             <RMSO>
- <SMSO>    <RMSO>
- <SMSO>  <RMSO>
-<1;2>
-<SMSO>r<RMSO>
-<SMSO>u<RMSO>
-<SMSO>d<RMSO>
-<SMSO>e<RMSO>
-<1;1>
-<SMSO>test/short.txt<RMSO>
- <SMSO>119B<RMSO>
- <SMSO>33%<RMSO>
+/<EL>
+rude<1;1>
+<SMSO>test/short.txt 119B 33%                                                         <RMSO>
 <4;8>
 <1;21>
 <SMSO>46<RMSO>

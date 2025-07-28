@@ -16,19 +16,8 @@ tab indent<11;1>
 <SMSO>10%<RMSO>
 <3;1>
 <1;1>
-<SMSO>!    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;2>
-<SMSO>t<RMSO>
-<SMSO>r<RMSO>
-<SMSO>u<RMSO>
-<SMSO>e<RMSO>
-<1;1>
-<SMSO>a.txt<RMSO>
- <SMSO>119B<RMSO>
- <SMSO>10%<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+!<EL>
+true<1;1>
+<SMSO>a.txt 119B 10% *                                                                <RMSO>
 <3;1>
 <24;1>

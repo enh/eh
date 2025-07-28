@@ -16,9 +16,7 @@ tab indent<11;1>
 <SMSO>14%<RMSO>
 <3;6>
 <1;7>
-<SMSO>98B 17% <RMSO>
-<1;80>
-<SMSO>*<RMSO>
+<SMSO>98B 17% *<RMSO>
 <3;6>
 e rude fart face<4;1>
 empty line<EL>
@@ -39,19 +37,8 @@ qwerty butt<9;1>
 <EL>
 <3;6>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 98B<RMSO>
- <SMSO>17%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 98B 17%                                                                   <RMSO>
 <3;6>
 <24;1>

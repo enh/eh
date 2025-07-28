@@ -16,13 +16,12 @@ world!<5;1>
 <5;1>
 <EL>
 <2;1>
-<1;77>
+<1;18>
 <SMSO>INS<RMSO>
 <2;1>
 <1;8>
 <SMSO>5<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+       <SMSO>*<RMSO>
 <2;1>
 i<1;8>
 <SMSO>6<RMSO>
@@ -156,23 +155,12 @@ e<1;8>
 <6;1>
 <SMSO>^D<RMSO>
 <5;1>
-<1;77>
+<1;18>
 <SMSO>   <RMSO>
 <5;1>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>    <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 55B<RMSO>
- <SMSO>100%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 55B 100%                                                                  <RMSO>
 <5;1>
 <24;1>

@@ -13,18 +13,9 @@ tab indent<11;1>
 <SMSO>^D<RMSO>
 <2;1>
 <1;1>
-<SMSO>/                  <RMSO>
- <SMSO>    <RMSO>
- <SMSO>  <RMSO>
-<1;2>
-<SMSO>l<RMSO>
-<SMSO>i<RMSO>
-<SMSO>n<RMSO>
-<SMSO>e<RMSO>
-<1;1>
-<SMSO>test/short-nonl.txt<RMSO>
- <SMSO>118B<RMSO>
- <SMSO>51%<RMSO>
+/<EL>
+line<1;1>
+<SMSO>test/short-nonl.txt 118B 51%                                                    <RMSO>
 <5;7>
 <1;26>
 <SMSO>6<RMSO>

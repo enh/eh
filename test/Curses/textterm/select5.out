@@ -25,26 +25,9 @@ tab indent<11;1>
 <SMSO>empty line<RMSO>
 <6;1>
 <1;1>
-<SMSO>!    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;2>
-<SMSO>f<RMSO>
-<SMSO>m<RMSO>
-<SMSO>t<RMSO>
- <SMSO>-<RMSO>
-<SMSO>g<RMSO>
-<SMSO>1<RMSO>
-<SMSO>6<RMSO>
- <SMSO>-<RMSO>
-<SMSO>w<RMSO>
-<SMSO>2<RMSO>
-<SMSO>4<RMSO>
-<1;1>
-<SMSO>a.txt 1<RMSO>
- <SMSO>9B 55%<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+!<EL>
+fmt -g16 -w24<1;1>
+<SMSO>a.txt 119B 55% *                                                                <RMSO>
 <3;1>
 this file might<EL>
 <4;1>
@@ -66,19 +49,8 @@ qwerty butt <EL>
 <SMSO>^D<RMSO>
 <7;1>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 119B<RMSO>
- <SMSO>55%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 119B 55%                                                                  <RMSO>
 <7;1>
 <24;1>

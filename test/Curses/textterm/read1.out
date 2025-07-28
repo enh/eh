@@ -4,14 +4,13 @@
 <3;1>
 <SMSO>^D<RMSO>
 <2;1>
-<1;77>
+<1;15>
 <SMSO>INS<RMSO>
 <2;1>
 <1;7>
 <SMSO>1<RMSO>
   <SMSO>100%<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+ <SMSO>* INS<RMSO>
 <2;1>
 T<1;7>
 <SMSO>2<RMSO>
@@ -39,7 +38,7 @@ c<1;7>
 <2;9>
 k<1;7>
 <SMSO>10B 1<RMSO>
- <SMSO>0%<RMSO>
+ <SMSO>0% * INS<RMSO>
 <2;11>
 <1;8>
 <SMSO>1<RMSO>
@@ -150,53 +149,18 @@ g<1;8>
 <4;1>
 <SMSO>^D<RMSO>
 <3;1>
-<1;77>
+<1;18>
 <SMSO>   <RMSO>
 <3;1>
 <1;1>
-<SMSO>/    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>    <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>f<RMSO>
-<SMSO>o<RMSO>
-<SMSO>x<RMSO>
-<1;1>
-<SMSO>a.t<RMSO>
- <SMSO>t<RMSO>
- <SMSO>45B<RMSO>
- <SMSO>35%<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+/<EL>
+fox<1;1>
+<SMSO>a.txt 45B 35% *                                                                 <RMSO>
 <2;17>
 <1;1>
-<SMSO><    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>t<RMSO>
-<SMSO>e<RMSO>
-<SMSO>s<RMSO>
-<SMSO>t<RMSO>
-<SMSO>/<RMSO>
-<SMSO>s<RMSO>
-<SMSO>h<RMSO>
-<SMSO>o<RMSO>
-<SMSO>r<RMSO>
-<SMSO>t<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.tx<RMSO>
- <SMSO> 164B 82% <RMSO>
-<1;80>
-<SMSO>*<RMSO>
+<<EL>
+test/short.txt<1;1>
+<SMSO>a.txt 164B 82% *                                                                <RMSO>
 <2;17>
 hello   world<EL>
 <3;1>
@@ -211,19 +175,8 @@ fox jumps over the lazy dog.<14;1>
 <SMSO>^D<RMSO>
 <12;1>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 164B<RMSO>
- <SMSO>82%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 164B 82%                                                                  <RMSO>
 <12;1>
 <24;1>

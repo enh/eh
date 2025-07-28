@@ -13,18 +13,9 @@ tab indent<11;1>
 <SMSO>^D<RMSO>
 <2;1>
 <1;1>
-<SMSO>/    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>  <RMSO>
-<1;2>
-<SMSO>r<RMSO>
-<SMSO>u<RMSO>
-<SMSO>d<RMSO>
-<SMSO>e<RMSO>
-<1;1>
-<SMSO>a.txt<RMSO>
- <SMSO>119B<RMSO>
- <SMSO>33%<RMSO>
+/<EL>
+rude<1;1>
+<SMSO>a.txt 119B 33%                                                                  <RMSO>
 <4;8>
 <1;12>
 <SMSO>18<RMSO>
@@ -36,8 +27,7 @@ tab indent<11;1>
 <1;8>
 <SMSO>01<RMSO>
   <SMSO>21<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+  <SMSO>*<RMSO>
 <3;11>
 rude fart face<4;1>
 empty line<EL>
@@ -58,21 +48,9 @@ qwerty butt<9;1>
 <EL>
 <3;11>
 <1;1>
-<SMSO>/    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>b<RMSO>
-<SMSO>u<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt<RMSO>
- <SMSO>101B<RMSO>
- <SMSO>71%<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+/<EL>
+but<1;1>
+<SMSO>a.txt 101B 71% *                                                                <RMSO>
 <8;8>
 <1;8>
 <SMSO>19<RMSO>
@@ -88,19 +66,8 @@ little butt <EL>
 <SMSO>^D<RMSO>
 <9;8>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 119B<RMSO>
- <SMSO>75%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 119B 75%                                                                  <RMSO>
 <9;8>
 <24;1>

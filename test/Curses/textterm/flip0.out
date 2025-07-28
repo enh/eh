@@ -4,14 +4,13 @@
 <3;1>
 <SMSO>^D<RMSO>
 <2;1>
-<1;77>
+<1;15>
 <SMSO>INS<RMSO>
 <2;1>
 <1;7>
 <SMSO>1<RMSO>
   <SMSO>100%<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+ <SMSO>* INS<RMSO>
 <2;1>
 H<1;7>
 <SMSO>2<RMSO>
@@ -39,7 +38,7 @@ o<1;7>
 <2;9>
 r<1;7>
 <SMSO>10B 1<RMSO>
- <SMSO>0%<RMSO>
+ <SMSO>0% * INS<RMSO>
 <2;10>
 l<1;8>
 <SMSO>1<RMSO>
@@ -47,17 +46,18 @@ l<1;8>
 d<1;8>
 <SMSO>2<RMSO>
 <2;12>
-!<1;77>
+!<1;18>
 <SMSO>   <RMSO>
 <2;13>
 <1;11>
-<SMSO>0%  <RMSO>
+<SMSO>0% *<RMSO>
+ <SMSO> <RMSO>
 <2;1>
 <1;11>
 <SMSO>8<RMSO>
 <2;1>
 h<1;11>
-<SMSO>16%<RMSO>
+<SMSO>16% *<RMSO>
 <2;2>
 e<1;11>
 <SMSO>25<RMSO>
@@ -87,22 +87,11 @@ L<1;11>
 <SMSO>91<RMSO>
 <2;11>
 D<1;11>
-<SMSO>100%<RMSO>
+<SMSO>100% *<RMSO>
 <2;13>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>    <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 12B<RMSO>
- <SMSO>100%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 12B 100%                                                                  <RMSO>
 <2;13>
 <24;1>

@@ -12,14 +12,13 @@ world!<5;1>
 <1;11>
 <SMSO>9<RMSO>
 <3;15>
-<1;77>
+<1;17>
 <SMSO>INS<RMSO>
 <3;15>
 <1;8>
 <SMSO>5<RMSO>
    <SMSO>3<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+  <SMSO>*<RMSO>
 <3;16>
 <1;8>
 <SMSO>6<RMSO>
@@ -38,23 +37,12 @@ T<1;7>
 <SMSO>20<RMSO>
    <SMSO>5<RMSO>
 <3;20>
-!<1;77>
+!<1;17>
 <SMSO>   <RMSO>
 <3;21>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 20B<RMSO>
- <SMSO>95%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 20B 95%                                                                   <RMSO>
 <3;21>
 <24;1>

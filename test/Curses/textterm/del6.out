@@ -25,26 +25,13 @@ world!<3;1>
 <SMSO>^D<RMSO>
 <2;1>
 <1;7>
-<SMSO>8B 75% <RMSO>
-<1;80>
-<SMSO>*<RMSO>
+<SMSO>8B 75% *<RMSO>
 <2;1>
 !<2;9>
 <EL>
 <CR><1;1>
-<SMSO>>    <RMSO>
- <SMSO>  <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 8B<RMSO>
- <SMSO>75%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 8B 75%                                                                    <RMSO>
 <2;1>
 <24;1>

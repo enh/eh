@@ -16,21 +16,10 @@ tab indent<11;1>
 <SMSO>10%<RMSO>
 <3;1>
 <1;1>
-<SMSO>!    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;2>
-<SMSO>W<RMSO>
-<SMSO>O<RMSO>
-<SMSO>O<RMSO>
-<SMSO>T<RMSO>
-<BEL>
+!<EL>
+WOOT<BEL>
 <1;1>
-<SMSO>a.txt<RMSO>
- <SMSO>157B<RMSO>
- <SMSO>31%<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+<SMSO>a.txt 157B 31% *                                                                <RMSO>
 <3;1>
 mksh: WOOT: inaccessible or not found<4;1>
 this file might be a<EL>

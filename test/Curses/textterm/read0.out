@@ -5,32 +5,8 @@
 <SMSO>^D<RMSO>
 <2;1>
 <1;1>
-<SMSO><  <RMSO>
- <SMSO>  <RMSO>
-<1;2>
-<SMSO>t<RMSO>
-<SMSO>e<RMSO>
-<SMSO>s<RMSO>
-<SMSO>t<RMSO>
-<SMSO>/<RMSO>
-<SMSO>s<RMSO>
-<SMSO>h<RMSO>
-<SMSO>o<RMSO>
-<SMSO>r<RMSO>
-<SMSO>t<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<SMSO>W<RMSO>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO> 0B 0%               <RMSO>
-<1;80>
-<SMSO>*<RMSO>
+<<EL>
+test/short.txtWa.txt<1;1>
+<SMSO> 0B 0% *                                                                        <RMSO>
 <2;1>
 <24;1>

@@ -13,9 +13,7 @@ tab indent<11;1>
 <SMSO>^D<RMSO>
 <2;1>
 <1;16>
-<SMSO>0B 0%  <RMSO>
-<1;80>
-<SMSO>*<RMSO>
+<SMSO>0B 0% *<RMSO>
 <2;1>
 <EL>
 <3;1>
@@ -38,6 +36,7 @@ tab indent<11;1>
 <2;1>
 <1;16>
 <SMSO>119B 100%<RMSO>
+ <SMSO>*<RMSO>
 <2;1>
 hello   world<3;1>
 this file might be a<4;1>

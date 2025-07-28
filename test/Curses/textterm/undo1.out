@@ -15,14 +15,13 @@ tab indent<11;1>
 <1;12>
 <SMSO>2<RMSO>
 <2;4>
-<1;77>
+<1;17>
 <SMSO>INS<RMSO>
 <2;4>
 <1;8>
 <SMSO>20<RMSO>
   <SMSO>3<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+  <SMSO>*<RMSO>
 <2;4>
 Wlo<2;5>
 <1;9>
@@ -44,37 +43,24 @@ Tlo<2;8>
   <SMSO>6<RMSO>
 <2;8>
 !lo<2;9>
-<1;77>
+<1;17>
 <SMSO>   <RMSO>
 <2;9>
 <1;8>
 <SMSO>19<RMSO>
   <SMSO>2<RMSO>
-<1;80>
-<SMSO> <RMSO>
+  <SMSO> <RMSO>
 <2;4>
 lo   world   <EL>
 <2;4>
 <1;8>
 <SMSO>24<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+     <SMSO>*<RMSO>
 <2;4>
 WOOT!lo      world<2;4>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>  <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 124B<RMSO>
- <SMSO>2%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 124B 2%                                                                   <RMSO>
 <2;4>
 <24;1>

@@ -19,9 +19,7 @@ tab indent<11;1>
 <SMSO>34%<RMSO>
 <4;9>
 <1;7>
-<SMSO>84B 7%  <RMSO>
-<1;80>
-<SMSO>*<RMSO>
+<SMSO>84B 7% *<RMSO>
 <2;9>
 ude fart face<3;1>
 empty line<EL>
@@ -40,19 +38,8 @@ tab indent<9;1>
 <EL>
 <2;9>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>   <RMSO>
- <SMSO>  <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 84B<RMSO>
- <SMSO>7%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 84B 7%                                                                    <RMSO>
 <2;9>
 <24;1>

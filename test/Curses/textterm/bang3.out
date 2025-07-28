@@ -16,27 +16,9 @@ tab indent<11;1>
 <SMSO>10%<RMSO>
 <3;1>
 <1;1>
-<SMSO>!    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;2>
-<SMSO>l<RMSO>
-<SMSO>s<RMSO>
- <SMSO>t<RMSO>
-<SMSO>e<RMSO>
-<SMSO>s<RMSO>
-<SMSO>t<RMSO>
-<SMSO>/<RMSO>
-<SMSO>t<RMSO>
-<SMSO>e<RMSO>
-<SMSO>r<RMSO>
-<SMSO>m<RMSO>
-<SMSO>*<RMSO>
-<1;1>
-<SMSO>a.tx<RMSO>
- <SMSO> 151B 29%<RMSO>
-<1;80>
-<SMSO>*<RMSO>
+!<EL>
+ls test/term*<1;1>
+<SMSO>a.txt 151B 29% *                                                                <RMSO>
 <3;2>
 est/terminfo<EL>
 <4;1>
@@ -55,19 +37,8 @@ tab indent<13;1>
 <SMSO>^D<RMSO>
 <5;1>
 <1;1>
-<SMSO>>    <RMSO>
- <SMSO>    <RMSO>
- <SMSO>   <RMSO>
-<1;80>
-<SMSO> <RMSO>
-<1;2>
-<SMSO>a<RMSO>
-<SMSO>.<RMSO>
-<SMSO>t<RMSO>
-<SMSO>x<RMSO>
-<SMSO>t<RMSO>
-<1;1>
-<SMSO>a.txt 151B<RMSO>
- <SMSO>29%<RMSO>
+><EL>
+a.txt<1;1>
+<SMSO>a.txt 151B 29%                                                                  <RMSO>
 <5;1>
 <24;1>
