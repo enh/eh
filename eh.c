@@ -938,6 +938,16 @@ deld(void)
 }
 
 #ifndef IOCCC
+void
+ungetstr(const char *str)
+{
+	ssize_t n = strlen(str);
+	assert(n < COLS and COLS <= egap-gap);
+	while (0 < n and 0 == ungetch(str[--n])) {
+		;
+	}
+}
+
 /**
  * Yank current line.
  */
@@ -945,9 +955,7 @@ void
 yankY(void)
 {
 	marker = -1;
-	lnbegin();
-	(void) ungetch('j');
-	yanky();
+	ungetstr("^yj");
 }
 
 /**
@@ -1015,8 +1023,7 @@ chgC(void)
 void
 insertI(void)
 {
-	lnbegin();
-	insert();
+	ungetstr("^i");
 }
 
 /**
@@ -1025,8 +1032,7 @@ insertI(void)
 void
 append(void)
 {
-	right();
-	insert();
+	ungetstr("li");
 }
 
 /**
@@ -1035,8 +1041,7 @@ append(void)
 void
 appendA(void)
 {
-	lnend();
-	insert();
+	ungetstr("$i");
 }
 
 /**
@@ -1045,10 +1050,7 @@ appendA(void)
 void
 openo(void)
 {
-	if (0 < pos(ebuf)) {
-		(void) ungetch('\n');
-	}
-	appendA();
+	ungetstr("$a\n\033hi");
 }
 
 /**
@@ -1057,12 +1059,7 @@ openo(void)
 void
 openO(void)
 {
-	lnbegin();
-	(void) ungetch(ESC);
-	(void) ungetch('\n');
-	insert();
-	up();
-	insert();
+	ungetstr("^i\n\033ki");
 }
 
 /**
@@ -1128,15 +1125,13 @@ pasteP(void)
 void
 pastep(void)
 {
-	right();
-	pasteP();
 	/* SUS 2018 vi(1) `p` paste-after unnamed buffer leaves the
 	 * cursor on the last column of the last character.  Allows
 	 * for common transpose combo `xp`, eg. te_h => th_e.  Also
 	 * `pp` or `2p` eg. 1_23 => 12pastepaste_3, where '_' is the
 	 * cursor.
 	 */
-	left();
+	ungetstr("lPh");
 }
 
 void
@@ -1188,11 +1183,7 @@ prompt(int ch, const char *str)
 		str = "";
 	}
 	/* Prime the input with initial input. */
-	ssize_t n = strlen(str);
-	assert(n < COLS and COLS <= egap-gap);
-	while (0 < n and 0 == ungetch(str[--n])) {
-		;
-	}
+	ungetstr(str);
 	/* NetBSD 9.3 erase ^H works fine, but not the kill ^U character. */
 	(void) mvgetnstr(0, 1, gap, COLS);
 	(void) attroff(A_UNDERLINE);

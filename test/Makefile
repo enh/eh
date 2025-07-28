@@ -72,6 +72,7 @@ test:
 TESTS:= tests_have_term_data \
 	arg0 term0 empty0 empty1 empty3 redraw0 flip0 flip1 \
 	ins0 ins1 ins2 ins3 ins4 ins5 \
+	open0 open1 open2 open3 \
 	del0 del1 del2 del3 del4 del5 del6 \
 	scroll0 scroll1 scroll2 \
 	goto0 goto1 goto2 goto3 \
@@ -233,6 +234,38 @@ ins5:
 	-${TITLE}
 	printf "Hello\n\tworld!\n" >a.txt
 	printf 'j99|i WOOT!\eW\nQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	${A_OUT}
+	${A_TXT}
+	-${PASS}
+
+open0:
+	-${TITLE}
+	printf 'o123\eW\nQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	${A_OUT}
+	${A_TXT}
+	-${PASS}
+
+open1:
+	-${TITLE}
+	printf 'O123\eW\nQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	${A_OUT}
+	${A_TXT}
+	-${PASS}
+
+open2:
+	-${TITLE}
+	printf 'oHello\eoworld!\eW\nQ' | ${PROG} a.txt >a.out
+	${A_CORE}
+	${A_OUT}
+	${A_TXT}
+	-${PASS}
+
+open3:
+	-${TITLE}
+	printf 'Oworld!\eOHello\eW\nQ' | ${PROG} a.txt >a.out
 	${A_CORE}
 	${A_OUT}
 	${A_TXT}
