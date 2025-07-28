@@ -3,7 +3,7 @@
  *
  * Copyright 2024, 2025 by Anthony C Howe.  All rights reserved.
  *
- * For TextPad suggest...
+ * For TextPad suggest this Unicode font...
  * https://www.unifoundry.com/pub/unifont/unifont-16.0.03/font-builds/unifont-16.0.03.otf
  */
 
@@ -473,6 +473,7 @@ display(void)
 	char *p;
 	int i, j;
 	off_t from, to, eof = pos(ebuf);
+	/* Find the top of the display page. */
 	if (here < page) {
 		/* Scroll up one logical line or goto physical line. */
 		page = row_start(bol(here), here);
@@ -1054,8 +1055,12 @@ openo(void)
 void
 openO(void)
 {
+	lnbegin();
+	(void) ungetch(ESC);
+	(void) ungetch('\n');
+	insert();
 	up();
-	openo();
+	insert();
 }
 
 /**
