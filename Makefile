@@ -30,6 +30,7 @@ INSTALL_FLAGS != if test ${MAKE_OS} != 'Cygwin'; then echo "-o ${USER} -g ${GROU
 # Override from the command-line, eg. make DBG='-O0 -g'
 DBG	:= -DNDEBUG
 LDDBG	:=
+CCONFIG	:= -DPLACEHOLDER
 
 CC	!= if test ${CC} = 'c99'; then echo gcc; else echo ${CC}; fi
 LDFLAGS	!= if test ${CC} = 'gcc'; then echo '-fno-ident -flto'; fi
@@ -79,7 +80,8 @@ CINCLUDE := -include curses.h -include ctype.h -include string.h \
 CFLAGS	:= -std=gnu17 -Os -funsigned-char -Wall -Wextra -pedantic ${CSILENCE} ${DBG}
 
 # Frack need extra #define to enable SUS standard strdup(), strndup().
-CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} -DBUILT="\"${BUILT}\"" -DCOMMIT="\"${COMMIT}\"" -D_XOPEN_SOURCE=700
+CPPFLAGS:= -DBUF=${BUF} -DMODE=${MODE} -DBUILT="\"${BUILT}\"" -DCOMMIT="\"${COMMIT}\"" \
+	-D_XOPEN_SOURCE=700 ${CCONFIG}
 
 LDFLAGS	:=
 
