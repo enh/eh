@@ -154,6 +154,7 @@ int
 mblength(int ch)
 {
 //	return (1+(ch > 193)+(ch > 223)+(ch > 239)) * (ch < 128 or (193 < ch and ch < 245));
+	assert(0 <= ch and ch < 245);
 	return 1+(ch > 193)+(ch > 223)+(ch > 239);
 }
 
