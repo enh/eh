@@ -1,0 +1,121 @@
+<RMSO>
+<CLEAR>
+<SMSO>a.txt 0B 0%                                                                     <RMSO>
+<CUD1>
+<SMSO>^D<RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;15>
+<SMSO>INS<RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;7>
+<SMSO>1B 100% * INS<RMSO>
+<3;1>
+<SMSO><RMSO>
+  <4;1>
+<SMSO>^D<RMSO>
+<3;1>
+<SMSO><RMSO>
+<1;17>
+<SMSO>   <RMSO>
+<3;1>
+<SMSO><RMSO>
+<1;10>
+<SMSO>0% *  <RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;15>
+<SMSO>INS<RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;7>
+<SMSO>2B 50% * INS<RMSO>
+<2;1>
+<SMSO><RMSO>
+w<1;7>
+<SMSO>3B 66<RMSO>
+<2;2>
+<SMSO><RMSO>
+o<1;7>
+<SMSO>4B 75<RMSO>
+<2;3>
+<SMSO><RMSO>
+r<1;7>
+<SMSO>5B 80<RMSO>
+<2;4>
+<SMSO><RMSO>
+l<1;7>
+<SMSO>6B 83<RMSO>
+<2;5>
+<SMSO><RMSO>
+d<1;7>
+<SMSO>7B 85<RMSO>
+<2;6>
+<SMSO><RMSO>
+!<1;16>
+<SMSO>   <RMSO>
+<2;7>
+<SMSO><RMSO>
+<1;10>
+<SMSO>0% * <RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;15>
+<SMSO>INS<RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;7>
+<SMSO>8B 12% * INS<RMSO>
+<2;1>
+<SMSO><RMSO>
+      <3;1>
+world!<4;1>
+  <5;1>
+<SMSO>^D<RMSO>
+<3;1>
+<SMSO><RMSO>
+<1;16>
+<SMSO>   <RMSO>
+<3;1>
+<SMSO><RMSO>
+<1;10>
+<SMSO>0% * <RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;15>
+<SMSO>INS<RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;7>
+<SMSO>9B 11% * INS<RMSO>
+<2;1>
+<SMSO><RMSO>
+H<1;7>
+<SMSO>10B 20% * INS<RMSO>
+<2;2>
+<SMSO><RMSO>
+e<1;8>
+<SMSO>1B 27<RMSO>
+<2;3>
+<SMSO><RMSO>
+l<1;8>
+<SMSO>2B 33<RMSO>
+<2;4>
+<SMSO><RMSO>
+l<1;8>
+<SMSO>3B 38<RMSO>
+<2;5>
+<SMSO><RMSO>
+o<1;17>
+<SMSO>   <RMSO>
+<2;6>
+<SMSO><RMSO>
+<HOME>
+>                                                                               <1;2>
+a.txt<2;1>
+<HOME>
+<SMSO>a.txt 13B 38%                                                                   <RMSO>
+<2;6>
+<24;1>
+

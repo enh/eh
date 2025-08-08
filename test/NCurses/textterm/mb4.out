@@ -1,0 +1,39 @@
+<RMSO>
+<CLEAR>
+<SMSO>a.txt 0B 0%                                                                     <RMSO>
+<CUD1>
+<SMSO>^D<RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;15>
+<SMSO>INS<RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;7>
+<SMSO>4B 100% * INS<RMSO>
+<2;1>
+<SMSO><RMSO>
+🔥<1;7>
+<SMSO>0B 0% * INS  <RMSO>
+<2;1>
+<SMSO><RMSO>
+  <CR><1;7>
+<SMSO>1B 100% * INS<RMSO>
+<3;1>
+<SMSO><RMSO>
+  <4;1>
+<SMSO>^D<RMSO>
+<3;1>
+<SMSO><RMSO>
+<1;17>
+<SMSO>   <RMSO>
+<3;1>
+<SMSO><RMSO>
+<HOME>
+>                                                                               <1;2>
+a.txt<2;1>
+<HOME>
+<SMSO>a.txt 1B 100%                                                                   <RMSO>
+<CUD1>
+<24;1>
+

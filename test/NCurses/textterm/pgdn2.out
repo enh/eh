@@ -1,0 +1,102 @@
+<RMSO>
+<CLEAR>
+<SMSO>test/usage.md 2570B 0%                                                          <RMSO>
+ae 1.3.0<3;1>
+========<5;1>
+A minimalist version of `vi(1)`.  It is an example of the "Buffer Gap" method outlined in the [The Craft Of Text Editing](http://www.finseth.com/craft/) used by<7;2>
+many Emacs style editors.<10;1>
+Usage<11;1>
+-----<13;5>
+ae [filename]<15;1>
+Read or create a text file; default filename is `a.txt`.  Text files consists of<16;2>
+lines of printable text, tabs, or newline characters.  A physical line can be of arbitrary length and is delimited by either a newline or the end of file.  Tab<18;2>
+stops are every eight columns.  The behaviour of non-printable characters may vary depending on the implementation of the Curses library, `stty(1)` settings, or terminal emulator.<23;1>
+Commands<24;1>
+--------<2;1>
+<24;1>
+<ED>
+<1;21>
+<SMSO>26%<RMSO>
+<2;1>
+<SMSO><RMSO>
+<EL>
+<CUD1>
+    h j k l   left, down, up, right cursor movement<4;5>
+H J K L   word left, page down, page up, word right<5;1>
+    [ ]       beginning and end of line<EL>
+<6;1>
+    G         goto line number; 1G top of file, G bottom<EL>
+<7;2>
+   i         enter insert mode, FF or ESC to quit<8;5>
+x         delete character under the cursor<9;5>
+W         write buffer to file<10;1>
+    Q         quit<11;1>
+     <12;1>
+Any other key will redraw the screen.<13;5>
+<EL>
+<15;1>
+Exit Status<EL>
+<16;1>
+-----------<EL>
+<17;1>
+<EL>
+<CUD1>
+- 0 success<EL>
+<19;1>
+- 1 file read error<EL>
+<20;1>
+<EL>
+<22;1>
+Testing<23;1>
+------- <2;1>
+<1;21>
+<SMSO>45<RMSO>
+<2;1>
+<SMSO><RMSO>
+This document contains a mix of short and long physical lines.<3;5>
+<EL>
+<4;1>
+* Row = A physical screen row.<EL>
+<5;1>
+* Short line = A physical line of text that display less that `COLS` columns factoring in tabs.<EL>
+<7;1>
+* Long line = A physical line of text that can wrap onto two or more logical lines (screen rows) depending on the terminal width given by `COLS` factoring in tabs.<EL>
+<10;1>
+* Logical line = portion of a long line that fits on a single screen row.<11;1>
+* BOF = Beginning of file.<12;1>
+* EOF = End of file just after last character or newline.<13;1>
+* BOL = Beginning of line, which can be BOF.<14;1>
+* EOL = End of line at a newline or EOF if no terminating newline.<15;1>
+* TOP = Top of page.<16;1>
+* BOP = Bottom of page.<18;1>
+<EL>
+<CUD1>
+### Terminal Dimensions<21;1>
+Historical serial CRT terminals were 80 columns by 24 rows.  Later serial terminals were 80x25 to make room for a status line.  X Windows, Windows, and Mac systems have terminal emulators (typically `xterm`, `ansi`, or `vt100`) that can be<24;1>
+resized on the fly.  Typically the column width is a multiple of eight (8) to a<2;1>
+<12;1>
+<ED>
+<1;21>
+<SMSO>84<RMSO>
+<2;1>
+<SMSO><RMSO>
+count for `TAB` stops.  The terminal dimensions can be found with `stty -a` or check the `TERM` definition (see `/usr/share/misc/terminfo`) or both.<4;1>
+<EL>
+<CUD1>
+Curses library supports the environment variables `TERM`, `LINES`, and `COLUMNS`.  It possible to temporarily set `LINES` or `COLUMNS` or both smaller than the<7;1>
+terminal window size for easier testing and debugging, eg.<EL>
+<8;1>
+<EL>
+<CUD1>
+    $ LINES=10 ./ae file<10;1>
+<EL>
+<CUD1>
+<SMSO>^D<RMSO>
+<EL>
+<2;1>
+<1;21>
+<SMSO>100%<RMSO>
+<10;1>
+<SMSO><RMSO>
+<24;1>
+

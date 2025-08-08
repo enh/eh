@@ -1,0 +1,50 @@
+<RMSO>
+<CLEAR>
+<SMSO>a.txt 119B 0%                                                                   <RMSO>
+hello   world<3;1>
+this file might be a<4;1>
+little rude fart face<5;1>
+empty line<7;1>
+blank line<9;1>
+qwerty butt<10;9>
+tab indent<11;1>
+-last line-<13;1>
+<SMSO>^D<RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;12>
+<SMSO>10%<RMSO>
+<3;1>
+<SMSO><RMSO>
+<HOME>
+!                                                                               <1;2>
+ls<1;5>
+-d<1;8>
+test/*Curses<2;1>
+<HOME>
+<SMSO>a.txt 144B 25% *                                                                <RMSO>
+<3;2>
+est/Curses<EL>
+<4;1>
+test/NCurses<EL>
+<5;1>
+this file might be a<6;1>
+little rude fart face<7;1>
+empty<9;1>
+blank line <10;9>
+<EL>
+<11;1>
+qwerty butt<12;9>
+tab indent<13;1>
+-last line-<15;1>
+<SMSO>^D<RMSO>
+<5;1>
+<SMSO><RMSO>
+<HOME>
+>                                                                               <1;2>
+a.txt<2;1>
+<HOME>
+<SMSO>a.txt 144B 25%                                                                  <RMSO>
+<5;1>
+<24;1>
+

@@ -1,0 +1,14 @@
+<RMSO>
+<CLEAR>
+<SMSO> 0B 0%                                                                          <RMSO>
+<CUD1>
+<SMSO>^D<RMSO>
+<2;1>
+<SMSO><RMSO>
+<HOME>
+<                                                                               <1;2>
+test/short.txtWa.txt<2;1>
+<HOME>
+<SMSO> 0B 0% *                                                                        <RMSO>
+<24;1>
+

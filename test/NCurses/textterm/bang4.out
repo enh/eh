@@ -1,0 +1,48 @@
+<RMSO>
+<CLEAR>
+<SMSO>a.txt 119B 0%                                                                   <RMSO>
+hello   world<3;1>
+this file might be a<4;1>
+little rude fart face<5;1>
+empty line<7;1>
+blank line<9;1>
+qwerty butt<10;9>
+tab indent<11;1>
+-last line-<13;1>
+<SMSO>^D<RMSO>
+<2;1>
+<SMSO><RMSO>
+<1;12>
+<SMSO>10%<RMSO>
+<3;1>
+<SMSO><RMSO>
+<HOME>
+!                                                                               <1;2>
+cat<1;6>
+>b.txt<2;1>
+<13;1>
+<ED>
+<HOME>
+<SMSO>a.txt 76B 15% *                                                                 <RMSO>
+<CUD1>
+empty line<EL>
+<4;1>
+<EL>
+<CUD1>
+blank<7;1>
+qwerty butt<8;9>
+tab indent<9;1>
+-last line-<10;9>
+<EL>
+<11;1>
+<SMSO>^D<RMSO>
+<EL>
+<3;1>
+<HOME>
+>                                                                               <1;2>
+a.txt<2;1>
+<HOME>
+<SMSO>a.txt 76B 15%                                                                   <RMSO>
+<CUD1>
+<24;1>
+
