@@ -1,6 +1,6 @@
 hello	world
-test/terminfo
-test/terminfo.cdb
+test/Curses
+test/NCurses
 this file might be a
 little rude fart face
 empty line

@@ -26,31 +26,29 @@ tab indent<11;1>
 <6;1>
 <1;1>
 !<EL>
-fmt -g16 -w24<1;1>
+fmt -g25 -w30<1;1>
 <SMSO>a.txt 119B 55% *                                                                <RMSO>
 <3;1>
-this file might<EL>
-<4;1>
-be a little rude<EL>
-<5;1>
-fart face empty<6;1>
-line<7;1>
+this file might be a little<4;1>
+rude fart face empty line<5;1>
+<EL>
+<6;1>
+blank line<7;1>
 <EL>
 <8;1>
-blank line<9;1>
-<EL>
-<10;1>
-qwerty butt <EL>
+qwerty butt<9;1>
+        tab indent<10;1>
+-last line- <EL>
 <11;1>
-        tab indent<12;1>
--last line-<13;1>
 <EL>
-<14;1>
+<12;1>
 <SMSO>^D<RMSO>
-<7;1>
+<13;1>
+<EL>
+<5;1>
 <1;1>
 ><EL>
 a.txt<1;1>
 <SMSO>a.txt 119B 55%                                                                  <RMSO>
-<7;1>
+<5;1>
 <24;1>

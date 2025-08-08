@@ -17,11 +17,11 @@ tab indent<11;1>
 <3;1>
 <1;1>
 !<EL>
-fmt -w40<BEL>
+fmt -g68 -w40<BEL>
 <1;1>
 <SMSO>a.txt 135B 52% *                                                                <RMSO>
 <3;1>
-fmt: Max length (40) must be greater than goal length (65)<4;1>
+fmt: Max length (40) must be greater than goal length (68)<4;1>
 empty line<EL>
 <5;1>
 <EL>
