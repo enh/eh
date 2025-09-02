@@ -3,7 +3,7 @@ Primary Repository https://codeberg.org/SirWumpus/eh
 
 
 eh(1)
-=====i
+=====
 
 Name
 ----
