@@ -1,8 +1,9 @@
-![eh screen capture](./eh_1.png)
+![eh screen capture](./eh_1.png)  
 Primary Repository https://codeberg.org/SirWumpus/eh
 
+
 eh(1)
-=====
+=====i
 
 Name
 ----
