@@ -216,6 +216,8 @@ s/(^|[^[:alnum:]_])fileread([^[:alnum:]_]|$)/\1Ȑ\2/
 s/(^|[^[:alnum:]_])filewrite([^[:alnum:]_]|$)/\1ȑ\2/
 s/(^|[^[:alnum:]_])charwidth([^[:alnum:]_]|$)/\1G\2/
 s/(^|[^[:alnum:]_])version([^[:alnum:]_]|$)/\1Ж\2/
+s/(^|[^[:alnum:]_])isword([^[:alnum:]_]|$)/\1ω\2/
+
 
 s/mblength([^[:alnum:]_]|$)/S\1/g
 s/(^|[^[:alnum:]_])func([^[:alnum:]_]|$)/\1Κ\2/g

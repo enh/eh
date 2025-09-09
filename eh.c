@@ -707,19 +707,6 @@ column(void)
 }
 
 void
-wleft(void)
-{
-	/* Move backwards to end of previous word. */
-	while (0 < here and isspace(*ptr(here-1))) {
-		--here;
-	}
-	/* Move backwards to start of previous word. */
-	while (0 < here and not isspace(*ptr(here-1))) {
-		--here;
-	}
-}
-
-void
 pgtop(void)
 {
 #ifndef IOCCC
@@ -781,16 +768,35 @@ pgup(void)
 	here = col_or_eol(here, 0, cur_col);
 }
 
+int
+isword(int ch)
+{
+	return isalnum(ch) or ch == '_';
+}
+
+void
+wleft(void)
+{
+	/* Move backwards to end of previous word. */
+	while (0 < here and not isword(*ptr(here-1))) {
+		--here;
+	}
+	/* Move backwards to start of previous word. */
+	while (0 < here and isword(*ptr(here-1))) {
+		--here;
+	}
+}
+
 void
 wright(void)
 {
 	off_t eof = pos(ebuf);
 	/* Move forwards to end of current word. */
-	while (here < eof and not isspace(*ptr(here))) {
+	while (here < eof and isword(*ptr(here))) {
 		++here;
 	}
 	/* Move forwards to start of next word. */
-	while (here < eof and isspace(*ptr(here))) {
+	while (here < eof and not isword(*ptr(here))) {
 		++here;
 	}
 }
@@ -1071,11 +1077,11 @@ wend(void)
 {
 	off_t eof = pos(ebuf);
 	/* Move forwards to start of next word. */
-	while (here < eof and isspace(*ptr(++here))) {
+	while (here < eof and not isword(*ptr(++here))) {
 		;
 	}
 	/* Move forwards to end of current word. */
-	while (here < eof and not isspace(*ptr(here))) {
+	while (here < eof and isword(*ptr(here))) {
 		here++;
 	}
 	here--;

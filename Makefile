@@ -109,7 +109,7 @@ MANDIR  != if test "${MANDIR}" = '.'; then echo /usr/local/share/man; else echo 
 
 all: build
 
-build: eh$E ioccc28/prog$E
+build: eh$E
 
 clean:
 	-rm -f build.h *.core *.stackdump *.i a.out a.txt b.txt
